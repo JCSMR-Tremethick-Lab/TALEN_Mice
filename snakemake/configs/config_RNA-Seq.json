@@ -1,0 +1,24 @@
+{
+    "references" :
+    {
+        "genome" : "/home/skurscheid/Data/RefGenomes/Data/RefGenomes/Mus_musculus/mm10_GRCm38/GRCm38_mm10_masked",
+        "transcriptome_kallisto" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38//Mus_musculus.GRCm38.74.cdna.all.0.42.4.ki"
+    },
+    "units" :
+    {
+        "NMG3-60hemi" : ["NMG3-60hemi_S1_R1_001.fastq.gz", "NMG3-60hemi_S1_R2_001.fastq.gz"],
+        "NMG3-62wt": ["NMG3-62wt_S2_R1_001.fastq.gz", "NMG3-62wt_S2_R2_001.fastq.gz"],
+        "NMG3-74wt" : ["NMG3-74wt_S3_R1_001.fastq.gz", "NMG3-74wt_S3_R2_001.fastq.gz"],
+        "NMG3-75hemi" : ["NMG3-75hemi_S4_R1_001.fastq.gz", "NMG3-75hemi_S4_R2_001.fastq.gz"],
+        "NMG3-76wt" : ["NMG3-76wt_S5_R1_001.fastq.gz", "NMG3-76wt_S5_R2_001.fastq.gz"],
+        "NMG3-77hemi" : ["NMG3-77hemi_S6_R1_001.fastq.gz", "NMG3-77hemi_S6_R1_001.fastq.gz"]
+    },
+  "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
+  "trim_dir" : "trimmed_data",
+  "processed_dir" : "processed_data",
+  "aligned_dir" : "aligned_data",
+  "reports_dir" : "reports",
+  "temp_dir" : "temp_data",
+  "alignment_quality" : "20",
+  "raw_dir" : "fastq"
+}
