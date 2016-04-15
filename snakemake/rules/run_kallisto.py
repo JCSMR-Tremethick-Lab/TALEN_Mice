@@ -7,7 +7,7 @@ from snakemake.exceptions import MissingInputException
 #configfile: "~/Development/JCSMR-Tremethick-Lab/Hodgkins-Lymphoma/snakemake/configs/config.json"
 
 REF_TO_PATH = {
-    path: ref for ref, paths in config["kallisto_index"].items()
+    path: paths in config["kallisto_index"].items()
     for path in paths}
 
 rule kallisto_quant:
