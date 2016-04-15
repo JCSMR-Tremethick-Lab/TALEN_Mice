@@ -17,7 +17,7 @@ rule kallisto_quant:
     input:
         "fastq/{unit}_R1_001.fastq.gz",
         "fastq/{unit}_R2_001.fastq.gz",
-        "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/{ref}""
+        "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/{ref}"
     output:
         "processed_data/{unit}/{ref}"
     shell:
