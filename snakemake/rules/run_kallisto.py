@@ -16,7 +16,7 @@ rule kallisto_quant:
     params:
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
-        bootstraps = config["kallisto"]["bootstraps"]
+        bootstraps = config["kallisto"]["bootstraps"],
         reference = lambda wildcards: REF_TO_PATH[wildcards.ref]
     input:
         "fastq/{unit}_R1_001.fastq.gz",
