@@ -24,7 +24,7 @@ rule kallisto_quant:
         "processed_data/{unit}/{ref}"
     shell:
         """
-            kallisto quant --index={config[kallisto_index][{ref}]} \
+            kallisto quant --index={config[kallisto_index][{wildcards.ref}]} \
                            --output-dir={output} \
                            --threads=4 \
                            --bootstrap-samples={params.bootstraps} \
