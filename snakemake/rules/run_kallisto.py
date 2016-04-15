@@ -16,7 +16,8 @@ rule kallisto_quant:
     params:
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
-        bootstraps = config["kallisto"]["bootstraps"]
+        bootstraps = config["kallisto"]["bootstraps"],
+        ki=lambda wildcards: wildcards.ref
     input:
         "fastq/{unit}_R1_001.fastq.gz",
         "fastq/{unit}_R2_001.fastq.gz"
@@ -24,7 +25,7 @@ rule kallisto_quant:
         "processed_data/{unit}/{ref}"
     shell:
         """
-            kallisto quant --index={config[kallisto_index][{wildcards.ref}]} \
+            kallisto quant --index={params.ki} \
                            --output-dir={output} \
                            --threads=4 \
                            --bootstrap-samples={params.bootstraps} \
