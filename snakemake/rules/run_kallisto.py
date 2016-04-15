@@ -10,7 +10,6 @@ rule kallisto_quant:
     message:
         "Running kallisto..."
     params:
-        ki = config["references"]["mm10.ens74.cdna.all"],
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
         bootstraps = config["kallisto"]["bootstraps"]
