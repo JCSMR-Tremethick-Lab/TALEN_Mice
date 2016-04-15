@@ -2,7 +2,12 @@
     "references" :
     {
         "genome" : "/home/skurscheid/Data/RefGenomes/Data/RefGenomes/Mus_musculus/mm10_GRCm38/GRCm38_mm10_masked",
-        "transcriptome_kallisto" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38//Mus_musculus.GRCm38.74.cdna.all.0.42.4.ki"
+        "mm10.74" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.74.cdna.all.0.42.4.ki",
+        "h2a.lap1_mutants" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/H2A.Lap1_mutants.ki"
+    },
+    "kallisto" :
+    {
+      "bootstraps" : 1000
     },
     "units" :
     {
