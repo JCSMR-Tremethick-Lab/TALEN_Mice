@@ -22,7 +22,7 @@ rule kallisto_quant:
         "fastq/{unit}_R1_001.fastq.gz",
         "fastq/{unit}_R2_001.fastq.gz"
     output:
-        "processed_data/{unit}/{ref}"
+        "processed_data/{ref}/{unit}"
     shell:
         """
             kallisto quant --index={params.ki} \
@@ -35,6 +35,6 @@ rule kallisto_quant:
 rule all:
     input:
         #expand("{output}/{sample}" , output = config["processed_dir"], sample = config["units"])
-        expand("{outdir}/{unit}/{ref}", outdir = config["processed_dir"], unit = config["units"], ref = config["kallisto_index"])
+        expand("{outdir}/{ref}/{unit}", outdir = config["processed_dir"], unit = config["units"], ref = config["kallisto_index"])
         # expand("{outdir}/L12362715qia_S9", outdir = config["processed_dir"]),
         # expand("{outdir}/L12363-6-15_S7", outdir = config["processed_dir"])
