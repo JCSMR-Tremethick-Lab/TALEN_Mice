@@ -6,9 +6,9 @@ from snakemake.exceptions import MissingInputException
 
 #configfile: "~/Development/JCSMR-Tremethick-Lab/Hodgkins-Lymphoma/snakemake/configs/config.json"
 
-REF_TO_PATH = {
-    path: paths in config["kallisto_index"].items()
-    for path in paths}
+# REF_TO_PATH = {
+#     path: paths in config["kallisto_index"].items()
+#     for path in paths}
 
 rule kallisto_quant:
     message:
@@ -16,17 +16,15 @@ rule kallisto_quant:
     params:
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
-        bootstraps = config["kallisto"]["bootstraps"],
-        reference = lambda wildcards: REF_TO_PATH[wildcards.ref]
+        bootstraps = config["kallisto"]["bootstraps"]
     input:
         "fastq/{unit}_R1_001.fastq.gz",
-        "fastq/{unit}_R2_001.fastq.gz",
-        config["references"][{ref}]
+        "fastq/{unit}_R2_001.fastq.gz"
     output:
         "processed_data/{unit}/{ref}"
     shell:
         """
-            kallisto quant --index={params.references} \
+            kallisto quant --index={config[kallisto_index][{ref}]} \
                            --output-dir={output} \
                            --threads=4 \
                            --bootstrap-samples={params.bootstraps} \
