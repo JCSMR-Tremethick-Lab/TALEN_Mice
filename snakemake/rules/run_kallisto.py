@@ -13,10 +13,11 @@ rule kallisto_quant:
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
         bootstraps = config["kallisto"]["bootstraps"]
+        references = config["references"]
     input:
         "fastq/{unit}_R1_001.fastq.gz",
         "fastq/{unit}_R2_001.fastq.gz",
-        "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/{ref}"
+        config["references"][{ref}]
     output:
         "processed_data/{unit}/{ref}"
     shell:
