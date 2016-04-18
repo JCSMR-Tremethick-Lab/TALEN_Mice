@@ -32,6 +32,31 @@ rule kallisto_quant:
                            {input[0]} {input[1]}
         """
 
+rule kallisto_quant_pseudobam:
+    message:
+        "Running kallisto with pseudobam option..."
+    params:
+        raw_data = config["raw_dir"],
+        outdir = config["processed_dir"],
+        bootstraps = config["kallisto"]["bootstraps"],
+        ki=lambda wildcards: config["kallisto_index"][wildcards.ref],
+        sample=lambda wildcards: wildcards.unit
+    input:
+        "fastq/{unit}_R1_001.fastq.gz",
+        "fastq/{unit}_R2_001.fastq.gz"
+    output:
+        "processed_data/{ref}/{unit}"
+    shell:
+        """
+            kallisto quant --index={params.ki} \
+                           --output-dir={output} \
+                           --threads=4 \
+                           --bootstrap-samples={params.bootstraps} \
+                           --pseudobam \
+                           {input[0]} {input[1]} | \
+            samtools view -Sb - > {params.sample}.bam
+        """
+
 rule all:
     input:
         #expand("{output}/{sample}" , output = config["processed_dir"], sample = config["units"])
