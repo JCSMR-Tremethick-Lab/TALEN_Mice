@@ -10,27 +10,27 @@ from snakemake.exceptions import MissingInputException
 #     path: paths in config["kallisto_index"].items()
 #     for path in paths}
 
-rule kallisto_quant:
-    message:
-        "Running kallisto..."
-    params:
-        raw_data = config["raw_dir"],
-        outdir = config["processed_dir"],
-        bootstraps = config["kallisto"]["bootstraps"],
-        ki=lambda wildcards: config["kallisto_index"][wildcards.ref]
-    input:
-        "fastq/{unit}_R1_001.fastq.gz",
-        "fastq/{unit}_R2_001.fastq.gz"
-    output:
-        "processed_data/{ref}/{unit}"
-    shell:
-        """
-            kallisto quant --index={params.ki} \
-                           --output-dir={output} \
-                           --threads=4 \
-                           --bootstrap-samples={params.bootstraps} \
-                           {input[0]} {input[1]}
-        """
+# rule kallisto_quant:
+#     message:
+#         "Running kallisto..."
+#     params:
+#         raw_data = config["raw_dir"],
+#         outdir = config["processed_dir"],
+#         bootstraps = config["kallisto"]["bootstraps"],
+#         ki=lambda wildcards: config["kallisto_index"][wildcards.ref]
+#     input:
+#         "fastq/{unit}_R1_001.fastq.gz",
+#         "fastq/{unit}_R2_001.fastq.gz"
+#     output:
+#         "processed_data/{ref}/{unit}"
+#     shell:
+#         """
+#             kallisto quant --index={params.ki} \
+#                            --output-dir={output} \
+#                            --threads=4 \
+#                            --bootstrap-samples={params.bootstraps} \
+#                            {input[0]} {input[1]}
+#         """
 
 rule kallisto_quant_pseudobam:
     message:
