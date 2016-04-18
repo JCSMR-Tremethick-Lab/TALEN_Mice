@@ -50,8 +50,8 @@ rule kallisto_quant_pseudobam:
         """
             kallisto quant --index={params.ki} \
                            --output-dir={output} \
-                           --threads=4 \
-                           --bootstrap-samples={params.bootstraps} \
+                           --threads=1 \
+                           --bootstrap-samples=1 \
                            --pseudobam \
                            {input[0]} {input[1]} | \
             samtools view -Sb - > {params.sample}.bam
