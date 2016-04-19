@@ -54,7 +54,7 @@ rule kallisto_quant_pseudobam:
                            --bootstrap-samples=1 \
                            --pseudobam \
                            {input[0]} {input[1]} | \
-            samtools view -Sb - > {params.sample}.bam
+            samtools view -Sb - > {output}/pseudobam/{params.sample}.bam
         """
 
 rule all:
