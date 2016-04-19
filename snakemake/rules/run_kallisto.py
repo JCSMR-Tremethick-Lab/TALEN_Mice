@@ -48,6 +48,7 @@ rule kallisto_quant_pseudobam:
         "processed_data/{ref}/{unit}"
     shell:
         """
+            mkdir -p {output}/pseudobam;
             kallisto quant --index={params.ki} \
                            --output-dir={output} \
                            --threads=1 \
