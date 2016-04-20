@@ -78,4 +78,4 @@ rule bam_index:
 
 rule all:
     input:
-        expand("{outdir}/{ref}/NMG3-77hemi_S6/pseudobam/NMG3-77hemi_S6.sorted.bam", outdir = config["processed_dir"], unit = config["units"], ref = config["kallisto_index"])
+        expand("{outdir}/{ref}/{unit}/pseudobam/NMG3-77hemi_S6.sorted.bam", outdir = config["processed_dir"], unit = config["units"], ref = config["kallisto_index"])
