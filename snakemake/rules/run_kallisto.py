@@ -70,7 +70,7 @@ rule bam_sort:
 
 rule bam_index:
     input:
-        "{bam_sort.output}"
+        "{outdir}/{ref}/{unit}/pseudobam/{unit}.sorted.bam"
     output:
         "{outdir}/{ref}/{unit}/pseudobam/{unit}.sorted.bam.bai"
     shell:
