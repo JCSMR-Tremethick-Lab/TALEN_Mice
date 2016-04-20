@@ -62,9 +62,9 @@ rule bam_sort:
     params:
         sample=lambda wildcards: wildcards.unit
     input:
-        "{kallisto_quant_pseudobam.output}/pseudobam/{params.sample}.bam"
+        "{outdir}/{ref}/{unit}/pseudobam/{params.sample}.bam"
     output:
-        "{kallisto_quant_pseudobam.output}/pseudobam/{params.sample}.sorted.bam"
+        "{outdir}/{ref}/{unit}/pseudobam/{params.sample}.sorted.bam"
     shell:
         "samtools sort {input} -T {wildcards.unit}.sorted -o {output}"
 
