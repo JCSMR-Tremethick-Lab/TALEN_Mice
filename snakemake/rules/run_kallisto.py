@@ -72,7 +72,7 @@ rule bam_index:
     input:
         "{bam_sort.output}"
     output:
-        "{bam_sort.output}.bai"
+        "{outdir}/{ref}/{unit}/pseudobam/{unit}.sorted.bam.bai"
     shell:
         "samtools index {input} {output}"
 
