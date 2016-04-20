@@ -45,7 +45,7 @@ rule kallisto_quant_pseudobam:
         "fastq/{unit}_R1_001.fastq.gz",
         "fastq/{unit}_R2_001.fastq.gz"
     output:
-        "processed_data/{ref}/{unit}"
+        "processed_data/{ref}/{unit}/"
     shell:
         """
             mkdir -p {output}/pseudobam;
