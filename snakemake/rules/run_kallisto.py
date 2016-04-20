@@ -58,9 +58,28 @@ rule kallisto_quant_pseudobam:
             samtools view -Sb - > {output}/pseudobam/{params.sample}.bam
         """
 
+rule bam_sort:
+    params:
+        sample=lambda wildcards: wildcards.unit
+    input:
+        "{kallisto_quant_pseudobam.output}/pseudobam/{params.sample}.bam"
+    output:
+        "{kallisto_quant_pseudobam.output}/pseudobam/{params.sample}.sorted.bam"
+    shell:
+        "samtools sort {input} -T {wildcards.unit}.sorted -o {output}"
+
+rule bam_index:
+    input:
+        "{bam_sort.output}"
+    output:
+        "{bam_sort.output}.bai"
+    shell:
+        "samtools index {input} {output}"
+
 rule all:
     input:
         #expand("{output}/{sample}" , output = config["processed_dir"], sample = config["units"])
-        expand("{outdir}/{ref}/{unit}", outdir = config["processed_dir"], unit = config["units"], ref = config["kallisto_index"])
+        #expand("{outdir}/{ref}/{unit}", outdir = config["processed_dir"], unit = config["units"], ref = config["kallisto_index"]),
+        expand("{outdir}/{ref}/{unit}/pseudobam/{sample}.bai", outdir = config["processed_dir"], unit = config["units"], ref = config["kallisto_index"], sample = config["units"][0])
         # expand("{outdir}/L12362715qia_S9", outdir = config["processed_dir"]),
         # expand("{outdir}/L12363-6-15_S7", outdir = config["processed_dir"])
