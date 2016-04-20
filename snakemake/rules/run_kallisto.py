@@ -62,9 +62,9 @@ rule bam_sort:
     params:
         sample=lambda wildcards: wildcards.unit
     input:
-        "{outdir}/{ref}/{unit}/pseudobam/{params.sample}.bam"
+        "{outdir}/{ref}/{unit}/pseudobam/{unit}.bam"
     output:
-        "{outdir}/{ref}/{unit}/pseudobam/{params.sample}.sorted.bam"
+        "{outdir}/{ref}/{unit}/pseudobam/{unit}.sorted.bam"
     shell:
         "samtools sort {input} -T {wildcards.unit}.sorted -o {output}"
 
@@ -78,4 +78,4 @@ rule bam_index:
 
 rule all:
     input:
-        expand("{outdir}/{ref}/{unit}/pseudobam/{unit}.sorted.bam", outdir = config["processed_dir"], unit = config["units"], ref = config["kallisto_index"])
+        expand("{outdir}/{ref}/NMG3-60hemi_S1/pseudobam/NMG3-60hemi_S1.sorted.bam", outdir = config["processed_dir"], unit = config["units"], ref = config["kallisto_index"])
