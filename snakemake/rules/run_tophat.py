@@ -15,7 +15,7 @@ rule tophat_align:
         "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
         "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
     output:
-        "processed_data/tophat2/{unit}"
+        "processed_data/tophat2/{unit}/"
     shell:
         """
             tophat2 --output-dir {ouput} \
