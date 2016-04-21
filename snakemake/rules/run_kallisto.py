@@ -88,7 +88,7 @@ rule extract_fastq_data:
         id_file = config["id_file"],
         ids = getIDs(config["id_dir"] + "/" + config["id_file"])
     input:
-        expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/{unit}/pseudobam/{unit}.sorted.bam", outdir = config["processed_dir"], unit = config["units"]),
+        "processed_data/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/{unit}/pseudobam/{unit}.sorted.bam")
         "fastq/{unit}_R1_001.fastq.gz",
         "fastq/{unit}_R2_001.fastq.gz"
     output:
