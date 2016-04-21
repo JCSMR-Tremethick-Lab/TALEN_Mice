@@ -28,4 +28,9 @@ rule tophat_align:
 
 rule all:
     input:
-        expand("{outdir}/tophat2/{unit}/accepted_hits.bam", outdir = config["processed_dir"], unit = config["units"])
+        expand("{outdir}/tophat2/NMG3-60hemi_S1/accepted_hits.bam", outdir = config["processed_dir"]),
+        expand("{outdir}/tophat2/NMG3-62wt_S2/accepted_hits.bam", outdir = config["processed_dir"]),
+        expand("{outdir}/tophat2/NMG3-74wt_S3/accepted_hits.bam", outdir = config["processed_dir"]),
+        expand("{outdir}/tophat2/NMG3-75hemi_S4/accepted_hits.bam", outdir = config["processed_dir"]),
+        expand("{outdir}/tophat2/NMG3-76wt_S5/accepted_hits.bam", outdir = config["processed_dir"]),
+        expand("{outdir}/tophat2/NMG3-77hemi_S6/accepted_hits.bam", outdir = config["processed_dir"])
