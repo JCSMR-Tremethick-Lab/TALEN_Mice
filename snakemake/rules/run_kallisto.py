@@ -112,6 +112,22 @@ rule extract_fasta_data:
             seqtk seq -A {input} > {output}
         """
 
+rule run_oases:
+    params:
+
+    input:
+        "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
+        "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
+    output:
+        "assembly/{unit}"
+    shell:
+        """
+            oases_pipeline.py -s 2 -o {output} \
+            -d '-fastq -shortPaired -separate {input[0]} {input[1]}' \
+            -p '-ins_length 200 -min_trans_lgth 100'
+        """
+
+
 rule all:
     input:
         expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-60hemi_S1/pseudobam/NMG3-60hemi_S1.sorted.bai", outdir = config["processed_dir"]),
@@ -123,4 +139,5 @@ rule all:
         expand("fastq/subsets/{unit}_subset_IDs.txt", unit = config["units"]),
         expand("fastq/subsets/{unit}_subset_R1_001.fastq.gz", unit = config["units"]),
         expand("fastq/subsets/{unit}_subset_R2_001.fastq.gz", unit = config["units"]),
-        expand("fastq/subsets/{unit}_subset_{suffix}.fa", unit = config["units"], suffix = ["R1_001", "R2_001"])
+        expand("fastq/subsets/{unit}_subset_{suffix}.fa", unit = config["units"], suffix = ["R1_001", "R2_001"]),
+        expand("assembly/{unit}", unit = config["units"])
