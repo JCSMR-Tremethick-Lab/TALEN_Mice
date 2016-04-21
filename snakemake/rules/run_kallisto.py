@@ -102,8 +102,15 @@ rule extract_fastq_data:
             seqtk subseq {input[2]} {output[0]} > {output[2]}
         """
 
-
-
+rule extract_fasta_data:
+    input:
+        "fastq/subsets/{unit}_subset_{suffix}.fastq.gz"
+    output:
+        "fastq/subsets/{unit}_subset_{suffix}.fa"
+    shell:
+        """
+            seqtk seq {input} {output}
+        """
 
 rule all:
     input:
@@ -116,3 +123,4 @@ rule all:
         expand("fastq/subsets/{unit}_subset_IDs.txt", unit = config["units"]),
         expand("fastq/subsets/{unit}_subset_R1_001.fastq.gz", unit = config["units"]),
         expand("fastq/subsets/{unit}_subset_R2_001.fastq.gz", unit = config["units"])
+        expand("fastq/subsets/fastq/subsets/{unit}_subset_{suffix}.fa", unit = config["units"], suffix = ["R1_001", "R2_001"])
