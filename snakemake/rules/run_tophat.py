@@ -11,9 +11,9 @@ rule tophat_align:
         del_length = config["tophat"]["max-deletion-length"],
         lib_type = config["tophat"]["library-type"]
     input:
-        expand("fastq/subsets/{unit}_subset_{suffix}.fastq.gz", unit = config["units"], suffix = ["R1_001", "R2_001"])
+        expand("fastq/subsets/{unit}_subset_{suffix}.fastq.gz", suffix = ["R1_001", "R2_001"])
     output:
-        "processed_data/tophat2/{unit}/"
+        expand("processed_data/tophat2/{unit}" , unit = config["units"])
     shell:
         """
             tophat2 --output-dir {ouput} \
