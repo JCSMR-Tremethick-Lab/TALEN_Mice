@@ -89,7 +89,7 @@ rule extract_fastq_data:
     params:
         id_dir = config["id_dir"],
         id_file = config["id_file"],
-        ids = getIDs(config["id_dir"] + "/" config["id_file"])
+        ids = getIDs(config["id_dir"] + "/" + config["id_file"])
     input:
         "{outdir}/{ref}/{unit}/pseudobam/{unit}.sorted.bam",
         "fastq/{unit}_R1_001.fastq.gz",
