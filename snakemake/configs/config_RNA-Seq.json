@@ -36,5 +36,7 @@
   "reports_dir" : "reports",
   "temp_dir" : "temp_data",
   "alignment_quality" : "20",
-  "raw_dir" : "fastq"
+  "raw_dir" : "fastq",
+  "id_dir" : "sequencing_targets",
+  "id_file" : "ID_list.txt"
 }

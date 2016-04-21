@@ -32,6 +32,15 @@ from snakemake.exceptions import MissingInputException
 #                            {input[0]} {input[1]}
 #         """
 
+def getIDs(file):
+    if file.exists():
+        fo = file.open(file, "r")
+        line = [x.strip() for x in fo.readlines()]
+        line = ' '.join(line)
+        return line
+    else:
+        raise(Exception("ID List file is missing."))
+
 rule kallisto_quant_pseudobam:
     message:
         "Running kallisto with pseudobam option..."
@@ -76,6 +85,29 @@ rule bam_index:
     shell:
         "samtools index {input} {output}"
 
+rule extract_fastq_data:
+    params:
+        id_dir = config["id_dir"],
+        id_file = config["id_file"],
+        ids = getIDs(config["id_dir"] + "/" config["id_file"])
+    input:
+        "{outdir}/{ref}/{unit}/pseudobam/{unit}.sorted.bam",
+        "fastq/{unit}_R1_001.fastq.gz",
+        "fastq/{unit}_R2_001.fastq.gz"
+    output:
+        "fastq/subsets/{unit}_subset_IDs.txt",
+        "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
+        "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
+    shell:
+        """
+            samtools view {input[0]} {params.ids} | cut -f 1 | sort | uniq > {output[0]}; \
+            seqtk subseq {input[1]} {output[0]} > {output[1]}; \
+            seqtk subseq {input[2]} {output[0]} > {output[2]}
+        """
+
+
+
+
 rule all:
     input:
         expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-60hemi_S1/pseudobam/NMG3-60hemi_S1.sorted.bai", outdir = config["processed_dir"]),
@@ -83,4 +115,7 @@ rule all:
         expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-74wt_S3/pseudobam/NMG3-74wt_S3.sorted.bai", outdir = config["processed_dir"]),
         expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-75hemi_S4/pseudobam/NMG3-75hemi_S4.sorted.bai", outdir = config["processed_dir"]),
         expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-76wt_S5/pseudobam/NMG3-76wt_S5.sorted.bai", outdir = config["processed_dir"]),
-        expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-77hemi_S6/pseudobam/NMG3-77hemi_S6.sorted.bai", outdir = config["processed_dir"])
+        expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-77hemi_S6/pseudobam/NMG3-77hemi_S6.sorted.bai", outdir = config["processed_dir"]),
+        expand("fastq/subsets/{unit}_subset_IDs.txt", unit = config["units"]),
+        expand("fastq/subsets/{unit}_subset_R1_001.fastq.gz", unit = config["units"]),
+        expand("fastq/subsets/{unit}_subset_R2_001.fastq.gz", unit = config["units"])
