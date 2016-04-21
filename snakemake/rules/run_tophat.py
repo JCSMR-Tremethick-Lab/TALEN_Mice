@@ -17,7 +17,7 @@ rule tophat_align:
         "processed_data/tophat2/{unit}"
     shell:
         """
-            tophat2 --output-dir {ouput} \
+            tophat2 --output-dir {output} \
                     --GTF {params.ref_trome} \
                     --max-deletion-length {params.del_length} \
                     --library-type {params.lib_type} \
