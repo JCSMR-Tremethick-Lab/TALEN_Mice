@@ -64,15 +64,15 @@ rule kallisto_quant_pseudobam:
             samtools view -Sb - > {output}/pseudobam/{params.sample}.bam
         """
 
-# rule bam_sort:
-#     params:
-#         sample=lambda wildcards: wildcards.unit
-#     input:
-#         "{outdir}/{ref}/{unit}/pseudobam/{unit}.bam"
-#     output:
-#         "{outdir}/{ref}/{unit}/pseudobam/{unit}.sorted.bam"
-#     shell:
-#         "samtools sort {input} -T {wildcards.unit}.sorted -o {output}"
+rule bam_sort:
+    params:
+        sample=lambda wildcards: wildcards.unit
+    input:
+        "{outdir}/{ref}/{unit}/pseudobam/{unit}.bam"
+    output:
+        "{outdir}/{ref}/{unit}/pseudobam/{unit}.sorted.bam"
+    shell:
+        "samtools sort {input} -T {wildcards.unit}.sorted -o {output}"
 
 rule bam_index:
     input:
