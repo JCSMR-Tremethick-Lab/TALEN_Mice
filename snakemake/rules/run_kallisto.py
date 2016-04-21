@@ -122,5 +122,5 @@ rule all:
         expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-77hemi_S6/pseudobam/NMG3-77hemi_S6.sorted.bai", outdir = config["processed_dir"]),
         expand("fastq/subsets/{unit}_subset_IDs.txt", unit = config["units"]),
         expand("fastq/subsets/{unit}_subset_R1_001.fastq.gz", unit = config["units"]),
-        expand("fastq/subsets/{unit}_subset_R2_001.fastq.gz", unit = config["units"])
+        expand("fastq/subsets/{unit}_subset_R2_001.fastq.gz", unit = config["units"]),
         expand("fastq/subsets/fastq/subsets/{unit}_subset_{suffix}.fa", unit = config["units"], suffix = ["R1_001", "R2_001"])
