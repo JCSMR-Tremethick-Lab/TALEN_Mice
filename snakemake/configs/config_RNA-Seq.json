@@ -16,6 +16,7 @@
     "tophat" :
     {
       "max-deletion-length" : "65",
+      "min-intron-length" : "66",
       "num-threads" : "4",
       "GTF" : "/home/skurscheid/Data/Annotations/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.74.gtf",
       "library-type" : "fr-firststrand"

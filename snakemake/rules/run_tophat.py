@@ -9,6 +9,7 @@ rule tophat_align:
         bt_index = config["references"]["genome"],
         ref_trome = config["tophat"]["GTF"],
         del_length = config["tophat"]["max-deletion-length"],
+        intron_length = config["tophat"]["min-intron-length"],
         lib_type = config["tophat"]["library-type"]
     input:
         "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
@@ -21,7 +22,7 @@ rule tophat_align:
                     --GTF {params.ref_trome} \
                     --max-deletion-length {params.del_length} \
                     --library-type {params.lib_type} \
-                    --min-intron-length {params.del_length} \
+                    --min-intron-length {params.intron_length} \
                     {params.bt_index} \
                     {input[0]} {input[1]}
         """
