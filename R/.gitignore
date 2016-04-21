@@ -1,13 +1,10 @@
-<<<<<<< HEAD
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-=======
 .Rproj.user/*
 .Rhistory
 .RData
 *.sh.o*
 *.sh.e*
 *.sh.po*
->>>>>>> tophat_integration
