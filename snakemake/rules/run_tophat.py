@@ -9,8 +9,7 @@ rule tophat_align:
         bt_index = config["references"]["genome"],
         ref_trome = config["tophat"]["GTF"],
         del_length = config["tophat"]["max-deletion-length"],
-        lib_type = config["tophat"]["library-type"],
-        sample=lambda wildcards: wildcards.unit
+        lib_type = config["tophat"]["library-type"]
     input:
         expand("fastq/subsets/{unit}_subset_{suffix}.fastq.gz", unit = config["units"], suffix = ["R1_001", "R2_001"])
     output:
