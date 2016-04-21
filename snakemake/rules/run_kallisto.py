@@ -109,7 +109,7 @@ rule extract_fasta_data:
         "fastq/subsets/{unit}_subset_{suffix}.fa"
     shell:
         """
-            seqtk seq {input} {output}
+            seqtk seq -A {input} > {output}
         """
 
 rule all:
