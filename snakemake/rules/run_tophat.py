@@ -12,8 +12,8 @@ rule tophat_align:
         lib_type = config["tophat"]["library-type"],
         sample=lambda wildcards: wildcards.unit
     input:
-        "fastq/filtered/{unit}_R1_001.fastq.gz",
-        "fastq/filtered/{unit}_R2_001.fastq.gz"
+        "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
+        "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
     output:
         "processed_data/tophat2/{unit}"
     shell:
