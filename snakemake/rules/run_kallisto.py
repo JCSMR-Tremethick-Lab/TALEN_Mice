@@ -10,6 +10,12 @@ from snakemake.exceptions import MissingInputException
 #     path: paths in config["kallisto_index"].items()
 #     for path in paths}
 
+def getIDs(file):
+    fo = file.open(file, "r")
+    line = [x.strip() for x in fo.readlines()]
+    line = ' '.join(line)
+    return line
+
 # rule kallisto_quant:
 #     message:
 #         "Running kallisto..."
@@ -31,15 +37,6 @@ from snakemake.exceptions import MissingInputException
 #                            --bootstrap-samples={params.bootstraps} \
 #                            {input[0]} {input[1]}
 #         """
-
-def getIDs(file):
-    if file.exists():
-        fo = file.open(file, "r")
-        line = [x.strip() for x in fo.readlines()]
-        line = ' '.join(line)
-        return line
-    else:
-        raise(Exception("ID List file is missing."))
 
 rule kallisto_quant_pseudobam:
     message:
