@@ -13,7 +13,11 @@ rule tophat_align:
     input:
         expand("fastq/subsets/{unit}_subset_{suffix}.fastq.gz", suffix = ["R1_001", "R2_001"])
     output:
+<<<<<<< HEAD
         expand("processed_data/tophat2/{unit}" , unit = config["units"])
+=======
+        "processed_data/tophat2/{unit}"
+>>>>>>> parent of bb64f17... modified rule for running tophat
     shell:
         """
             tophat2 --output-dir {ouput} \
