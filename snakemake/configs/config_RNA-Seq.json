@@ -1,7 +1,7 @@
 {
     "references" :
     {
-        "genome" : "/home/skurscheid/Data/RefGenomes/Data/RefGenomes/Mus_musculus/mm10_GRCm38/GRCm38_mm10_masked"
+        "genome" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/GRCm38_mm10_masked"
     },
     "kallisto" :
     {
