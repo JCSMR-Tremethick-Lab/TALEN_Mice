@@ -21,6 +21,7 @@ rule tophat_align:
                     --GTF {params.ref_trome} \
                     --max-deletion-length {params.del_length} \
                     --library-type {params.lib_type} \
+                    --min-intron-length {params.del_length} \
                     {params.bt_index} \
                     {input[0]} {input[1]}
         """
