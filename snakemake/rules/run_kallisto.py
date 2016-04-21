@@ -10,8 +10,8 @@ from snakemake.exceptions import MissingInputException
 #     path: paths in config["kallisto_index"].items()
 #     for path in paths}
 
-def getIDs(file):
-    fo = file.open(file, "r")
+def getIDs( file ):
+    fo = open(file, "r")
     line = [x.strip() for x in fo.readlines()]
     line = ' '.join(line)
     return line
