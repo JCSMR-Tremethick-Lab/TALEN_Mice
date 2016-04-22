@@ -5,20 +5,19 @@ __date__ = "2016-02-25"
 from snakemake.exceptions import MissingInputException
 import os
 
-#configfile: "~/Development/JCSMR-Tremethick-Lab/Hodgkins-Lymphoma/snakemake/configs/config.json"
-
 rule fastqc:
     message: "Performing FastQC..."
     params:
         rdir = config["reports_dir"],
         data_dir = config["raw_dir"]
     input:
-        expand("{data}/{sample}{suffix}.fastq.gz", sample = config["units"], data = config["raw_dir"], suffix = ("_R1_001", "_R2_001")),
+        "fastqc/{unit}_R2_001.fastq.gz",
+        "fastqc/{unit}_R1_001.fastq.gz"
     output:
-        expand("{rdir}/{sample}{suffix}_fastqc.zip", sample = config["units"], rdir = config["reports_dir"], suffix = ("_R1_001", "_R2_001"))
+        "{rdir}/{unit}"
     shell:
-        "/usr/local/bin/fastqc {input} --noextract --outdir  {params.rdir}"
+        "/usr/local/bin/fastqc {params.data_dir}/{input}  --noextract --outdir {output}"
 
 rule all:
     input:
-        expand("{rdir}/{sample}{suffix}_fastqc.zip", sample = config["units"], rdir = config["reports_dir"], suffix = ("_R1_001", "_R2_001"))
+        expand("{rdir}/{unit}", unit = config["units"], rdir = config["reports_dir"])

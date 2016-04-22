@@ -4,10 +4,6 @@ __date__ = "2016-04-22"
 
 from snakemake.exceptions import MissingInputException
 
-rule all:
-    input:
-        expand("{outdir}/STAR/{unit}", outdir = config["processed_dir"], unit = config["units"])
-
 rule star_align:
     params:
         genomeDir = config["STAR"]["genomeDir"],
@@ -16,12 +12,15 @@ rule star_align:
         "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
         "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
     output:
-        "{outdir}/STAR/{unit}"
+        "{outdir}/STAR/{unit}.aligned.bam"
     shell:
         """
             STAR --runMode alignReads \
                  --runThreadN {params.runThreadN} \
                  --genomeDir {params.genomeDir} \
                  --readFilesIn {input[0]} {input[1]} \
-                 --outFileNamePrefix {output[0]}
+                 --outSAMmode Full \
+                 --outStd SAM \
+                 --outSAMattributes Standard\
+            | samtools view -b > {output[0]}
         """
