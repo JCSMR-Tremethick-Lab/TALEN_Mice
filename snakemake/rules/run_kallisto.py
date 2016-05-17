@@ -110,20 +110,20 @@ rule extract_fastq_data:
             seqtk subseq {input[2]} {output[0]} > {output[2]}
         """
 
-rule run_oases:
-    message:
-        "Running Oases assembler on cDNA reads..."
-    input:
-        "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
-        "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
-    output:
-        "assembly/{unit}"
-    shell:
-        """
-            oases_pipeline.py -s 2 -o {output} \
-            -d '-fastq -shortPaired -separate {input[0]} {input[1]}' \
-            -p '-ins_length 200 -min_trans_lgth 100'
-        """
+# rule run_oases:
+#     message:
+#         "Running Oases assembler on cDNA reads..."
+#     input:
+#         "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
+#         "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
+#     output:
+#         "assembly/{unit}"
+#     shell:
+#         """
+#             oases_pipeline.py -s 2 -o {output} \
+#             -d '-fastq -shortPaired -separate {input[0]} {input[1]}' \
+#             -p '-ins_length 200 -min_trans_lgth 100'
+#         """
 
 
 # rule all:
