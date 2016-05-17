@@ -43,7 +43,7 @@ rule kallisto_quant_pseudobam:
         "Running kallisto with pseudobam option..."
     params:
         raw_data = config["raw_dir"],
-        outdir = config["processed_dir"],
+        outdir = config["processed_dir"] + "\kallisto",
         bootstraps = config["kallisto"]["bootstraps"],
         ki=lambda wildcards: config["kallisto_index"][wildcards.ref],
         sample=lambda wildcards: wildcards.unit
@@ -128,7 +128,7 @@ rule run_oases:
 
 # rule all:
 #     input:
-#         # expand("{outdir}/{ref}/{unit}/", outdir = config["processed_dir"], ref = "mm10.ens74.cdna.all_incl_h2a.Lap1_mutants", unit = config["units"]),
+#         # expand("{outdir}/{ref}/{unit}/", outdir = config["processed_dir"] + "kallisto", ref = "mm10.ens74.cdna.all_incl_h2a.Lap1_mutants", unit = config["units"]),
 #         # expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-60hemi_S1/pseudobam/NMG3-60hemi_S1.sorted.bai", outdir = config["processed_dir"]),
 #         # expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-62wt_S2/pseudobam/NMG3-62wt_S2.sorted.bai", outdir = config["processed_dir"]),
 #         # expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-74wt_S3/pseudobam/NMG3-74wt_S3.sorted.bai", outdir = config["processed_dir"]),
