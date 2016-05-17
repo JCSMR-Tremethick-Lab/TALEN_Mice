@@ -21,6 +21,6 @@ include:
 
 rule all:
     input:
-        expand("{rdir}/{sample}{suffix}_fastqc.zip", sample = config["units"], rdir = config["reports_dir"], suffix = ("_R1_001", "_R2_001")),
-        expand("{outdir}/STAR/{unit}.aligned.bam", outdir = config["processed_dir"], unit = config["units"]),
-        expand("assembly/{unit}", unit = config["units"])
+        #expand("{rdir}/{sample}{suffix}_fastqc.zip", sample = config["units"], rdir = config["reports_dir"], suffix = ("_R1_001", "_R2_001")),
+        expand("{outdir}/STAR/{unit}.aligned.bam", outdir = config["processed_dir"], unit = config["units"])
+        #expand("assembly/{unit}", unit = config["units"])
