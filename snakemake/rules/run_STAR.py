@@ -43,7 +43,26 @@ rule star_align_full:
                  --readFilesCommand zcat \
                  --outTmpDir /home/skurscheid/tmp \
                  --outSAMmode Full \
-                 --outStd SAM \
-                 --outSAMattributes Standard\
-            | samtools view -b > {output[0]}
+                 --outSAMattributes Standard \
+                 --outSAMtype BAM SortedByCoordinate > {output[0]}
+        """
+
+rule run_htseq-count:
+    params:
+        htseq_dir = config["HTSeq_dir"],
+        gtf = config["GTF"]
+    input:
+        rules.star_align_full.output
+    output:
+        "{outdir}/HTSeq/count/{unit}.txt"
+    shell:
+        """
+            {params.htseq_dir}htseq-count --format=bam \
+                                          --order=pos \
+                                          --stranded=yes \
+                                          --type=exon \
+                                          --idattr=gene_id \
+                                          {input} \
+                                          {params.gtf} \
+                                          > {output}
         """

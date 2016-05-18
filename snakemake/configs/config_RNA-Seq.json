@@ -1,7 +1,8 @@
 {
     "references" :
     {
-        "genome" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/GRCm38_mm10_masked"
+        "genome" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/GRCm38_mm10_masked",
+        "GTF" : "/home/skurscheid/Data/Annotations/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.74.gtf"
     },
     "kallisto" :
     {
@@ -21,7 +22,6 @@
       "library-type" : "fr-firststrand",
       "min-intron-length" : "66",
       "num-threads" : "4",
-      "GTF" : "/home/skurscheid/Data/Annotations/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.74.gtf",
       "library-type" : "fr-firststrand"
     },
     "STAR" :
@@ -47,5 +47,6 @@
   "alignment_quality" : "20",
   "raw_dir" : "fastq",
   "id_dir" : "sequencing_targets",
-  "id_file" : "ID_list.txt"
+  "id_file" : "ID_list.txt",
+  "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin"
 }
