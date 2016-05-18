@@ -47,7 +47,7 @@ rule star_align_full:
                  --outSAMtype BAM SortedByCoordinate > {output[0]}
         """
 
-rule run_htseq-count:
+rule run_htseq_count:
     params:
         htseq_dir = config["HTSeq_dir"],
         gtf = config["GTF"]
