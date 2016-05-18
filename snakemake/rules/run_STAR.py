@@ -41,7 +41,7 @@ rule star_align_full:
                  --genomeDir {params.genomeDir} \
                  --readFilesIn {input[0]} {input[1]} \
                  --readFilesCommand zcat \
-                 --outTmpDir /home/skurscheid/tmp/{unit} \
+                 --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
                  --outSAMtype BAM SortedByCoordinate > {output[0]}
