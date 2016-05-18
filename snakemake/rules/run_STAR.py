@@ -50,7 +50,7 @@ rule star_align_full:
 rule run_htseq_count:
     params:
         htseq_dir = config["HTSeq_dir"],
-        gtf = config["GTF"]
+        gtf = config["references"]["GTF"]
     input:
         rules.star_align_full.output
     output:
