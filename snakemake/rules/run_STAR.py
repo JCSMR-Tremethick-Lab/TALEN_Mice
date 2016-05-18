@@ -57,7 +57,7 @@ rule run_htseq-count:
         "{outdir}/HTSeq/count/{unit}.txt"
     shell:
         """
-            {params.htseq_dir}htseq-count --format=bam \
+            {params.htseq_dir}/htseq-count --format=bam \
                                           --order=pos \
                                           --stranded=yes \
                                           --type=exon \
