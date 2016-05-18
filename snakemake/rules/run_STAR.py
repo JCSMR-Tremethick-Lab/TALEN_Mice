@@ -40,6 +40,7 @@ rule star_align_full:
                  --runThreadN {params.runThreadN} \
                  --genomeDir {params.genomeDir} \
                  --readFilesIn {input[0]} {input[1]} \
+                 --readFilesCommand zcat \
                  --outSAMmode Full \
                  --outStd SAM \
                  --outSAMattributes Standard\
