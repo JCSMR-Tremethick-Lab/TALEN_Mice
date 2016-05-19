@@ -44,8 +44,8 @@ rule star_align_full:
                  --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
-                 --outSAMtype BAM SortedByCoordinate
-                 --outStd BAM_SortedByCoordinate
+                 --outSAMtype BAM SortedByCoordinate \
+                 --outStd BAM_SortedByCoordinate \
                  > {output[0]}
         """
 
