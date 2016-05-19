@@ -33,7 +33,7 @@ rule star_align_full:
         "fastq/{unit}_R1_001.fastq.gz",
         "fastq/{unit}_R2_001.fastq.gz"
     output:
-        "{outdir}/STAR/full/{unit}.aligned.sam"
+        "{outdir}/STAR/full/{unit}.aligned.bam"
     shell:
         """
             STAR --runMode alignReads \
@@ -44,6 +44,8 @@ rule star_align_full:
                  --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
+                 --outSAMtype BAM SortedByCoordinate
+                 --outStd BAM_SortedByCoordinate
                  > {output[0]}
         """
 
