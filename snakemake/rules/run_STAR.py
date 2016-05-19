@@ -1,4 +1,4 @@
-__author__ = "Sebastian Kurscheid (sebastian.kurscheid@anu.edu.au)"
+  __author__ = "Sebastian Kurscheid (sebastian.kurscheid@anu.edu.au)"
 __license__ = "MIT"
 __date__ = "2016-04-22"
 
@@ -33,7 +33,7 @@ rule star_align_full:
         "fastq/{unit}_R1_001.fastq.gz",
         "fastq/{unit}_R2_001.fastq.gz"
     output:
-        "{outdir}/STAR/full/{unit}.aligned.bam"
+        "{outdir}/STAR/full/{unit}.aligned.sam"
     shell:
         """
             STAR --runMode alignReads \
@@ -44,7 +44,7 @@ rule star_align_full:
                  --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
-                 | samtools view -b > {output[0]}
+                 > {output[0]}
         """
 
 rule run_htseq_count:
