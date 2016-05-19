@@ -44,7 +44,7 @@ rule star_align_full:
                  --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
-                 --outSAMtype BAM SortedByCoordinate > {output[0]}
+                 | samtools view -b > {output[0]}
         """
 
 rule run_htseq_count:
