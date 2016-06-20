@@ -5,7 +5,7 @@ __date__ = "2015-04-22"
 from snakemake.exceptions import MissingInputException
 
 rule:
-    version: 0.2
+    version: 0.3
 
 localrules:
     all

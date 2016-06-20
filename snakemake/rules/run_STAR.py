@@ -7,6 +7,8 @@ from snakemake.exceptions import MissingInputException
 wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
 
 rule star_align:
+    version:
+        0.1
     params:
         genomeDir = config["STAR"]["genomeDir"],
         runThreadN = config["STAR"]["runThreadN"]
@@ -14,7 +16,7 @@ rule star_align:
         "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
         "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
     output:
-        "{outdir}/STAR/subsets/{unit}.aligned.bam"
+        "{outdir}/{reference_version}/STAR/subsets/{unit}.aligned.bam"
     shell:
         """
             STAR --runMode alignReads \
@@ -29,7 +31,7 @@ rule star_align:
 
 rule star_align_full:
     version:
-        0.2
+        0.3
     params:
         runThreadN = config["STAR"]["runThreadN"]
     input:
@@ -37,7 +39,7 @@ rule star_align_full:
         fq1 = "fastq/{unit}_R1_001.fastq.gz",
         fq2 = "fastq/{unit}_R2_001.fastq.gz"
     output:
-        "{outdir}/STAR/full/{unit}.aligned.bam"
+        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
     shell:
         """
             STAR --runMode alignReads \
@@ -54,25 +56,25 @@ rule star_align_full:
         """
 rule bam_index_STAR_output:
     version:
-        0.1
+        0.2
     input:
-        "{outdir}/STAR/full/{unit}.aligned.bam"
+        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
     output:
-        "{outdir}/STAR/full/{unit}.aligned.bam.bai"
+        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
     wrapper:
         "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
 rule run_htseq_count:
     version:
-        0.1
+        0.2
     params:
         htseq_dir = config["HTSeq_dir"],
         gtf = config["references"]["GTF"]
     input:
-        "{outdir}/STAR/full/{unit}.aligned.bam",
-        "{outdir}/STAR/full/{unit}.aligned.bam.bai"
+        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
+        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
     output:
-        "{outdir}/HTSeq/count/{unit}.txt"
+        "{outdir}/{reference_version}/HTSeq/count/{unit}.txt"
     shell:
         """
             {params.htseq_dir}/htseq-count --format=bam \
