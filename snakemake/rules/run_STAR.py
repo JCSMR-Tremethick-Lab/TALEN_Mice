@@ -4,6 +4,8 @@ __date__ = "2016-04-22"
 
 from snakemake.exceptions import MissingInputException
 
+wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
+
 rule star_align:
     params:
         genomeDir = config["STAR"]["genomeDir"],
@@ -50,6 +52,15 @@ rule star_align_full:
                  --outStd BAM_SortedByCoordinate \
                  > {output[0]}
         """
+rule bam_index_STAR_output:
+    version:
+        0.1
+    input:
+        "{outdir}/STAR/full/{unit}.aligned.bam"
+    output:
+        "{outdir}/STAR/full/{unit}.aligned.bam.bai"
+    wrapper:
+        "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
 rule run_htseq_count:
     version:
@@ -58,7 +69,8 @@ rule run_htseq_count:
         htseq_dir = config["HTSeq_dir"],
         gtf = config["references"]["GTF"]
     input:
-        rules.star_align_full.output
+        "{outdir}/STAR/full/{unit}.aligned.bam",
+        "{outdir}/STAR/full/{unit}.aligned.bam.bai"
     output:
         "{outdir}/HTSeq/count/{unit}.txt"
     shell:

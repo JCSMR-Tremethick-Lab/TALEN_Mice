@@ -2,7 +2,7 @@
     "references" :
     {
         "genome" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/GRCm38_mm10_masked",
-        "GTF" : "/home/skurscheid/Data/Annotations/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.74.gtf"
+        "GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_mm10/ensembl_84/Mus_musculus.GRCm38.84.gtf"
     },
     "kallisto" :
     {
