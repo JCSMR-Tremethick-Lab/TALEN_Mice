@@ -26,6 +26,8 @@ rule star_align:
         """
 
 rule star_align_full:
+    version:
+        0.2
     params:
         runThreadN = config["STAR"]["runThreadN"]
     input:
@@ -50,6 +52,8 @@ rule star_align_full:
         """
 
 rule run_htseq_count:
+    version:
+        0.1
     params:
         htseq_dir = config["HTSeq_dir"],
         gtf = config["references"]["GTF"]
