@@ -26,7 +26,7 @@
     },
     "STAR" :
     {
-      "genomeDir" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/STAR_Index/",
+      "genomeDir" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index/",
       "runThreadN" : "4"
     },
     "units" :

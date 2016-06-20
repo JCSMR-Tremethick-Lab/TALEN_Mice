@@ -27,19 +27,19 @@ rule star_align:
 
 rule star_align_full:
     params:
-        genomeDir = config["STAR"]["genomeDir"],
         runThreadN = config["STAR"]["runThreadN"]
     input:
-        "fastq/{unit}_R1_001.fastq.gz",
-        "fastq/{unit}_R2_001.fastq.gz"
+        index = config["STAR"]["genomeDir"],
+        fq1 = "fastq/{unit}_R1_001.fastq.gz",
+        fq2 = "fastq/{unit}_R2_001.fastq.gz"
     output:
         "{outdir}/STAR/full/{unit}.aligned.bam"
     shell:
         """
             STAR --runMode alignReads \
                  --runThreadN {params.runThreadN} \
-                 --genomeDir {params.genomeDir} \
-                 --readFilesIn {input[0]} {input[1]} \
+                 --genomeDir {input.index} \
+                 --readFilesIn {input.fq1} {input.fq2} \
                  --readFilesCommand zcat \
                  --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
                  --outSAMmode Full \
