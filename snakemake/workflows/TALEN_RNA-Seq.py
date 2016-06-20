@@ -22,6 +22,11 @@ include:
 rule all:
     input:
         #expand("{rdir}/{sample}{suffix}_fastqc.zip", sample = config["units"], rdir = config["reports_dir"], suffix = ("_R1_001", "_R2_001")),
-        expand("{outdir}/STAR/full/{unit}.aligned.bam", outdir = config["processed_dir"], unit = config["units"]),
-        expand("{outdir}/HTSeq/count/{unit}.txt", outdir = config["processed_dir"], unit = config["units"])
-        #expand("assembly/{unit}", unit = config["units"])
+        expand("{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["version"],
+               unit = config["units"]),
+        expand("{outdir}/{reference_version}/HTSeq/count/{unit}.txt",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["version"],
+               unit = config["units"])
