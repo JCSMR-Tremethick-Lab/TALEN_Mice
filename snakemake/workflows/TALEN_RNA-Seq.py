@@ -12,10 +12,10 @@ localrules:
 
 include_prefix="/home/skurscheid/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
 
-include:
-    include_prefix + "perform_fastqc.py"
-include:
-    include_prefix + "run_kallisto.py"
+# include:
+#     include_prefix + "perform_fastqc.py"
+# include:
+#     include_prefix + "run_kallisto.py"
 include:
     include_prefix + "run_STAR.py"
 
