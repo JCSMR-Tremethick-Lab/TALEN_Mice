@@ -71,8 +71,8 @@ rule run_htseq_count:
         htseq_dir = config["HTSeq_dir"],
         gtf = config["references"]["GTF"]
     input:
-        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
-        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
+        bam = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
+        index = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
     output:
         "{outdir}/{reference_version}/HTSeq/count/{unit}.txt"
     shell:
@@ -82,7 +82,7 @@ rule run_htseq_count:
                                           --stranded=yes \
                                           --type=exon \
                                           --idattr=gene_id \
-                                          {input} \
+                                          {input.bam} \
                                           {params.gtf} \
                                           > {output}
         """
