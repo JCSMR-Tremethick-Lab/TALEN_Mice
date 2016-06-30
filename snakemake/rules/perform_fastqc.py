@@ -24,6 +24,6 @@ rule fastqc:
     input:
         getAllFASTQ
     output:
-        "{params.rdir}"
+        "reports"
     shell:
         "/usr/local/bin/fastqc {input} --noextract --outdir  {output}}"
