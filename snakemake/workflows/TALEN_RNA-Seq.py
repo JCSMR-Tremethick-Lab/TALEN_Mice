@@ -12,8 +12,10 @@ localrules:
 
 include_prefix="/home/skurscheid/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
 
+# include:
+#     include_prefix + "perform_fastqc.py"
 include:
-    include_prefix + "perform_fastqc.py"
+    include_prefix + "perform_cutadapt.py"
 include:
     include_prefix + "run_kallisto.py"
 include:
@@ -21,8 +23,10 @@ include:
 
 rule all:
     input:
-        expand("{rdir}",
-               rdir = config["reports_dir"]),
+        expand("./{trim_data}/{unit}_{suffix}.QT.CA.fastq.gz",
+               unit = config["units"],
+               trim_data = config["trim_dir"],
+               suffix = ["R1_001", "R2_001"]),
         expand("{outdir}/{reference_version}/kallisto/{unit}",
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],

@@ -12,12 +12,11 @@ Rules for trimming reads with cutadapt
 
 For usage, include this in your workflow.
 """
-
-UNIT_TO_SAMPLE = {
-    unit: sample for sample, units in config["units"].items()
-    for unit in units}
-
-# configfile: "config.json"
+def getFASTQ(wildcards):
+    fn = []
+    for i in config["units"][wildcards.unit]:
+        fn.append("./fastq/" + i)
+    return(fn)
 
 rule cutadapt_pe:
     """Trims given paired-end reads with given parameters"""
@@ -26,11 +25,10 @@ rule cutadapt_pe:
         trim_data = config["trim_dir"],
         raw_data = config["raw_dir"]
     input:
-        "./NB501086_0034_MNekrasov_JCSMR_ChIPseq/{units}_R1_001.fastq.gz",
-        "./NB501086_0034_MNekrasov_JCSMR_ChIPseq/{units}_R2_001.fastq.gz"
+        defFASTQ
     output:
-        "./trimmed_data/{units}_R1_001.QT.CA.fastq.gz",
-        "./trimmed_data/{units}_R2_001.QT.CA.fastq.gz"
+        "./{params.trim_data}/{unit}_R1_001.QT.CA.fastq.gz",
+        "./{params.trim_data}/{unit}_R2_001.QT.CA.fastq.gz"
     shell:
         """
             cutadapt {params.trim_params} \
@@ -41,5 +39,5 @@ rule cutadapt_pe:
 rule all:
      """Trim all reads with all supplied trimming parameters"""
      input:
-         expand("./{trim_data}/{units}_R1_001.QT.CA.fastq.gz", units = config["units"], trim_data = config["trim_dir"]),
-         expand("./{trim_data}/{units}_R2_001.QT.CA.fastq.gz", units = config["units"], trim_data = config["trim_dir"])
+         expand("./{trim_data}/{unit}_R1_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"]),
+         expand("./{trim_data}/{uniunitts}_R2_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"])
