@@ -12,7 +12,7 @@ def getIDs( file ):
 
 def getFASTQ(wildcards):
     fn = []
-    for i in config["units"][wildcards.units]:
+    for i in config["units"][wildcards.unit]:
         fn.append("./fastq/" + i)
     return(fn)
 
