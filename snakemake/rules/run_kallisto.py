@@ -10,12 +10,6 @@ def getIDs( file ):
     line = ' '.join(line)
     return line
 
-def getFASTQ(wildcards):
-    fn = []
-    for i in config["units"][wildcards.unit]:
-        fn.append("./fastq/" + i)
-    return(fn)
-
 rule kallisto_quant:
     message:
         "Running kallisto..."
@@ -25,9 +19,9 @@ rule kallisto_quant:
         bootstraps = config["kallisto"]["bootstraps"],
         ki=lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     input:
-        getFASTQ
+        rules.cutadapt_pe.output
     output:
-        "{outdir}/{reference_version}/{unit}"
+        "{outdir}/{reference_version}/kallisto/{unit}"
     shell:
         """
             kallisto quant --index={params.ki} \
@@ -123,19 +117,3 @@ rule kallisto_quant:
 #             -d '-fastq -shortPaired -separate {input[0]} {input[1]}' \
 #             -p '-ins_length 200 -min_trans_lgth 100'
 #         """
-
-
-# rule all:
-#     input:
-#         # expand("{outdir}/{ref}/{unit}/", outdir = config["processed_dir"] + "kallisto", ref = "mm10.ens74.cdna.all_incl_h2a.Lap1_mutants", unit = config["units"]),
-#         # expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-60hemi_S1/pseudobam/NMG3-60hemi_S1.sorted.bai", outdir = config["processed_dir"]),
-#         # expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-62wt_S2/pseudobam/NMG3-62wt_S2.sorted.bai", outdir = config["processed_dir"]),
-#         # expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-74wt_S3/pseudobam/NMG3-74wt_S3.sorted.bai", outdir = config["processed_dir"]),
-#         # expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-75hemi_S4/pseudobam/NMG3-75hemi_S4.sorted.bai", outdir = config["processed_dir"]),
-#         # expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-76wt_S5/pseudobam/NMG3-76wt_S5.sorted.bai", outdir = config["processed_dir"]),
-#         # expand("{outdir}/mm10.ens74.cdna.all_incl_h2a.Lap1_mutants/NMG3-77hemi_S6/pseudobam/NMG3-77hemi_S6.sorted.bai", outdir = config["processed_dir"]),
-#         # expand("fastq/subsets/{unit}_subset_IDs.txt", unit = config["units"]),
-#         # expand("fastq/subsets/{unit}_subset_R1_001.fastq.gz", unit = config["units"]),
-#         # expand("fastq/subsets/{unit}_subset_R2_001.fastq.gz", unit = config["units"]),
-#         # expand("fastq/subsets/{unit}_subset_{suffix}.fa", unit = config["units"], suffix = ["R1_001", "R2_001"]),
-#         expand("assembly/{unit}", unit = config["units"])

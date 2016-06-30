@@ -23,7 +23,7 @@ rule all:
     input:
         expand("{rdir}",
                rdir = config["reports_dir"]),
-        expand("{outdir}/{reference_version}/{unit}",
+        expand("{outdir}/{reference_version}/kallisto/{unit}",
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],
                unit = config["units"]),
