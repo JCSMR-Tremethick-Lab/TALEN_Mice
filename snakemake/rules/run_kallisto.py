@@ -23,7 +23,7 @@ rule kallisto_quant:
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
         bootstraps = config["kallisto"]["bootstraps"],
-        ki=lambda wildcards: config["kallisto_index"][wildcards.ref]
+        ki=lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     input:
         getFASTQ
     output:
