@@ -26,4 +26,4 @@ rule fastqc:
     output:
         "reports"
     shell:
-        "/usr/local/bin/fastqc {input} --noextract --outdir  {output}}"
+        "/usr/local/bin/fastqc {input} --noextract --outdir  {output}"
