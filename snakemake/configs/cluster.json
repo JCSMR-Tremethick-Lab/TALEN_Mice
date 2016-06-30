@@ -2,8 +2,8 @@
     "__default__" :
     {
         "queue" : "hugemem.q,all.q",
-        "virtual_free" : "24G",
-        "h_vmem" : "24.1G",
+        "virtual_free" : "48G",
+        "h_vmem" : "48.1G",
         "threads" : 2
     },
     "fastqc" :
@@ -26,63 +26,49 @@
     },
     "kallisto_quant" :
     {
-        "queue" : "hugemem.q",
         "virtual_free" : "48G",
         "h_vmem" : "48.1G",
         "threads" : 4
     },
     "kallisto_quant_pseudobam" :
     {
-        "queue" : "hugemem.q",
         "virtual_free" : "48G",
         "h_vmem" : "48.1G",
         "threads" : 5
     },
     "tophat_align" :
     {
-        "queue" : "hugemem.q",
         "virtual_free" : "48G",
         "h_vmem" : "48.1G",
         "threads" : 4
     },
     "bowtie2_pe" :
     {
-        "queue" : "hugemem.q",
         "threads" : 8
     },
     "bam_mark_duplicates" :
     {
-        "queue" : "hugemem.q",
         "virtual_free" : "48G",
-        "h_vmem" : "48.5G",
         "threads" : 1
     },
     "multiBamSummary" :
     {
-        "queue" : "hugemem.q",
         "virtual_free" : "48G",
-        "h_vmem" : "48.5G",
         "threads" : 12
     },
     "plotFingerprint" :
     {
-        "queue" : "hugemem.q",
         "virtual_free" : "48G",
-        "h_vmem" : "48.5G",
-        "threads" : 12
+        "threads" : 8
     },
     "bamCompare" :
     {
-        "queue" : "hugemem.q",
         "virtual_free" : "48G",
-        "h_vmem" : "48.5G",
-        "threads" : 12
+        "threads" : 8
     },
     "bamCoverage_MNase" :
     {
-        "queue" : "hugemem.q",
         "virtual_free" : "48G",
-        "h_vmem" : "48.5G",
-        "threads" : 12
+        "threads" : 8
     }
 }
