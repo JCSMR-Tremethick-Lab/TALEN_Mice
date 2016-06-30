@@ -11,7 +11,7 @@
     },
     "kallisto_index" :
     {
-      "mm10.ens84" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.ki"
+      "GRCm38_ensembl84" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.ki"
     },
     "STAR" :
     {
