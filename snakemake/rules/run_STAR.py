@@ -33,19 +33,18 @@ rule star_align_full:
     version:
         0.3
     params:
+        index = config["STAR"]["genomeDir"],
         runThreadN = config["STAR"]["runThreadN"]
     input:
-        index = config["STAR"]["genomeDir"],
-        fq1 = "fastq/{unit}_R1_001.fastq.gz",
-        fq2 = "fastq/{unit}_R2_001.fastq.gz"
+        rules.cutadapt_pe.output
     output:
         "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
     shell:
         """
             STAR --runMode alignReads \
                  --runThreadN {params.runThreadN} \
-                 --genomeDir {input.index} \
-                 --readFilesIn {input.fq1} {input.fq2} \
+                 --genomeDir {params.index} \
+                 --readFilesIn {input[0]} {input[1]} \
                  --readFilesCommand zcat \
                  --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
                  --outSAMmode Full \
