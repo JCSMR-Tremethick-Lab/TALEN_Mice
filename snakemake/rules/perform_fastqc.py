@@ -9,7 +9,7 @@ def getAllFASTQ(wildcards):
     fn = []
     for i in config["units"]:
         for j in config["units"][i]:
-            fn.append("./fastq/" + j)
+            fn.append("./fastq/" + i + "/" + j)
     return(fn)
 
 rule dummy:
