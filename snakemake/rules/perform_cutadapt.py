@@ -15,7 +15,7 @@ For usage, include this in your workflow.
 def getFASTQ(wildcards):
     fn = []
     for i in config["units"][wildcards.unit]:
-        fn.append("./fastq/" + i)
+        fn.append("./fastq/" + wildcards.unit + "/" + i)
     return(fn)
 
 rule cutadapt_pe:
