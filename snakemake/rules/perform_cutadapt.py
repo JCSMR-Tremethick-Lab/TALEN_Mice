@@ -27,8 +27,8 @@ rule cutadapt_pe:
     input:
         getFASTQ
     output:
-        "./{params.trim_data}/{unit}_R1_001.QT.CA.fastq.gz",
-        "./{params.trim_data}/{unit}_R2_001.QT.CA.fastq.gz"
+        "./trimmed_data/{unit}_R1_001.QT.CA.fastq.gz",
+        "./trimmed_data/{unit}_R2_001.QT.CA.fastq.gz"
     shell:
         """
             cutadapt {params.trim_params} \
