@@ -40,4 +40,4 @@ rule all:
      """Trim all reads with all supplied trimming parameters"""
      input:
          expand("./{trim_data}/{unit}_R1_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"]),
-         expand("./{trim_data}/{uniunitts}_R2_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"])
+         expand("./{trim_data}/{unit}_R2_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"])
