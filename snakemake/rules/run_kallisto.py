@@ -4,12 +4,6 @@ __date__ = "2016-04-10"
 
 from snakemake.exceptions import MissingInputException
 
-#configfile: "~/Development/JCSMR-Tremethick-Lab/Hodgkins-Lymphoma/snakemake/configs/config.json"
-
-# REF_TO_PATH = {
-#     path: paths in config["kallisto_index"].items()
-#     for path in paths}
-
 def getIDs( file ):
     fo = open(file, "r")
     line = [x.strip() for x in fo.readlines()]
@@ -19,9 +13,8 @@ def getIDs( file ):
 def getFASTQ(wildcards):
     fn = []
     for i in config["units"][wildcards.units]:
-        fn.append"./fastq/" + i)
+        fn.append("./fastq/" + i)
     return(fn)
-
 
 rule kallisto_quant:
     message:

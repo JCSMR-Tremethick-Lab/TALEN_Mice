@@ -21,10 +21,8 @@ include:
 
 rule all:
     input:
-        expand("{rdir}/{sample}{suffix}_fastqc.zip",
-               sample = config["units"],
-               rdir = config["reports_dir"],
-               suffix = ("_R1_001", "_R2_001")),
+        expand("{rdir}",
+               rdir = config["reports_dir"]),
         expand("{outdir}/{reference_version}/{unit}",
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],
