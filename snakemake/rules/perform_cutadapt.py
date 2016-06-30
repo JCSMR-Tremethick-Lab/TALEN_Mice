@@ -23,7 +23,8 @@ rule cutadapt_pe:
     params:
         trim_params = config["trim_params"],
         trim_data = config["trim_dir"],
-        raw_data = config["raw_dir"]
+        raw_data = config["raw_dir"],
+        cutadapt_dir = config["cutadapt_dir"]
     input:
         getFASTQ
     output:
@@ -31,7 +32,7 @@ rule cutadapt_pe:
         "./trimmed_data/{unit}_R2_001.QT.CA.fastq.gz"
     shell:
         """
-            cutadapt {params.trim_params} \
+            {params.cutadapt_dir}/cutadapt {params.trim_params} \
             -o {output[0]} -p {output[1]} \
             {input[0]} {input[1]}
         """
