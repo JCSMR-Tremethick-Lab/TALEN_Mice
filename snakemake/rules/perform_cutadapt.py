@@ -36,7 +36,7 @@ rule cutadapt_pe:
             {input[0]} {input[1]}
         """
 
-rule all:
+rule dummy_cutadapt:
      """Trim all reads with all supplied trimming parameters"""
      input:
          expand("./{trim_data}/{unit}_R1_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"]),
