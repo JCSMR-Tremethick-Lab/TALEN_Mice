@@ -5,7 +5,7 @@ __date__ = "2016-02-25"
 from snakemake.exceptions import MissingInputException
 import os
 
-def getAllFASTQ():
+def getAllFASTQ(wildcards):
     fn = []
     for i in config["units"]:
         for j in config["units"][i]:
