@@ -25,7 +25,7 @@ rule cutadapt_pe:
         trim_data = config["trim_dir"],
         raw_data = config["raw_dir"]
     input:
-        defFASTQ
+        getFASTQ
     output:
         "./{params.trim_data}/{unit}_R1_001.QT.CA.fastq.gz",
         "./{params.trim_data}/{unit}_R2_001.QT.CA.fastq.gz"
