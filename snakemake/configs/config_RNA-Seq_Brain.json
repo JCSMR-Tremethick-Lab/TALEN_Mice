@@ -3,7 +3,7 @@
     {
         "genome" : "/home/skurscheid/Data/References/Genomes/Mus_musculus/GRCm38_mm10/GRCm38_mm10_unmasked",
         "GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
-        "version" : "GRCm38_ensembl84"
+        "version" : "GRCm38_ensembl84_ERCC"
     },
     "kallisto" :
     {
@@ -11,11 +11,11 @@
     },
     "kallisto_index" :
     {
-      "GRCm38_ensembl84" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
+      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
     },
     "STAR" :
     {
-      "genomeDir" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
+      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
       "runThreadN" : "4"
     },
     "units" :
