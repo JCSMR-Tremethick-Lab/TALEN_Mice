@@ -10,9 +10,9 @@ rule star_align:
     version:
         0.1
     params:
-        genomeDir = config["STAR"]["genomeDir"],
         runThreadN = config["STAR"]["runThreadN"]
     input:
+        genomeDir = lambda wildcards: config["STAR"][wildcards.reference_version],
         "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
         "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
     output:
@@ -21,7 +21,7 @@ rule star_align:
         """
             STAR --runMode alignReads \
                  --runThreadN {params.runThreadN} \
-                 --genomeDir {params.genomeDir} \
+                 --genomeDir {input.genomeDir} \
                  --readFilesIn {input[0]} {input[1]} \
                  --outSAMmode Full \
                  --outStd SAM \
