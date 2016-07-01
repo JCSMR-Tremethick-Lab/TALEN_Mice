@@ -62,25 +62,3 @@ rule run_htseq_count:
                                           {params.gtf} \
                                           > {output}
         """
-
-# rule star_align:
-#     version:
-#         0.1
-#     params:
-#         runThreadN = config["STAR"]["runThreadN"]
-#     input:
-#         "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
-#         "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
-#     output:
-#         "{outdir}/{reference_version}/STAR/subsets/{unit}.aligned.bam"
-#     shell:
-#         """
-#             STAR --runMode alignReads \
-#                  --runThreadN {params.runThreadN} \
-#                  --genomeDir {input.genomeDir} \
-#                  --readFilesIn {input[0]} {input[1]} \
-#                  --outSAMmode Full \
-#                  --outStd SAM \
-#                  --outSAMattributes Standard\
-#             | samtools view -b > {output[0]}
-#         """
