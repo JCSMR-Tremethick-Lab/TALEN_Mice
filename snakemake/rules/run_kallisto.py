@@ -17,14 +17,14 @@ rule kallisto_quant:
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
         bootstraps = config["kallisto"]["bootstraps"],
-        ki=lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     input:
-        rules.cutadapt_pe.output
+        rules.cutadapt_pe.output,
+        ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     output:
         "{outdir}/{reference_version}/kallisto/{unit}"
     shell:
         """
-            kallisto quant --index={params.ki} \
+            kallisto quant --index={input.ki} \
                            --output-dir={output} \
                            --threads=4 \
                            --bootstrap-samples={params.bootstraps} \
