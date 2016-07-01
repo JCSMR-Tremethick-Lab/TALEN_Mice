@@ -6,44 +6,21 @@ from snakemake.exceptions import MissingInputException
 
 wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
 
-rule star_align:
-    version:
-        0.1
-    params:
-        runThreadN = config["STAR"]["runThreadN"]
-    input:
-        genomeDir = lambda wildcards: config["STAR"][wildcards.reference_version],
-        "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
-        "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
-    output:
-        "{outdir}/{reference_version}/STAR/subsets/{unit}.aligned.bam"
-    shell:
-        """
-            STAR --runMode alignReads \
-                 --runThreadN {params.runThreadN} \
-                 --genomeDir {input.genomeDir} \
-                 --readFilesIn {input[0]} {input[1]} \
-                 --outSAMmode Full \
-                 --outStd SAM \
-                 --outSAMattributes Standard\
-            | samtools view -b > {output[0]}
-        """
-
 rule star_align_full:
     version:
         0.3
     params:
-        index = config["STAR"]["genomeDir"],
         runThreadN = config["STAR"]["runThreadN"]
     input:
-        rules.cutadapt_pe.output
+        rules.cutadapt_pe.output,
+        index = lambda wildcards: config["STAR"][wildcards.reference_version]
     output:
         "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
     shell:
         """
             STAR --runMode alignReads \
                  --runThreadN {params.runThreadN} \
-                 --genomeDir {params.index} \
+                 --genomeDir {input.index} \
                  --readFilesIn {input[0]} {input[1]} \
                  --readFilesCommand zcat \
                  --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
@@ -85,3 +62,25 @@ rule run_htseq_count:
                                           {params.gtf} \
                                           > {output}
         """
+
+# rule star_align:
+#     version:
+#         0.1
+#     params:
+#         runThreadN = config["STAR"]["runThreadN"]
+#     input:
+#         "fastq/subsets/{unit}_subset_R1_001.fastq.gz",
+#         "fastq/subsets/{unit}_subset_R2_001.fastq.gz"
+#     output:
+#         "{outdir}/{reference_version}/STAR/subsets/{unit}.aligned.bam"
+#     shell:
+#         """
+#             STAR --runMode alignReads \
+#                  --runThreadN {params.runThreadN} \
+#                  --genomeDir {input.genomeDir} \
+#                  --readFilesIn {input[0]} {input[1]} \
+#                  --outSAMmode Full \
+#                  --outStd SAM \
+#                  --outSAMattributes Standard\
+#             | samtools view -b > {output[0]}
+#         """
