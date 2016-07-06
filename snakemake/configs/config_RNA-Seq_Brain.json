@@ -1,7 +1,7 @@
 {
     "references" :
     {
-        "genome" : "/home/skurscheid/Data/References/Genomes/Mus_musculus/GRCm38_mm10/GRCm38_mm10_unmasked",
+        "genome" : "/home/skurscheid/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
         "GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
         "version" : "GRCm38_ensembl84_ERCC"
     },
