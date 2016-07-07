@@ -40,7 +40,7 @@ t2g <- rbind(t2g, ercc.df)
 
 rownames(t2g) <- t2g$target_id
 
-save(t2g, file = "~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto/t2g.rda")
+save(t2g, file = "~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
 
 load("~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
 # re-run sleuth
@@ -57,25 +57,33 @@ kt <- kallisto_table(so)
 load("~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis/kt.rda")
 kt <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
 rownames(kt) <- kt$target_id
-# check ERCC expression
+
+# check ERCC expression ---------------------------------------------------
 ercc_tab <- read.table("~/mount/gduserv/Data/References/Transcriptomes/ERCC/cms_095046.txt", header = T, as.is = T, sep = "\t")
 rownames(ercc_tab) <- ercc_tab$ERCC.ID
 ercc_exp <- kt[grep("ERCC", kt$target_id),]
-i1 <- intersect(rownames(ercc_exp), rownames(ercc_tab))
+i1 <- intersect(rownames(ercc_exp[which(ercc_exp$mean > 0),]), rownames(ercc_tab))
 
 pdf("ERCC_spike_ins.pdf", paper = "a4")
 par(mfrow = c(3,2))
 lapply(seq_along(1:18), function(x){
   x <- x+1
   s <- colnames(ercc_exp)[x]
-  cor <- cor(log2(ercc_tab[i1, "concentration.in.Mix.1..attomoles.ul."] + 1), log2(ercc_exp[i1, x] + 1)) 
-  sm <- summary(lm(log2(ercc_exp[i1, x] + 1) ~ log2(ercc_tab[i1, "concentration.in.Mix.1..attomoles.ul."] + 1)))
-  plot(log2(ercc_tab[i1, "concentration.in.Mix.1..attomoles.ul."] + 1), log2(ercc_exp[i1, x] + 1),
-       main = paste(s),
+  y <- ercc_exp[i1, x]
+  names(y) <- i1
+  y1 <- which(y > 0.01)
+  y <- y[names(y1)]
+  e <- unlist(ercc_tab[i1, "concentration.in.Mix.1..attomoles.ul."])
+  names(e) <- i1
+  e <- e[names(y1)]
+  cor <- cor(log2(e), log2(y)) 
+  sm <- summary(lm(log2(y) ~ log2(e)))
+  plot(log2(e), log2(y),
+       main = paste(s, " [#", length(y1), " ERCCs]", sep = ""),
        xlab = "Log2(aM) Mix 1",
-       ylab = "Log2(tpm + 1)")
-  lines(lowess(log2(ercc_exp[i1, x] + 1) ~ log2(ercc_tab[i1, "concentration.in.Mix.1..attomoles.ul."] + 1)),col="green3")
-  abline(lm(log2(ercc_exp[i1, x] + 1) ~ log2(ercc_tab[i1, "concentration.in.Mix.1..attomoles.ul."] + 1)),col="red3")
+       ylab = "Log2(tpm)")
+  lines(lowess(log2(y) ~ log2(e)), col="green3")
+  abline(lm(log2(y) ~ log2(e)),col="red3")
   legend("bottom", legend = c(paste("cor = ", round(cor, 2), sep = ""), paste("R2 = ", round(sm$adj.r.squared, 2), sep = "")))
 })
 dev.off()
@@ -94,26 +102,54 @@ toGrep <- t2g[grep(paste(toGrep, collapse = "|"), t2g$ext_gene),]$target_id
 kt.goi <- kt[grep(paste(toGrep, collapse = "|"), kt$target_id),]
 
 
-  
-# run analysis by brain region so that only pair-wise comparison will be done
-s2c.pfc <- s2c[grep("PFC", s2c$condition),]
-s2c.ob <- s2c[grep("OB", s2c$condition),]
-s2c.hippo <- s2c[grep("HIPPO", s2c$condition),]
+# run analysis by brain region so that only pair-wise comparison w --------
+# PFC
+base_dir.pfc <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_pfc"
+sample_id <- dir(base_dir.pfc)
+
+kal_dirs.pfc <- sapply(sample_id, function(id) file.path(base_dir.pfc, id))
+condition <- unlist(lapply(strsplit(names(kal_dirs.pfc), "_"), function(x) paste(x[3:4], collapse = "_")))
+condition <- as.factor(condition)
+condition <- factor(condition, levels(condition)[c(2,1)])
+s2c.pfc <- data.frame(sample = sample_id, condition = condition)
+s2c.pfc <- dplyr::mutate(s2c.pfc, path = kal_dirs.pfc)
 
 so.pfc <- sleuth_prep(s2c.pfc, ~ condition, target_mapping = t2g)
 so.pfc <- sleuth_fit(so.pfc)
 so.pfc <- sleuth_wt(so.pfc, "conditionhemi_PFC")
 so.pfc <- sleuth_fit(so.pfc, ~1, "reduced")
 
-so.pfc <- sleuth_prep(s2c.pfc, ~ condition, target_mapping = t2g)
-so.pfc <- sleuth_fit(so.pfc)
-so.pfc <- sleuth_wt(so.pfc, "conditionhemi_PFC")
-so.pfc <- sleuth_fit(so.pfc, ~1, "reduced")
+# HIPPO
+base_dir.hippo <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_hippo"
+sample_id <- dir(base_dir.hippo)
 
-so.pfc <- sleuth_prep(s2c.pfc, ~ condition, target_mapping = t2g)
-so.pfc <- sleuth_fit(so.pfc)
-so.pfc <- sleuth_wt(so.pfc, "conditionhemi_PFC")
-so.pfc <- sleuth_fit(so.pfc, ~1, "reduced")
+kal_dirs.hippo <- sapply(sample_id, function(id) file.path(base_dir.hippo, id))
+condition <- unlist(lapply(strsplit(names(kal_dirs.hippo), "_"), function(x) paste(x[3:4], collapse = "_")))
+condition <- as.factor(condition)
+condition <- factor(condition, levels(condition)[c(2,1)])
+s2c.hippo <- data.frame(sample = sample_id, condition = condition)
+s2c.hippo <- dplyr::mutate(s2c.hippo, path = kal_dirs.hippo)
+
+so.hippo <- sleuth_prep(s2c.hippo, ~ condition, target_mapping = t2g)
+so.hippo <- sleuth_fit(so.hippo)
+so.hippo <- sleuth_wt(so.hippo, "conditionhemi_HIPPO")
+so.hippo <- sleuth_fit(so.hippo, ~1, "reduced")
+
+# OB
+base_dir.ob <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_ob"
+sample_id <- dir(base_dir.ob)
+
+kal_dirs.ob <- sapply(sample_id, function(id) file.path(base_dir.ob, id))
+condition <- unlist(lapply(strsplit(names(kal_dirs.ob), "_"), function(x) paste(x[3:4], collapse = "_")))
+condition <- as.factor(condition)
+condition <- factor(condition, levels(condition)[c(2,1)])
+s2c.ob <- data.frame(sample = sample_id, condition = condition)
+s2c.ob <- dplyr::mutate(s2c.ob, path = kal_dirs.ob)
+
+so.ob <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g)
+so.ob <- sleuth_fit(so.ob)
+so.ob <- sleuth_wt(so.ob, "conditionhemi_OB")
+so.ob <- sleuth_fit(so.ob, ~1, "reduced")
 
 
 
