@@ -14,8 +14,8 @@ include_prefix="/home/skurscheid/Development/JCSMR-Tremethick-Lab/TALEN_Mice/sna
 
 # include:
 #     include_prefix + "perform_fastqc.py"
-include:
-    include_prefix + "perform_cutadapt.py"
+# include:
+#     include_prefix + "perform_cutadapt.py"
 include:
     include_prefix + "run_kallisto.py"
 include:
