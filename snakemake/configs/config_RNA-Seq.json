@@ -1,9 +1,9 @@
 {
-    "references" :
+  "references" :
     {
-        "genome" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/GRCm38_mm10_masked",
+        "genome" : "/home/skurscheid/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
         "GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
-        "version" : "GRCm38_ensembl84"
+        "version" : "GRCm38_ensembl84_ERCC"
     },
     "kallisto" :
     {
@@ -11,23 +11,11 @@
     },
     "kallisto_index" :
     {
-      "mm10.ens74.cdna.all" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.74.cdna.all.0.42.4.ki",
-      "h2a.lap1_mutants" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/H2A.Lap1_mutants.ki",
-      "mm10.ens74.cdna.all_incl_h2a.Lap1_mutants" : "/home/skurscheid/Data/RefGenomes/Mus_musculus/mm10_GRCm38/mm10.ens74.cdna.all_incl_H2A.Lap1_mutants.kmer25.042.4.ki"
-    },
-    "tophat" :
-    {
-      "max-deletion-length" : "65",
-      "num-threads" : "4",
-      "GTF" : "/home/skurscheid/Data/Annotations/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.74.gtf",
-      "library-type" : "fr-firststrand",
-      "min-intron-length" : "66",
-      "num-threads" : "4",
-      "library-type" : "fr-firststrand"
+      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
     },
     "STAR" :
     {
-      "genomeDir" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index/",
+      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
       "runThreadN" : "4"
     },
     "units" :
