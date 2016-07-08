@@ -30,10 +30,10 @@ rownames(t2g) <- t2g$target_id
 # re-run sleuth
 so <- sleuth_prep(s2c, ~ condition, target_mapping = t2g)
 so <- sleuth_fit(so)
-so <- sleuth_wt(so, "conditionKO")
-results_table <- sleuth_results(so, "conditionKO")
+so <- sleuth_wt(so, "conditionKO - Testis")
+results_table <- sleuth_results(so, "conditionKO - Testis")
 results_table$FC_estimated <- log2(exp(results_table$b))
-
+kt.transcripts <- kallisto_table(so)
 
 # gene level analysis -----------------------------------------------------
 options(mc.cores = 8L)
@@ -102,6 +102,7 @@ kt <- kallisto_table(so)
 
 toGrep <- c("H2afb3", "H2afb2", "Gm14920")
 toGrep <- t2g[grep(paste(toGrep, collapse = "|"), t2g$ext_gene),]$target_id
+toGrep <- c(toGrep, "ENSMUST00000026723") # adds HPRT transcript
 kt.goi <- kt[grep(paste(toGrep, collapse = "|"), kt$target_id),]
 kt.goi$sample <- factor(kt.goi$sample)
 kt.goi <- spread(kt.goi[, c("target_id", "sample", "tpm")], sample, tpm)
@@ -111,8 +112,6 @@ kt.goi <- kt.goi[, c("NMG3-62wt_S2", "NMG3-74wt_S3", "NMG3-76wt_S5", "NMG3-60hem
 
 write.csv(kt.goi, "KO_Gene_expression_levels.csv")
 write.csv(results_table, "Differential_Expression_WT_vs_KO.csv")
-
-
 
 # analysis of Lap1-driven genes (based on mouse testis data) --------------
 lap1Genes <- read.table("~/Data/Tremethick/TALENs/Lap1_dependent_genes/RS_lap_data.txt", header = F, as.is = T)

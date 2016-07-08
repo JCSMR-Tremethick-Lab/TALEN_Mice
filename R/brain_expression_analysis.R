@@ -118,6 +118,10 @@ so.pfc <- sleuth_prep(s2c.pfc, ~ condition, target_mapping = t2g)
 so.pfc <- sleuth_fit(so.pfc)
 so.pfc <- sleuth_wt(so.pfc, "conditionhemi_PFC")
 so.pfc <- sleuth_fit(so.pfc, ~1, "reduced")
+save(so.pfc, file = "so.pfc.rda")
+
+results_table.pfc <- sleuth_results(so.pfc, "conditionhemi_PFC")
+results_table$FC_estimated <- log2(exp(results_table$b))
 
 # HIPPO
 base_dir.hippo <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_hippo"
@@ -134,6 +138,7 @@ so.hippo <- sleuth_prep(s2c.hippo, ~ condition, target_mapping = t2g)
 so.hippo <- sleuth_fit(so.hippo)
 so.hippo <- sleuth_wt(so.hippo, "conditionhemi_HIPPO")
 so.hippo <- sleuth_fit(so.hippo, ~1, "reduced")
+save(so.hippo, file = "so.hippo.rda")
 
 # OB
 base_dir.ob <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_ob"
@@ -150,8 +155,5 @@ so.ob <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g)
 so.ob <- sleuth_fit(so.ob)
 so.ob <- sleuth_wt(so.ob, "conditionhemi_OB")
 so.ob <- sleuth_fit(so.ob, ~1, "reduced")
-
-
-
-
+save(so.ob, file = "so.ob.rda")
 
