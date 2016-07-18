@@ -42,7 +42,7 @@ rule bam_index_STAR_output:
 
 rule run_htseq_count:
     version:
-        0.2
+        0.3
     params:
         htseq_dir = config["HTSeq_dir"],
         gtf = config["references"]["GTF"]
