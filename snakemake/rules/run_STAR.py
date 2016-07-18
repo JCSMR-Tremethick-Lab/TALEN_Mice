@@ -54,12 +54,12 @@ rule run_htseq_count:
     shell:
         """
             {params.htseq_dir}/htseq-count --format=bam \
-                                          --order=pos \
-                                          --stranded=yes \
-                                          --type=exon \
-                                          --idattr=gene_id \
-                                          --order=pos \
-                                          {input.bam} \
-                                          {params.gtf} \
-                                          > {output}
+                                           --order=pos \
+                                           --stranded=reverse \
+                                           --type=exon \
+                                           --idattr=gene_id \
+                                           --order=pos \
+                                           {input.bam} \
+                                           {params.gtf} \
+                                           > {output}
         """
