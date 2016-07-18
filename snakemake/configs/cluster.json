@@ -6,6 +6,13 @@
         "h_vmem" : "48.1G",
         "threads" : 2
     },
+    "run_htseq_count" :
+    {
+        "queue" : "all.q, hugemem.q",
+        "virtual_free" : "24",
+        "h_vmem" : "24.1G",
+        "threads" : 1
+    },
     "fastqc" :
     {
         "virtual_free" : "48G",
