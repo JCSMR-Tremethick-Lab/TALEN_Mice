@@ -58,6 +58,7 @@ rule run_htseq_count:
                                           --stranded=yes \
                                           --type=exon \
                                           --idattr=gene_id \
+                                          --order=pos \
                                           {input.bam} \
                                           {params.gtf} \
                                           > {output}
