@@ -1,7 +1,7 @@
 {
     "__default__" :
     {
-        "queue" : "hugemem.q,all.q",
+        "queue" : "all.q, hugemem.q",
         "virtual_free" : "48G",
         "h_vmem" : "48.1G",
         "threads" : 2
