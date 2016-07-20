@@ -6,6 +6,12 @@
         "h_vmem" : "48.1G",
         "threads" : 2
     },
+    "collect_insert_size_metrics" :
+    {
+      "virtual_free" : "48G",
+      "h_vmem" : "48.1G",
+      "threads" : 2
+    },
     "run_htseq_count" :
     {
         "queue" : "all.q,hugemem.q",

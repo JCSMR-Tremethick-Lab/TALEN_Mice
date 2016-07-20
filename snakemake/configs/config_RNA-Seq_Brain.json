@@ -50,5 +50,9 @@
   "id_dir" : "sequencing_targets",
   "id_file" : "ID_list.txt",
   "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
-  "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin"
+  "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
+  "Picard" :
+  {
+    "sampling" : "0.2"
+  },
 }

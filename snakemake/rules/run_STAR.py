@@ -30,6 +30,7 @@ rule star_align_full:
                  --outStd BAM_SortedByCoordinate \
                  > {output[0]}
         """
+
 rule bam_index_STAR_output:
     version:
         0.2
@@ -62,4 +63,25 @@ rule run_htseq_count:
                                            {input.bam} \
                                            {params.gtf} \
                                            > {output}
+        """
+
+rule collect_insert_size_metrics:
+    version:
+        0.1
+    params:
+        sampling = config["Picard"]["sampling"]
+    input:
+        rules.star_align_full.output
+    output:
+        txt = "{outdir}/{reference_version}/PICARD/insert_size_metrics/{unit}.insert_size_metrics.txt",
+        pdf = "{outdir}/{reference_version}/PICARD/insert_size_metrics/{unit}.insert_size_metrics.pdf"
+    shell:
+        """
+            java -Djava.io.tmpdir=/home/skurscheid/tmp \
+            -Xmx36G \
+            -jar /home/skurscheid/Bioinformatics/picard-tools-1.131/picard.jar CollectInsertSizeMetrics \
+            I={input} \
+            O={output.txt} \
+            H={output.pdf} \
+            M=0.2
         """
