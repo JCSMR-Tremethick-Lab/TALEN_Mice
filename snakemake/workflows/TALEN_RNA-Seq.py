@@ -39,3 +39,8 @@ rule all:
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],
                unit = config["units"])
+        expand("{outdir}/{reference_version}/PICARD/insert_size_metrics/{unit}.insert_size_metrics.{suffix}",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["version"],
+               unit = config["units"],
+               suffix = ("pdf", "txt"))
