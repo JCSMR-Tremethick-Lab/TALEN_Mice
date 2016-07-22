@@ -9,8 +9,8 @@ wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
 def getGroups(wildcards):
     cond1 = []
     cond2 = []
-    c1 = wildcards.condition.split(str="_vs_", num = 1)
-    c2 = wildcards.condition.split(str="_vs_", num = 2)
+    c1 = wildcards.condition.split("_vs_")[0]
+    c2 = wildcards.condition.split("_vs_")[1]
     for i in config["groups"][wildcards.tissue][c1]:
         cond1.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
     for i in config["groups"][wildcards.tissue][c2]:
@@ -118,8 +118,7 @@ rule run_rMats:
                                 -gtf {params.gtf} \
                                 -t paired \
                                 -len 76 \
-                                -o {output} \
                                 -analysis P \
                                 -libType fr-firststrand \
-                                -keepTemp
+                                -o {output}
         """
