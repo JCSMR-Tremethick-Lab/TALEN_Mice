@@ -44,3 +44,9 @@ rule all:
                reference_version = config["references"]["version"],
                unit = config["units"],
                suffix = ("pdf", "txt"))
+        expand("{outdir}/{reference_version}/rMATS/{tissue}/{condition}",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["version"],
+               tissue = ("OB", "PFC", "HIPPO"),
+               unit = config["units"],
+               condition = "WT_vs_HEMI")
