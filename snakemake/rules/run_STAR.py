@@ -105,7 +105,7 @@ rule run_rMats:
         gtf = config["references"]["GTF"],
         bin = "/home/skurscheid/Bioinformatics/rMATS.3.2.2.beta/RNASeq-MATS.py"
     input:
-        wt = getGroups[1]
+        wt = getGroups[1],
         hemi = getGroups[2]
     output:
         "{outdir}/{reference_version}/rMATS/{tissue}/{condition}/" # condition needs to be "WT_vs_HEMI"
