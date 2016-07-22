@@ -11,9 +11,9 @@ def getGroups(wildcards):
     cond2 = []
     c1 = wildcards.condition.split("_vs_")[0]
     c2 = wildcards.condition.split("_vs_")[1]
-    for i in config["groups"][wildcards.tissue][c1]:
+    for i in config["Groups"][wildcards.tissue][c1]:
         cond1.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
-    for i in config["groups"][wildcards.tissue][c2]:
+    for i in config["Groups"][wildcards.tissue][c2]:
         cond2.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
     cond1 = ",".join(cond1)
     cond2 = ",".join(cond2)
