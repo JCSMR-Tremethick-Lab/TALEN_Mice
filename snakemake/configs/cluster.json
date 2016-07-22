@@ -35,7 +35,13 @@
     {
       "virtual_free" : "48G",
       "h_vmem" : "48.1G",
-      "threads" : 4
+      "threads" : 8
+    },
+    "run_rMats" :
+    {
+      "virtual_free" : "48G",
+      "h_vmem" : "48.1G",
+      "threads" : 1
     },
     "kallisto_quant" :
     {
