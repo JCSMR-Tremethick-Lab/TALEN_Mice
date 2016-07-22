@@ -16,7 +16,7 @@
     "STAR" :
     {
       "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
-      "runThreadN" : "4"
+      "runThreadN" : "8"
     },
     "units" :
     {
