@@ -12,11 +12,11 @@ def getGroups(wildcards):
     c1 = wildcards.condition.split("_vs_")[0]
     c2 = wildcards.condition.split("_vs_")[1]
     for i in config["Groups"][wildcards.tissue][c1]:
-        cond1.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
+        cond1.append(wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
     for i in config["Groups"][wildcards.tissue][c2]:
-        cond2.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
-    #cond1 = ",".join(cond1)
-    #cond2 = ",".join(cond2)
+        cond2.append(wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
+    cond1 = ",".join(cond1)
+    cond2 = ",".join(cond2)
     return(cond1, cond2)
 
 
@@ -113,8 +113,8 @@ rule run_rMats:
         "{outdir}/{reference_version}/rMATS/{tissue}/{condition}"
     shell:
         """
-            python {params.bin} -b1 ",".join({input[0]}) \
-                                -b2 ",".join({input[1]}) \
+            python {params.bin} -b1 {input[0]} \
+                                -b2 {input[1]} \
                                 -gtf {params.gtf} \
                                 -t paired \
                                 -len 76 \
