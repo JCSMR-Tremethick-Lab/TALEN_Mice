@@ -110,14 +110,14 @@ rule run_rMats:
     output:
         "{outdir}/{reference_version}/rMATS/{tissue}/{condition}/" # condition needs to be "WT_vs_HEMI"
     shell:
-    """
-        python {params.bin} -b1 {input.wt} \
-                            -b2 {input.hemi} \
-                            -gtf {params.gtf} \
-                            -t paired \
-                            -len 76 \
-                            -o {output} \
-                            -analysis P \
-                            -libType fr-firststrand \
-                            -keepTemp
-    """
+        """
+            python {params.bin} -b1 {input.wt} \
+                                -b2 {input.hemi} \
+                                -gtf {params.gtf} \
+                                -t paired \
+                                -len 76 \
+                                -o {output} \
+                                -analysis P \
+                                -libType fr-firststrand \
+                                -keepTemp
+        """
