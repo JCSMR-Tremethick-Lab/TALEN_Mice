@@ -105,14 +105,13 @@ rule run_rMats:
         gtf = config["references"]["GTF"],
         bin = "/home/skurscheid/Bioinformatics/rMATS.3.2.2.beta/RNASeq-MATS.py"
     input:
-        wt = getGroups[1],
-        hemi = getGroups[2]
+        getGroups
     output:
         "{outdir}/{reference_version}/rMATS/{tissue}/{condition}/" # condition needs to be "WT_vs_HEMI"
     shell:
         """
-            python {params.bin} -b1 {input.wt} \
-                                -b2 {input.hemi} \
+            python {params.bin} -b1 {input[0]} \
+                                -b2 {input[1]} \
                                 -gtf {params.gtf} \
                                 -t paired \
                                 -len 76 \
