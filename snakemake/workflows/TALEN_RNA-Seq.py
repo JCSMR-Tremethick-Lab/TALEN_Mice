@@ -43,7 +43,7 @@ rule all:
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],
                unit = config["units"],
-               suffix = ("pdf", "txt"))
+               suffix = ("pdf", "txt")),
         expand("{outdir}/{reference_version}/rMATS/{tissue}/{condition}",
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],
