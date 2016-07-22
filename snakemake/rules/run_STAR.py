@@ -7,7 +7,6 @@ from snakemake.exceptions import MissingInputException
 wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
 
 def getGroups(wildcards):
-    string import join
     cond1 = []
     cond2 = []
     c1 = wildcards.condition.split(str="_vs_", num = 1)
@@ -19,6 +18,7 @@ def getGroups(wildcards):
     cond1 = ",".join(cond1)
     cond2 = ",".join(cond2)
     return(cond1, cond2)
+
 
 rule star_align_full:
     version:
