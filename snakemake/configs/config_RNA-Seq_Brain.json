@@ -39,20 +39,38 @@
       "1_21_hemi_HIPPO_GCCAAT" : ["4-GCCAAT_S4_R1_001.fastq.gz", "4-GCCAAT_S4_R2_001.fastq.gz"],
       "1_21_hemi_PFC_GAGTGG" : ["16-GAGTGG_S16_R1_001.fastq.gz", "16-GAGTGG_S16_R2_001.fastq.gz"]
     },
-  "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
-  "trim_dir" : "trimmed_data",
-  "processed_dir" : "processed_data",
-  "aligned_dir" : "aligned_data",
-  "reports_dir" : "reports",
-  "temp_dir" : "temp_data",
-  "alignment_quality" : "20",
-  "raw_dir" : "fastq",
-  "id_dir" : "sequencing_targets",
-  "id_file" : "ID_list.txt",
-  "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
-  "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
-  "Picard" :
-  {
-    "sampling" : "0.2"
-  },
+    "Groups" :
+    {
+      "OB" :
+        {
+          "WT" : ["10_13_wt_OB_AGTCAA", "10_25_wt_OB_AGTTCC", "10_50_wt_OB_ATGTCA"],
+          "HEMI" : ["10_14_hemi_OB_GTCCGC", "10_26_hemi_OB_GTGAAA", "10_9_hemi_OB_CCGTCC"]
+        },
+      "PFC" :
+      {
+        "WT" : ["10_35_wt_PFC_GTGGCC", "10_42_wt_PFC_GTTTCG", "1_12_wt_PFC_CGTACG"],
+        "HEMI" : ["10_27_hemi_PFC_ACTGAT", "10_28_hemi_PFC_ATTCCT", "1_21_hemi_PFC_GAGTGG"]
+      },
+      "HIPPO":
+      {
+        "WT" : ["10_35_wt_HIPPO_CGATGT", "10_42_wt_HIPPO_TGACCA", "1_12_wt_HIPPO_ACAGTG"],
+        "HEMI" : ["10_16_hemi_HIPPO_CTTGTA", "10_28_hemi_HIPPO_CAGATC", "1_21_hemi_HIPPO_GCCAAT"]
+      },
+    },
+    "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
+    "trim_dir" : "trimmed_data",
+    "processed_dir" : "processed_data",
+    "aligned_dir" : "aligned_data",
+    "reports_dir" : "reports",
+    "temp_dir" : "temp_data",
+    "alignment_quality" : "20",
+    "raw_dir" : "fastq",
+    "id_dir" : "sequencing_targets",
+    "id_file" : "ID_list.txt",
+    "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
+    "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
+    "Picard" :
+    {
+      "sampling" : "0.2",
+    },
 }

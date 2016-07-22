@@ -6,9 +6,20 @@ from snakemake.exceptions import MissingInputException
 
 wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
 
+def getGroups(wildcards):
+    cond1 = []
+    cond2 = []
+    c1 = wildcards.condition.split(str="_vs_", num = 1)
+    c2 = wildcards.condition.split(str="_vs_", num = 2)
+    for i in config["groups"][wildcards.tissue][c1]:
+        cond1.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
+    for i in config["groups"][wildcards.tissue][c2]:
+        cond2.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
+    return(cond1, cond2)
+
 rule star_align_full:
     version:
-        0.3
+        0.4
     params:
         runThreadN = config["STAR"]["runThreadN"]
     input:
@@ -28,6 +39,7 @@ rule star_align_full:
                  --outSAMattributes Standard \
                  --outSAMtype BAM SortedByCoordinate \
                  --outStd BAM_SortedByCoordinate \
+                 --alignEndsType EndToEnd\
                  > {output[0]}
         """
 
@@ -85,3 +97,27 @@ rule collect_insert_size_metrics:
             H={output.pdf} \
             M=0.2
         """
+
+rule run_rMats:
+    version:
+        0.1
+    params:
+        gtf = config["references"]["GTF"],
+        bin = "/home/skurscheid/Bioinformatics/rMATS.3.2.2.beta/RNASeq-MATS.py"
+    input:
+        wt = getGroups[1]
+        hemi = getGroups[2]
+    output:
+        "{outdir}/{reference_version}/rMATS/{tissue}/{condition}/" # condition needs to be "WT_vs_HEMI"
+    shell:
+    """
+        python {params.bin} -b1 {input.wt} \
+                            -b2 {input.hemi} \
+                            -gtf {params.gtf} \
+                            -t paired \
+                            -len 76 \
+                            -o {output} \
+                            -analysis P \
+                            -libType fr-firststrand \
+                            -keepTemp
+    """
