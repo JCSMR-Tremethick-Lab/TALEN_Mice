@@ -7,6 +7,7 @@ from snakemake.exceptions import MissingInputException
 wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
 
 def getGroups(wildcards):
+    from string import join
     cond1 = []
     cond2 = []
     c1 = wildcards.condition.split(str="_vs_", num = 1)
@@ -15,6 +16,8 @@ def getGroups(wildcards):
         cond1.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
     for i in config["groups"][wildcards.tissue][c2]:
         cond2.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
+    cond1 = join(cond1, ",")
+    cond2 = join(cond2, ",")
     return(cond1, cond2)
 
 rule star_align_full:
@@ -107,7 +110,7 @@ rule run_rMats:
     input:
         getGroups
     output:
-        "{outdir}/{reference_version}/rMATS/{tissue}/{condition}/" # condition needs to be "WT_vs_HEMI"
+        "{outdir}/{reference_version}/rMATS/{tissue}/{condition}" 
     shell:
         """
             python {params.bin} -b1 {input[0]} \
