@@ -93,13 +93,13 @@ rule run_dexseq_count:
         "{outdir}/{reference_version}/DEXSeq/count/{unit}.txt"
     shell:
         """
-            {params.dexseq_dir}/dexseq_count.py --format=bam \
-                                                --paired=yes \
-                                                --order=pos \
-                                                --stranded=reverse \
-                                                {input.bam} \
-                                                {params.dex_gtf} \
-                                                > {output}
+            python {params.dexseq_dir}/dexseq_count.py --format=bam \
+                                                       --paired=yes \
+                                                       --order=pos \
+                                                       --stranded=reverse \
+                                                       {input.bam} \
+                                                       {params.dex_gtf} \
+                                                       > {output}
         """
 
 
