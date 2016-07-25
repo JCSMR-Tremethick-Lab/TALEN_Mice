@@ -97,9 +97,9 @@ rule run_dexseq_count:
                                                        --paired=yes \
                                                        --order=pos \
                                                        --stranded=reverse \
-                                                       {input.bam} \
                                                        {params.dex_gtf} \
-                                                       > {output}
+                                                       {input.bam} \
+                                                       {output}
         """
 
 
