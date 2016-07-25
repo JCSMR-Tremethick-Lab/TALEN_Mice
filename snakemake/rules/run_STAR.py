@@ -43,7 +43,7 @@ rule star_align_full:
                  --outSAMtype BAM SortedByCoordinate \
                  --outStd BAM_SortedByCoordinate \
                  --alignEndsType EndToEnd\
-                 > {output[0]}
+                 > {output}
         """
 
 rule bam_index_STAR_output:
@@ -79,6 +79,29 @@ rule run_htseq_count:
                                            {params.gtf} \
                                            > {output}
         """
+
+rule run_dexseq_count:
+    version:
+        0.1
+    params:
+        dexseq_dir = config["DEXSeq_dir"],
+        dex_gtf = config["references"]["DEX_GTF"]
+    input:
+        bam = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
+        index = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
+    output:
+        "{outdir}/{reference_version}/DEXSeq/count/{unit}.txt"
+    shell:
+        """
+            {params.htseq_dir}/dexseq_count.py --format=bam \
+                                               --paired=yes \
+                                               --order=pos \
+                                               --stranded=reverse \
+                                               {input.bam} \
+                                               {params.dex_gtf} \
+                                               > {output}
+        """
+
 
 rule collect_insert_size_metrics:
     version:
@@ -118,7 +141,7 @@ rule run_rMats:
                                 -gtf {params.gtf} \
                                 -t paired \
                                 -len 76 \
-                                -analysis P \
+                                -analysis U \
                                 -libType fr-firststrand \
                                 -o {output}
         """
