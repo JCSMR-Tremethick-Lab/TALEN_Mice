@@ -30,32 +30,43 @@ attribs <- listAttributes(mouse)
 t2g <- getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id", "external_gene_name", "version", "transcript_version"), mart = mouse)
 t2g$ensembl_transcript_id <- paste(t2g$ensembl_transcript_id, t2g$transcript_version, sep = ".")
 t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
+load("~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
+save(t2g, file = "~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
 
 # add ERCC spike ins
-ercc <- import("~/mount/gduserv/Data/References/Transcriptomes/ERCC/ERCC92.gtf")
+ercc <- import("~/Data/References/Transcriptomes/ERCC/ERCC92.gtf")
 ercc.df <- mcols(ercc)
 ercc.df <- data.frame(ercc.df[, c("transcript_id", "gene_id", "gene_id")])
 colnames(ercc.df) <- c("target_id", "ens_gene", "ext_gene")
+ercc.df$version <- 1
+ercc.df$transcript_version <- 1
+ercc.df$target_id <- ercc.df$ens_gene
 t2g <- rbind(t2g, ercc.df)
-
 rownames(t2g) <- t2g$target_id
 
-save(t2g, file = "~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
-
-load("~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
-# re-run sleuth
+# run sleuth
 so <- sleuth_prep(s2c, ~ condition, target_mapping = t2g)
+# get raw data - count table needed for RUV analysis etc.
+kt.raw <- kallisto_table(so, normalize = F)
+kt.raw_counts <- tidyr::spread(kt.raw[, c("target_id", "sample", "est_counts")], sample, est_counts)
+rownames(kt.raw_counts) <- unlist(lapply(strsplit(kt.raw_counts$target_id, "\\."), function(x) x[1]))
+kt.raw_counts <- kt.raw_counts[, -1]
+save(kt.raw_counts, file = "kt.raw_counts.rda")
 so <- sleuth_fit(so)
 so <- sleuth_wt(so, "conditionhemi_HIPPO")
 so <- sleuth_fit(so, ~1, "reduced")
 
-results_table.hippo <- sleuth_results(so, "conditionhemi_HIPPO")
-results_table$FC_estimated <- log2(exp(results_table$b))
 
+# look at what proportions of reads where used up by ERCC spike-ins
+totalCounts <- apply(kt.raw_counts, 2, sum)
+ERCCCounts <- apply(kt.raw_counts[grep("ERCC", rownames(kt.raw_counts)), ], 2, sum)
+ERCCPerc <- ERCCCounts / totalCounts * 100
+  
 kt <- kallisto_table(so)
 
 load("~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis/kt.rda")
 kt <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
+kt <- merge(kt, tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm))
 rownames(kt) <- kt$target_id
 
 # check ERCC expression ---------------------------------------------------
@@ -114,14 +125,22 @@ condition <- factor(condition, levels(condition)[c(2,1)])
 s2c.pfc <- data.frame(sample = sample_id, condition = condition)
 s2c.pfc <- dplyr::mutate(s2c.pfc, path = kal_dirs.pfc)
 
+# transcript level
 so.pfc <- sleuth_prep(s2c.pfc, ~ condition, target_mapping = t2g)
 so.pfc <- sleuth_fit(so.pfc)
 so.pfc <- sleuth_wt(so.pfc, "conditionhemi_PFC")
 so.pfc <- sleuth_fit(so.pfc, ~1, "reduced")
+so.pfc <- sleuth_lrt(so.pfc, "reduced", "full")
 save(so.pfc, file = "so.pfc.rda")
 
-results_table.pfc <- sleuth_results(so.pfc, "conditionhemi_PFC")
-results_table$FC_estimated <- log2(exp(results_table$b))
+# gene level
+options(mc.cores = 8L)
+so.gene.pfc <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
+so.gene.pfc <- sleuth_fit(so.gene.pfc)
+so.gene.pfc <- sleuth_wt(so.gene.pfc, "conditionhemi_PFC")
+so.gene.pfc <- sleuth_fit(so.gene.pfc, ~1, "reduced")
+so.gene.pfc <- sleuth_lrt(so.gene.pfc, "reduced", "full")
+save(so.gene.pfc, file = "so.gene.pfc.rda")
 
 # HIPPO
 base_dir.hippo <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_hippo"
@@ -134,11 +153,23 @@ condition <- factor(condition, levels(condition)[c(2,1)])
 s2c.hippo <- data.frame(sample = sample_id, condition = condition)
 s2c.hippo <- dplyr::mutate(s2c.hippo, path = kal_dirs.hippo)
 
+# transcript level
 so.hippo <- sleuth_prep(s2c.hippo, ~ condition, target_mapping = t2g)
 so.hippo <- sleuth_fit(so.hippo)
 so.hippo <- sleuth_wt(so.hippo, "conditionhemi_HIPPO")
 so.hippo <- sleuth_fit(so.hippo, ~1, "reduced")
+so.hippo <- sleuth_lrt(so.hippo, "reduced", "full")
 save(so.hippo, file = "so.hippo.rda")
+
+# gene level
+options(mc.cores = 8L)
+so.gene.hippo <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
+so.gene.hippo <- sleuth_fit(so.gene.hippo)
+so.gene.hippo <- sleuth_wt(so.gene.hippo, "conditionhemi_HIPPO")
+so.gene.hippo <- sleuth_fit(so.gene.hippo, ~1, "reduced")
+so.gene.hippo <- sleuth_lrt(so.gene.hippo, "reduced", "full")
+save(so.gene.hippo, file = "so.gene.hippo.rda")
+
 
 # OB
 base_dir.ob <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_ob"
@@ -151,9 +182,19 @@ condition <- factor(condition, levels(condition)[c(2,1)])
 s2c.ob <- data.frame(sample = sample_id, condition = condition)
 s2c.ob <- dplyr::mutate(s2c.ob, path = kal_dirs.ob)
 
+# transcript level
 so.ob <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g)
 so.ob <- sleuth_fit(so.ob)
 so.ob <- sleuth_wt(so.ob, "conditionhemi_OB")
 so.ob <- sleuth_fit(so.ob, ~1, "reduced")
+so.ob <- sleuth_lrt(so.ob, "reduced", "full")
 save(so.ob, file = "so.ob.rda")
 
+# gene level
+options(mc.cores = 8L)
+so.gene.ob <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
+so.gene.ob <- sleuth_fit(so.gene.ob)
+so.gene.ob <- sleuth_wt(so.gene.ob, "conditionhemi_OB")
+so.gene.ob <- sleuth_fit(so.gene.ob, ~1, "reduced")
+so.gene.ob <- sleuth_lrt(so.gene.ob, "reduced", "full")
+save(so.gene.ob, file = "so.gene.ob.rda")

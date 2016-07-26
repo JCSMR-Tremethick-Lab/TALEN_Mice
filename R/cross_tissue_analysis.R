@@ -5,17 +5,29 @@
 # 3) obtain matching RNA-Seq data from mouse
 # 4) create tissue specific coverage maps for each histone gene
 
-# setting working directory and data sources ------------------------------
-setwd("~/mount/gduserv/Data/Tremethick/TALENs/meta_analysis/R_analysis")
-base_dir <- "~/mount/gduserv/Data/Tremethick/TALENs/meta_analysis/WT"
+amILocal <- function(machinename = NULL){
+  if(is.null(machinename)) stop("Machinename is missing")
+  m <- Sys.info()["nodename"]
+  mn <- unlist(lapply(strsplit(m, "\\."), function(x) x[1]))
+  if (mn == machinename) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
 
-# creating data.frame for experimental design and file names --------------
-sample_id <- dir(base_dir)
-kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, id))
-condition <- unlist(lapply(strsplit(names(kal_dirs), "_"), function(x) paste(x[3:4], collapse = "_")))
-condition[10:12] <- "wt_testis"
-s2c <- data.frame(sample = sample_id, condition = condition)
-s2c <- dplyr::mutate(s2c, path = kal_dirs)
-x <- s2c$condition
-x <- factor(x, levels(x)[c(4,1,2,3)])
-s2c$condition <- x
+# setting working directory and data sources ------------------------------
+if (amILocal("JCSMR027564ML")){
+  setwd("~/mount/gduserv/Data/Tremethick/TALENs/meta_analysis/R_analysis")
+  base_dir <- "~/mount/gduserv/Data/Tremethick/TALENs/meta_analysis/WT"
+  load("~/mount/gduserv/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
+} else {
+  setwd("~/Data/Tremethick/TALENs/meta_analysis/R_analysis")
+  base_dir <- "~/Data/Tremethick/TALENs/meta_analysis/WT"
+  load("~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
+}
+
+# load pre-processed data
+load("../../NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis/so.ob.rda")
+load("../../NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis/so.pfc.rda")
+load("../../NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis/so.hippo.rda")
