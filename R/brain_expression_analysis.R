@@ -3,49 +3,151 @@ require(sleuth)
 require(biomaRt)
 require(tidyr)
 require(rtracklayer)
+require(BiocParallel)
 
+source("~/Development/GeneralPurpose/R/amILocal.R")
 source("~/Development/GeneralPurpose/R/heatmap.3.R")
+source("~/Development/GeneralPurpose/R/lsos.R")
 
+# defining global variables
+ensemblHost <- "mar2016.archive.ensembl.org"
 
 # setting working directory and data sources ------------------------------
-setwd("~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis")
-base_dir <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto"
+if (amILocal("JCSMR027564ML")){
+  mount <- system("mount", intern = T)
+  if (length(grep("gduserv", mount)) == 0) {system("sshfs skurscheid@gduserv.anu.edu.au: ~/mount/gduserv/")}
+  BPPARAM <- BiocParallel::MulticoreParam(workers = 7)
+  mc.cores <- 8
+  setwd("~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis")
+  load("~/mount/gduserv/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
+  dataPath <- "~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/DEXSeq/count/"
+  kallisto_base_dir <- "~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto"
+  # biomaRt connection
+  mouse <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
+  attribs <- biomaRt::listAttributes(mouse)
+  pathPrefix = "~/mount/gduserv"
+  if (file.exists("~/mount/gduserv/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf")) {
+    flattenedfile <- "~/mount/gduserv/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf"
+  } else {
+    stop("GTF file missing!")
+  }
+} else {
+  BPPARAM <- BiocParallel::MulticoreParam(workers = 16)
+  mc.cores <- 16
+  pathPrefix = "~"
+  setwd("~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis")
+  load("~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
+  dataPath <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/DEXSeq/count/"
+  flattenedfile <- "~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf"
+  kallisto_base_dir <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto"
+}
+
+# use Ensembl 84 for annotation
+if (!file.exists("t2g.rda")){
+  mouse <- useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
+  attribs <- listAttributes(mouse)
+  # annotate transcripts
+  # Ensembl 84 includes version number in FASTA IDs, therefore have to conactenate them in, other wise mapping does not work
+  t2g <- getBM(attributes = c("ensembl_transcript_id", 
+                              "ensembl_gene_id", 
+                              "external_gene_name", 
+                              "version", 
+                              "transcript_version"), 
+               mart = mouse)
+  t2g$ensembl_transcript_id <- paste(t2g$ensembl_transcript_id, t2g$transcript_version, sep = ".")
+  t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
+  # add ERCC spike ins
+  ercc <- import(paste(pathPrefix, "/Data/References/Transcriptomes/ERCC/ERCC92.gtf", sep = ""))
+  ercc.df <- mcols(ercc)
+  ercc.df <- data.frame(ercc.df[, c("transcript_id", "gene_id", "gene_id")])
+  colnames(ercc.df) <- c("target_id", "ens_gene", "ext_gene")
+  ercc.df$version <- 1
+  ercc.df$transcript_version <- 1
+  ercc.df$target_id <- ercc.df$ens_gene
+  t2g <- rbind(t2g, ercc.df)
+  rownames(t2g) <- t2g$target_id
+  save(t2g, file = "t2g.rda")
+} else {
+  load("t2g.rda")
+}
+
+# transcript level differential expression analysis -----------------------------
+# run analysis by brain region so that only pair-wise comparison
+
+base_dirs <- c(OB = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_ob", sep = ""),
+               PFC = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_pfc", sep = ""),
+               HIPPO = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_hippo", sep = ""))
+
+sleuth_analysis_version <- 1
+sleuth_analysis_output <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output.rda", sep = "")
+
+if (!file.exists(sleuth_analysis_output)){
+  sleuthProcessedData <- lapply(names(base_dirs), function(x){
+    options(mc.cores = mc.cores)
+    sample_id <- dir(base_dirs[[x]])
+    kal_dirs <- sapply(sample_id, function(id) file.path(base_dirs[[x]], id))
+    condition <- unlist(lapply(strsplit(names(kal_dirs), "_"), function(x) paste(x[3], collapse = "_")))
+    condition <- as.factor(condition)
+    condition <- factor(condition, levels(condition)[c(2,1)])
+    s2c <- data.frame(sample = sample_id, condition = condition)
+    s2c <- dplyr::mutate(s2c, path = kal_dirs)
+    # transcript level
+    so <- sleuth::sleuth_prep(s2c, ~ condition, target_mapping = t2g)
+    so <- sleuth::sleuth_fit(so)
+    so <- sleuth::sleuth_wt(so, "conditionhemi")
+    so <- sleuth::sleuth_fit(so, ~1, "reduced")
+    so <- sleuth::sleuth_lrt(so, "reduced", "full")
+    kt <- sleuth::kallisto_table(so)
+    rt <- sleuth::sleuth_results(so, "conditionhemi")
+    rt <- rt[order(rt$qval),]
+    kt <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
+    rownames(kt) <- kt$target_id
+    kt <- kt[,-1]
+    kt.pca <- ade4::dudi.pca(t(as.matrix(kt)), center = T, scale = T, scannf = F, nf = 3)
+    
+    # gene level
+    so.gene <- sleuth::sleuth_prep(s2c, ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
+    so.gene <- sleuth::sleuth_fit(so.gene)
+    so.gene <- sleuth::sleuth_wt(so.gene, "conditionhemi")
+    so.gene <- sleuth::sleuth_fit(so.gene, ~1, "reduced")
+    so.gene <- sleuth::sleuth_lrt(so.gene, "reduced", "full")
+    kt.gene <- sleuth::kallisto_table(so.gene)
+    rt.gene <- sleuth::sleuth_results(so.gene, "conditionhemi")
+    rt.gene <- rt.gene[order(rt.gene$qval),]
+    kt.gene <- tidyr::spread(kt.gene[, c("target_id", "sample", "tpm")], sample, tpm)
+    rownames(kt.gene) <- kt.gene$target_id
+    kt.gene <- kt.gene[,-1]
+    kt.gene.pca <- ade4::dudi.pca(t(as.matrix(kt.gene)), center = T, scale = T, scannf = F, nf = 3)
+    return(list(sleuth_object = so,
+                sleuth_object_gene = so.gene,
+                kallisto_table = kt,
+                kallisto_table_gene = kt.gene,
+                kallisto_pca = kt.pca,
+                kallisto_gene_pca = kt.gene.pca))
+    })
+  names(sleuthProcessedData) <- names(base_dirs)
+  save(sleuthProcessedData, file = sleuth_analysis_output)
+} else {
+  load(sleuth_analysis_output)
+}
+
+
+s.class(kt_gene_pca$li, fac = as.factor(unlist(lapply(strsplit(rownames(kt_gene_pca$tab), "_"), function(x) x[3]))))
+
+# run sleuth on all samples -----------------------------------------------
 
 # creating data.frame for experimental design and file names --------------
-sample_id <- dir(base_dir)
-kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, id))
-condition <- unlist(lapply(strsplit(names(kal_dirs), "_"), function(x) paste(x[3:4], collapse = "_")))
+sample_id <- dir(kallisto_base_dir)
+kal_dirs <- sapply(sample_id, function(id) file.path(kallisto_base_dir, id))
+condition <- unlist(lapply(strsplit(names(kal_dirs), "_"), function(x) x[3]))
+tissue <- unlist(lapply(strsplit(names(kal_dirs), "_"), function(x) x[4]))
 s2c <- data.frame(sample = sample_id, condition = condition)
 s2c <- dplyr::mutate(s2c, path = kal_dirs)
 x <- s2c$condition
 x <- factor(x, levels(x)[c(4,5,6,1,2,3)])
 s2c$condition <- x
-
-# transcript level differential expression analysis -----------------------------
-# use Ensembl 84 for annotation
-mouse <- useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = "asia.ensembl.org")
-attribs <- listAttributes(mouse)
-# annotate transcripts
-# Ensembl 84 includes version number in FASTA IDs, therefore have to conactenate them in, other wise mapping does not work
-t2g <- getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id", "external_gene_name", "version", "transcript_version"), mart = mouse)
-t2g$ensembl_transcript_id <- paste(t2g$ensembl_transcript_id, t2g$transcript_version, sep = ".")
-t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
-load("~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
-save(t2g, file = "~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
-
-# add ERCC spike ins
-ercc <- import("~/Data/References/Transcriptomes/ERCC/ERCC92.gtf")
-ercc.df <- mcols(ercc)
-ercc.df <- data.frame(ercc.df[, c("transcript_id", "gene_id", "gene_id")])
-colnames(ercc.df) <- c("target_id", "ens_gene", "ext_gene")
-ercc.df$version <- 1
-ercc.df$transcript_version <- 1
-ercc.df$target_id <- ercc.df$ens_gene
-t2g <- rbind(t2g, ercc.df)
-rownames(t2g) <- t2g$target_id
-
-# run sleuth
 so <- sleuth_prep(s2c, ~ condition, target_mapping = t2g)
+
 # get raw data - count table needed for RUV analysis etc.
 kt.raw <- kallisto_table(so, normalize = F)
 kt.raw_counts <- tidyr::spread(kt.raw[, c("target_id", "sample", "est_counts")], sample, est_counts)
@@ -61,12 +163,11 @@ so <- sleuth_fit(so, ~1, "reduced")
 totalCounts <- apply(kt.raw_counts, 2, sum)
 ERCCCounts <- apply(kt.raw_counts[grep("ERCC", rownames(kt.raw_counts)), ], 2, sum)
 ERCCPerc <- ERCCCounts / totalCounts * 100
-  
+
 kt <- kallisto_table(so)
 
 load("~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis/kt.rda")
 kt <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
-kt <- merge(kt, tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm))
 rownames(kt) <- kt$target_id
 
 # check ERCC expression ---------------------------------------------------
@@ -111,90 +212,3 @@ dev.off()
 toGrep <- c("H2afb3", "H2afb2", "Gm14920")
 toGrep <- t2g[grep(paste(toGrep, collapse = "|"), t2g$ext_gene),]$target_id
 kt.goi <- kt[grep(paste(toGrep, collapse = "|"), kt$target_id),]
-
-
-# run analysis by brain region so that only pair-wise comparison w --------
-# PFC
-base_dir.pfc <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_pfc"
-sample_id <- dir(base_dir.pfc)
-
-kal_dirs.pfc <- sapply(sample_id, function(id) file.path(base_dir.pfc, id))
-condition <- unlist(lapply(strsplit(names(kal_dirs.pfc), "_"), function(x) paste(x[3:4], collapse = "_")))
-condition <- as.factor(condition)
-condition <- factor(condition, levels(condition)[c(2,1)])
-s2c.pfc <- data.frame(sample = sample_id, condition = condition)
-s2c.pfc <- dplyr::mutate(s2c.pfc, path = kal_dirs.pfc)
-
-# transcript level
-so.pfc <- sleuth_prep(s2c.pfc, ~ condition, target_mapping = t2g)
-so.pfc <- sleuth_fit(so.pfc)
-so.pfc <- sleuth_wt(so.pfc, "conditionhemi_PFC")
-so.pfc <- sleuth_fit(so.pfc, ~1, "reduced")
-so.pfc <- sleuth_lrt(so.pfc, "reduced", "full")
-save(so.pfc, file = "so.pfc.rda")
-
-# gene level
-options(mc.cores = 8L)
-so.gene.pfc <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
-so.gene.pfc <- sleuth_fit(so.gene.pfc)
-so.gene.pfc <- sleuth_wt(so.gene.pfc, "conditionhemi_PFC")
-so.gene.pfc <- sleuth_fit(so.gene.pfc, ~1, "reduced")
-so.gene.pfc <- sleuth_lrt(so.gene.pfc, "reduced", "full")
-save(so.gene.pfc, file = "so.gene.pfc.rda")
-
-# HIPPO
-base_dir.hippo <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_hippo"
-sample_id <- dir(base_dir.hippo)
-
-kal_dirs.hippo <- sapply(sample_id, function(id) file.path(base_dir.hippo, id))
-condition <- unlist(lapply(strsplit(names(kal_dirs.hippo), "_"), function(x) paste(x[3:4], collapse = "_")))
-condition <- as.factor(condition)
-condition <- factor(condition, levels(condition)[c(2,1)])
-s2c.hippo <- data.frame(sample = sample_id, condition = condition)
-s2c.hippo <- dplyr::mutate(s2c.hippo, path = kal_dirs.hippo)
-
-# transcript level
-so.hippo <- sleuth_prep(s2c.hippo, ~ condition, target_mapping = t2g)
-so.hippo <- sleuth_fit(so.hippo)
-so.hippo <- sleuth_wt(so.hippo, "conditionhemi_HIPPO")
-so.hippo <- sleuth_fit(so.hippo, ~1, "reduced")
-so.hippo <- sleuth_lrt(so.hippo, "reduced", "full")
-save(so.hippo, file = "so.hippo.rda")
-
-# gene level
-options(mc.cores = 8L)
-so.gene.hippo <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
-so.gene.hippo <- sleuth_fit(so.gene.hippo)
-so.gene.hippo <- sleuth_wt(so.gene.hippo, "conditionhemi_HIPPO")
-so.gene.hippo <- sleuth_fit(so.gene.hippo, ~1, "reduced")
-so.gene.hippo <- sleuth_lrt(so.gene.hippo, "reduced", "full")
-save(so.gene.hippo, file = "so.gene.hippo.rda")
-
-
-# OB
-base_dir.ob <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_ob"
-sample_id <- dir(base_dir.ob)
-
-kal_dirs.ob <- sapply(sample_id, function(id) file.path(base_dir.ob, id))
-condition <- unlist(lapply(strsplit(names(kal_dirs.ob), "_"), function(x) paste(x[3:4], collapse = "_")))
-condition <- as.factor(condition)
-condition <- factor(condition, levels(condition)[c(2,1)])
-s2c.ob <- data.frame(sample = sample_id, condition = condition)
-s2c.ob <- dplyr::mutate(s2c.ob, path = kal_dirs.ob)
-
-# transcript level
-so.ob <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g)
-so.ob <- sleuth_fit(so.ob)
-so.ob <- sleuth_wt(so.ob, "conditionhemi_OB")
-so.ob <- sleuth_fit(so.ob, ~1, "reduced")
-so.ob <- sleuth_lrt(so.ob, "reduced", "full")
-save(so.ob, file = "so.ob.rda")
-
-# gene level
-options(mc.cores = 8L)
-so.gene.ob <- sleuth_prep(s2c.ob, ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
-so.gene.ob <- sleuth_fit(so.gene.ob)
-so.gene.ob <- sleuth_wt(so.gene.ob, "conditionhemi_OB")
-so.gene.ob <- sleuth_fit(so.gene.ob, ~1, "reduced")
-so.gene.ob <- sleuth_lrt(so.gene.ob, "reduced", "full")
-save(so.gene.ob, file = "so.gene.ob.rda")

@@ -91,9 +91,7 @@ ensGenes <- biomaRt::getBM(attributes = c("ensembl_gene_id",
                                           "description",
                                           "percentage_gc_content",
                                           "gene_biotype"),
-                           mart = mouse,
-                           filter = "ensembl_gene_id",
-                           values = rownames(htSeqCountMatrix))
+                           mart = mouse)
 save(ensGenes, file = "ensGenes.rda")
 
 ensTranscripts <- biomaRt::getBM(attributes = c("ensembl_gene_id",
@@ -138,8 +136,10 @@ htSeqCountMatrix.hippo <- htSeqCountMatrix[, grep("HIPPO", colnames(htSeqCountMa
 htSeqCountMatrix.brain <- list(list(htSeqCountMatrix.ob), list(htSeqCountMatrix.pfc), list(htSeqCountMatrix.hippo))
 names(htSeqCountMatrix.brain) <- c("OB", "PFC", "HIPPO")
 
+analysis_version <- 2
+analysis_output_file <- paste("DifferentialGeneExpressionAnalysis_", analysis_version, ".rda", sep = "")
 # actual processing -------------------------------------------------------
-if (!file.exists("processedData.rda")){
+if (!file.exists(analysis_output_file)){
   processedData <- lapply(names(htSeqCountMatrix.brain), function(x){
     original <- htSeqCountMatrix.brain[[x]][[1]]
     filter <- apply(original, 1, function(y) length(y[y>5])>=2)
@@ -159,7 +159,6 @@ if (!file.exists("processedData.rda")){
     #---------------------------------------------
     # NOISeq analysis
     # create eSet
-    condition <- as.factor(unlist(lapply(strsplit(colnames(original), "_"), function(z) z[3])))
     tissue <- as.factor(unlist(lapply(strsplit(colnames(original), "_"), function(z) z[4])))
     myfactors <- data.frame(Tissue = tissue, Condition = condition)
     mydata <- NOISeq::readData(data = original, 
@@ -210,6 +209,7 @@ if (!file.exists("processedData.rda")){
     mycdNorm <- dat(mydataNorm, type = "cd", refColumn = 1, norm = TRUE)
     #---------------------------------------------
     # differential expression analysis using edgeR
+    # here including the RUVg factor to account for "unwanted variation"
     design <- model.matrix(~condition + W_1, data = pData(set1))
     y <- DGEList(counts = counts(set1), group = condition)
     y <- calcNormFactors(y, method="upperquartile")
@@ -219,6 +219,17 @@ if (!file.exists("processedData.rda")){
     lrt <- glmLRT(fit, coef=2)
     tt <- topTags(lrt, n = 5000)
     annotatedTT <- merge(tt[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id")
+    #---------------------------------------------
+    # differential expression analysis using plain vanilla edgeR
+    design1 <- model.matrix(~condition, data = pData(set))
+    y1 <- DGEList(counts = counts(set), group = condition)
+    y1 <- calcNormFactors(y1, method="upperquartile")
+    y1 <- estimateGLMCommonDisp(y1, design1)
+    y1 <- estimateGLMTagwiseDisp(y1, design1)
+    fit1 <- glmFit(y1, design1)
+    lrt1 <- glmLRT(fit1, coef=2)
+    tt1 <- topTags(lrt1, n = 5000)
+    annotatedTT1 <- merge(tt1[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id", all.x = T, sort = F)
     #---------------------------------------------
     # return all objects
     return(list(original = original, 
@@ -238,6 +249,11 @@ if (!file.exists("processedData.rda")){
                 glmLRT = lrt,
                 topTags = tt,
                 AnnotatedTopTags = annotatedTT,
+                DGEList_noRUV = y1,
+                glmFit_noRUV = fit1,
+                glmLRT_noRUV = lrt1,
+                topTags_noRUV = tt1,
+                AnnotatedTopTags_noRUV = annotatedTT1,
                 NOISeqRaw = list(mydata = mydata,
                                  myexplodata = myexplodata,
                                  mybiodetection = mybiodetection,
@@ -256,9 +272,9 @@ if (!file.exists("processedData.rda")){
                                   mycdNorm = mycdNorm)))
   })
   names(processedData) <- names(htSeqCountMatrix.brain)
-  save(processedData, file = "processedData.rda")
+  save(processedData, file = analysis_output_file)
 } else {
-  load("processedData.rda")
+  load(analysis_output_file)
 }
 
 # write top table to CSV
@@ -268,6 +284,27 @@ sapply(names(processedData), function(x){
 
 sapply(names(processedData), function(x){
   table(processedData[[x]][["AnnotatedTopTags"]]$FDR <= 0.1)
+})
+
+
+sapply(names(processedData), function(x){
+  table(processedData[[x]][["AnnotatedTopTags_noRUV"]]$FDR <= 0.1)
+})
+
+# Plot PCAs pre- and post-RUVg for each group
+sapply(names(processedData), function(x){
+  outfile <- paste(x, "/RUVg_pre_post_PCA.pdf", sep = "")
+  pdf(outfile, paper = "a4r")
+  par(mfrow = c(2,1))
+  plotPCA(processedData[[x]][["eSet"]],
+          col=colors[pData(processedData[[x]][["eSet"]])$condition],
+          cex=1.2, 
+          main = paste(x, " pre RUVg processing", sep = ""))
+  plotPCA(processedData[[x]][["eSetRUVg"]], 
+          col=colors[pData(processedData[[x]][["eSetRUVg"]])$condition], 
+          cex=1.2, 
+          main = paste(x, " post RUVg processing", sep = ""))
+  dev.off()
 })
 
 
