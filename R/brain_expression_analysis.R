@@ -78,7 +78,7 @@ base_dirs <- c(OB = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSo
                PFC = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_pfc", sep = ""),
                HIPPO = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_hippo", sep = ""))
 
-sleuth_analysis_version <- 1
+sleuth_analysis_version <- 2
 sleuth_analysis_output <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output.rda", sep = "")
 
 if (!file.exists(sleuth_analysis_output)){
@@ -104,26 +104,9 @@ if (!file.exists(sleuth_analysis_output)){
     rownames(kt) <- kt$target_id
     kt <- kt[,-1]
     kt.pca <- ade4::dudi.pca(t(as.matrix(kt)), center = T, scale = T, scannf = F, nf = 3)
-    
-    # gene level
-    so.gene <- sleuth::sleuth_prep(s2c, ~ condition, target_mapping = t2g, aggregation_column = "ens_gene")
-    so.gene <- sleuth::sleuth_fit(so.gene)
-    so.gene <- sleuth::sleuth_wt(so.gene, "conditionhemi")
-    so.gene <- sleuth::sleuth_fit(so.gene, ~1, "reduced")
-    so.gene <- sleuth::sleuth_lrt(so.gene, "reduced", "full")
-    kt.gene <- sleuth::kallisto_table(so.gene)
-    rt.gene <- sleuth::sleuth_results(so.gene, "conditionhemi")
-    rt.gene <- rt.gene[order(rt.gene$qval),]
-    kt.gene <- tidyr::spread(kt.gene[, c("target_id", "sample", "tpm")], sample, tpm)
-    rownames(kt.gene) <- kt.gene$target_id
-    kt.gene <- kt.gene[,-1]
-    kt.gene.pca <- ade4::dudi.pca(t(as.matrix(kt.gene)), center = T, scale = T, scannf = F, nf = 3)
     return(list(sleuth_object = so,
-                sleuth_object_gene = so.gene,
                 kallisto_table = kt,
-                kallisto_table_gene = kt.gene,
-                kallisto_pca = kt.pca,
-                kallisto_gene_pca = kt.gene.pca))
+                kallisto_pca = kt.pca))
     })
   names(sleuthProcessedData) <- names(base_dirs)
   save(sleuthProcessedData, file = sleuth_analysis_output)
