@@ -6,3 +6,4 @@
 *.sh.o*
 *.sh.e*
 *.sh.po*
+R/.Rproj.user/*
