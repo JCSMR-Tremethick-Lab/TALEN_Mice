@@ -4,6 +4,9 @@ require(biomaRt)
 require(tidyr)
 require(rtracklayer)
 require(BiocParallel)
+require(tximport)
+require(readr)
+require(RUVSeq)
 
 source("~/Development/GeneralPurpose/R/amILocal.R")
 source("~/Development/GeneralPurpose/R/heatmap.3.R")
@@ -11,13 +14,14 @@ source("~/Development/GeneralPurpose/R/lsos.R")
 
 # defining global variables
 ensemblHost <- "mar2016.archive.ensembl.org"
+colors <- RColorBrewer::brewer.pal(3, "Set2")
 
 # setting working directory and data sources ------------------------------
 if (amILocal("JCSMR027564ML")){
   mount <- system("mount", intern = T)
   if (length(grep("gduserv", mount)) == 0) {system("sshfs skurscheid@gduserv.anu.edu.au: ~/mount/gduserv/")}
   BPPARAM <- BiocParallel::MulticoreParam(workers = 7)
-  mc.cores <- 8
+  mc.cores <- 8L
   setwd("~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis")
   load("~/mount/gduserv/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
   dataPath <- "~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/DEXSeq/count/"
@@ -33,7 +37,7 @@ if (amILocal("JCSMR027564ML")){
   }
 } else {
   BPPARAM <- BiocParallel::MulticoreParam(workers = 16)
-  mc.cores <- 16
+  mc.cores <- 16L
   pathPrefix = "~"
   setwd("~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis")
   load("~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
@@ -71,6 +75,56 @@ if (!file.exists("t2g.rda")){
   load("t2g.rda")
 }
 
+if (!file.exists("ensGenes.rda")){
+  mouse <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
+  attribs <- biomaRt::listAttributes(mouse)
+  ensGenes <- biomaRt::getBM(attributes = c("ensembl_gene_id",
+                                            "external_gene_name",
+                                            "chromosome_name",
+                                            "start_position",
+                                            "end_position",
+                                            "strand",
+                                            "band",
+                                            "description",
+                                            "percentage_gc_content",
+                                            "gene_biotype"),
+                             mart = mouse)
+  save(ensGenes, file = "ensGenes.rda")
+  
+  ensTranscripts <- biomaRt::getBM(attributes = c("ensembl_gene_id",
+                                                  "ensembl_transcript_id",
+                                                  "transcript_length"),
+                                   mart = mouse,
+                                   filter = "ensembl_gene_id",
+                                   values = ensGenes$ensembl_gene_id)
+  save(ensTranscripts, file = "ensTranscripts.rda")
+  
+  mylength <- sapply(ensGenes$ensembl_gene_id, function(x){
+    y <- ensTranscripts[which(ensTranscripts$ensembl_gene_id == x), ]
+    y <- y[which.max(y$transcript_length), ]$transcript_length
+  })
+  save(mylength, file = "mylength.rda")
+  
+  mygc <- ensGenes$percentage_gc_content
+  names(mygc) <- ensGenes$ensembl_gene_id
+  save(mygc, file = "mygc.rda")
+  
+  mybiotypes <- ensGenes$gene_biotype
+  names(mybiotypes) <- ensGenes$ensembl_gene_id
+  save(mybiotypes, file = "mybiotypes.rda")
+  
+  mychroms <- data.frame(Chr = ensGenes$chromosome_name, GeneStart = ensGenes$start_position, GeneEnd = ensGenes$end_position)
+  rownames(mychroms) <- ensGenes$ensembl_gene_id
+  save(mychroms, file = "mychroms.rda")
+} else {
+  load("ensGenes.rda")
+  load("ensTranscripts.rda")
+  load("mylength.rda")
+  load("mygc.rda")
+  load("mybiotypes.rda")
+  load("mychroms.rda")
+}
+
 # transcript level differential expression analysis -----------------------------
 # run analysis by brain region so that only pair-wise comparison
 
@@ -78,11 +132,19 @@ base_dirs <- c(OB = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSo
                PFC = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_pfc", sep = ""),
                HIPPO = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_hippo", sep = ""))
 
-sleuth_analysis_version <- 2
+sleuth_analysis_version <- 4
 sleuth_analysis_output <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output.rda", sep = "")
+sleuth_analysis_output_combined <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output_combined.rda", sep = "")
 
+previous_sleuth_analysis_version <- sleuth_analysis_version - 1
+previous_sleuth_analysis_output <- paste("sleuth_analysis_V", previous_sleuth_analysis_version, "_output.rda", sep = "")
+previous_sleuth_analysis_output_combined <- paste("sleuth_analysis_V", previous_sleuth_analysis_version, "_output_combined.rda", sep = "")
+
+if (file.exists(previous_sleuth_analysis_output)) {file.remove(previous_sleuth_analysis_output); file.remove(previous_sleuth_analysis_output_combined)}
+  
 if (!file.exists(sleuth_analysis_output)){
   sleuthProcessedData <- lapply(names(base_dirs), function(x){
+    print(paste("Processing", x, "samples", sep = " "))
     options(mc.cores = mc.cores)
     sample_id <- dir(base_dirs[[x]])
     kal_dirs <- sapply(sample_id, function(id) file.path(base_dirs[[x]], id))
@@ -100,12 +162,16 @@ if (!file.exists(sleuth_analysis_output)){
     kt <- sleuth::kallisto_table(so)
     rt <- sleuth::sleuth_results(so, "conditionhemi")
     rt <- rt[order(rt$qval),]
-    kt <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
-    rownames(kt) <- kt$target_id
-    kt <- kt[,-1]
-    kt.pca <- ade4::dudi.pca(t(as.matrix(kt)), center = T, scale = T, scannf = F, nf = 3)
+    kt_wide <- tidyr::spread(kt[, c("target_id", "sample", "tpm")], sample, tpm)
+    rownames(kt_wide) <- kt_wide$target_id
+    kt_wide <- kt_wide[,-1]
+    kt_wide <- kt_wide[, c(grep("wt", colnames(kt_wide)),
+                           grep("hemi", colnames(kt_wide)))]
+    kt.pca <- ade4::dudi.pca(t(as.matrix(kt_wide)), center = T, scale = T, scannf = F, nf = 3)
     return(list(sleuth_object = so,
+                sleuth_results = rt,
                 kallisto_table = kt,
+                kallisto_table_wide = kt_wide,
                 kallisto_pca = kt.pca))
     })
   names(sleuthProcessedData) <- names(base_dirs)
@@ -115,33 +181,209 @@ if (!file.exists(sleuth_analysis_output)){
 }
 
 
-s.class(kt_gene_pca$li, fac = as.factor(unlist(lapply(strsplit(rownames(kt_gene_pca$tab), "_"), function(x) x[3]))))
+# Use tximport package to create gene level counts from kallisto --------
+# then proceed to run RUVseq followed by edgeR
 
-# run sleuth on all samples -----------------------------------------------
+edgeR_analysis_version <- 4
+edgeR_analysis_output <- paste("edgeR_analysis_V", edgeR_analysis_version, "_output.rda", sep = "")
 
-# creating data.frame for experimental design and file names --------------
-sample_id <- dir(kallisto_base_dir)
-kal_dirs <- sapply(sample_id, function(id) file.path(kallisto_base_dir, id))
-condition <- unlist(lapply(strsplit(names(kal_dirs), "_"), function(x) x[3]))
-tissue <- unlist(lapply(strsplit(names(kal_dirs), "_"), function(x) x[4]))
-s2c <- data.frame(sample = sample_id, condition = condition)
-s2c <- dplyr::mutate(s2c, path = kal_dirs)
-x <- s2c$condition
-x <- factor(x, levels(x)[c(4,5,6,1,2,3)])
-s2c$condition <- x
-so <- sleuth_prep(s2c, ~ condition, target_mapping = t2g)
+previous_edgeR_analysis_version <- edgeR_analysis_version - 1
+previous_edgeR_analysis_output <- paste("edgeR_analysis_V", previous_edgeR_analysis_version, "_output.rda", sep = "")
+if (file.exists(previous_edgeR_analysis_output)) {file.remove(previous_edgeR_analysis_output)}
 
-# get raw data - count table needed for RUV analysis etc.
-kt.raw <- kallisto_table(so, normalize = F)
-kt.raw_counts <- tidyr::spread(kt.raw[, c("target_id", "sample", "est_counts")], sample, est_counts)
-rownames(kt.raw_counts) <- unlist(lapply(strsplit(kt.raw_counts$target_id, "\\."), function(x) x[1]))
-kt.raw_counts <- kt.raw_counts[, -1]
-save(kt.raw_counts, file = "kt.raw_counts.rda")
-so <- sleuth_fit(so)
-so <- sleuth_wt(so, "conditionhemi_HIPPO")
-so <- sleuth_fit(so, ~1, "reduced")
+# actual edgeR analysis
+if (!file.exists(edgeR_analysis_output)){
+  edgeRProcessedData <- lapply(names(base_dirs), function(x){
+    print(paste("Processing", x, "samples", sep = " "))
+    options(mc.cores = mc.cores)
+    sample_id <- dir(base_dirs[[x]])
+    kal_dirs <- sapply(sample_id, function(id) file.path(base_dirs[[x]], id))
+    condition <- unlist(lapply(strsplit(names(kal_dirs), "_"), function(x) paste(x[3], collapse = "_")))
+    condition <- as.factor(condition)
+    condition <- factor(condition, levels(condition)[c(2,1)])
+    s2c <- data.frame(sample = sample_id, condition = condition)
+    s2c <- dplyr::mutate(s2c, path = kal_dirs)
+    s2c$files <- paste(s2c$path, "abundance.tsv", sep = "/")
+    s2c <- s2c[order(s2c$condition),]
+    files <- s2c$files
+    names(files) <- s2c$sample
+    # read in kallisto data with tximport
+    txi <- tximport::tximport(files,
+                              type = "kallisto",
+                              tx2gene = t2g,
+                              geneIdCol = "ens_gene",
+                              txIdCol = "target_id",
+                              reader = read_tsv)
+    # RUVseq analysis starts here
+    # have to round the estimated counts to integers
+    original <- round(txi$counts, 0)
+    filter <- apply(original, 1, function(y) length(y[y>5])>=2)
+    filtered <- original[filter, ]
+    genes <- rownames(filtered)[grep("ENS", rownames(filtered))]
+    spikes <- rownames(filtered)[grep("ERCC", rownames(filtered))]
+    #---------------------------------------------
+    # create expression set
+    if (x == "combined"){
+      set <- EDASeq::newSeqExpressionSet(as.matrix(filtered),
+                                 phenoData = data.frame(condition, tissue, individual, row.names=colnames(filtered)))
+    } else {
+      set <- EDASeq::newSeqExpressionSet(as.matrix(filtered),
+                                         phenoData = data.frame(condition, row.names=colnames(filtered)))
+    }
+    #---------------------------------------------
+    # data exploration
+    rle <- EDASeq::plotRLE(set, outline = FALSE, col = colors[s2c$condition])
+    pca <- EDASeq::plotPCA(set, col = colors[s2c$condition])
+    #---------------------------------------------
+    # RUVseq using spike ins
+    set1 <- RUVSeq::RUVg(set, spikes, k = 1)
+    rleRUV <- EDASeq::plotRLE(set1, outline=FALSE, col=colors[s2c$condition])
+    pcaRUV <- EDASeq::plotPCA(set1, col=colors[s2c$condition], cex=1.2)
+    #---------------------------------------------
+    # differential expression analysis using edgeR
+    # here including the RUVg factor to account for "unwanted variation"
+    cts <- txi$counts[filter,]
+    normMat <- txi$length[filter,]
+    normMat <- normMat/exp(rowMeans(log(normMat)))
+    design <- model.matrix(~ condition + W_1, data = pData(set1))
+    o <- log(calcNormFactors(cts/normMat)) + log(colSums(cts/normMat))
+    y <- edgeR::DGEList(counts = counts(set1), group = s2c$condition)
+    y$offset <- t(t(log(normMat)) + o)
+    y <- edgeR::estimateGLMCommonDisp(y, design)
+    y <- edgeR::estimateGLMTagwiseDisp(y, design)
+    fit <- edgeR::glmFit(y, design)
+    lrt <- edgeR::glmLRT(fit, coef=2)
+    tt <- edgeR::topTags(lrt, n = 20000)
+    annotatedTT <- merge(tt[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id")
+    annotatedTT <- annotatedTT[order(annotatedTT$FDR),]
+    #---------------------------------------------
+    # differential expression analysis using plain vanilla edgeR
+    design1 <- model.matrix(~condition, data = pData(set))
+    y1 <- edgeR::DGEList(counts = counts(set), group = condition)
+    y1 <- edgeR::calcNormFactors(y1, method="upperquartile")
+    y1 <- edgeR::estimateGLMCommonDisp(y1, design1)
+    y1 <- edgeR::estimateGLMTagwiseDisp(y1, design1)
+    fit1 <- edgeR::glmFit(y1, design1)
+    lrt1 <- edgeR::glmLRT(fit1, coef=1)
+    tt1 <- edgeR::topTags(lrt1, n = 5000)
+    annotatedTT1 <- merge(tt1[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id", all.x = T, sort = F)
+    annotatedTT1 <- annotatedTT1[sort(annotatedTT1$FDR), ]
+    # return all objects
+    return(list(txiGeneCounts = txi,
+                condition = condition,
+                preRUVSet = set,
+                preRUVRle = rle,
+                preRUVPca = pca,
+                postRUVSet = set1,
+                postRUVRle = rleRUV,
+                postRUVPca = pcaRUV,
+                DGEList = y,
+                glmFit = fit,
+                glmLRT = lrt,
+                topTags = tt,
+                AnnotatedTopTags = annotatedTT,
+                DGEList_noRUV = y1,
+                glmFit_noRUV = fit1,
+                glmLRT_noRUV = lrt1,
+                topTags_noRUV = tt1,
+                AnnotatedTopTags_noRUV = annotatedTT1))
+  })
+  names(edgeRProcessedData) <- names(base_dirs)
+  save(edgeRProcessedData, file = edgeR_analysis_output)
+  } else {
+  load(edgeR_analysis_output)
+}
 
+# see how many genes are DE @ 10%FDR
+sapply(edgeRProcessedData, function(x){
+  table(x[["AnnotatedTopTags"]]$FDR < 0.1)
+})
 
+sapply(edgeRProcessedData, function(x){
+  table(x[["AnnotatedTopTags_noRUV"]]$FDR < 0.1)
+})
+
+# get txi scaled TPMs for each group
+txiGeneCountsScaled <- lapply(names(base_dirs), function(x){
+  sample_id <- dir(base_dirs[[x]])
+  kal_dirs <- sapply(sample_id, function(id) file.path(base_dirs[[x]], id))
+  condition <- unlist(lapply(strsplit(names(kal_dirs), "_"), function(x) paste(x[3], collapse = "_")))
+  condition <- as.factor(condition)
+  condition <- factor(condition, levels(condition)[c(2,1)])
+  s2c <- data.frame(sample = sample_id, condition = condition)
+  s2c <- dplyr::mutate(s2c, path = kal_dirs)
+  s2c$files <- paste(s2c$path, "abundance.tsv", sep = "/")
+  s2c <- s2c[order(s2c$condition),]
+  files <- s2c$files
+  names(files) <- s2c$sample
+  # read in kallisto data with tximport
+  txi <- tximport::tximport(files,
+                            type = "kallisto",
+                            tx2gene = t2g,
+                            geneIdCol = "ens_gene",
+                            txIdCol = "target_id",
+                            reader = read_tsv,
+                  
+                                      countsFromAbundance = "lengthScaledTPM")
+})
+names(txiGeneCountsScaled) <- names(edgeRProcessedData)
+
+# run PCA on gene-level abundances
+geneLevelPCA <- lapply(txiGeneCountsScaled, function(x) {
+  ade4::dudi.pca(t(x[["abundance"]]), scannf = F, nf = 5)
+})
+
+# plot s.class diagrams
+pdf("Individual_PCAs_gene_level.pdf")
+par(mfrow = c(3,1))
+lapply(names(geneLevelPCA), function(x){
+  ade4::s.class(geneLevelPCA[[x]]$li, 
+                fac = as.factor(unlist(lapply(strsplit(rownames(geneLevelPCA[[x]]$tab), "_"), function(y) y[3]))),
+                sub = x)
+})
+dev.off()
+
+masterDFGeneLevel <- cbind(txiGeneCountsScaled[["OB"]][["abundance"]], 
+                  txiGeneCountsScaled[["PFC"]][["abundance"]],
+                  txiGeneCountsScaled[["HIPPO"]][["abundance"]])
+masterPCAGeneLevel <- ade4::dudi.pca(t(masterDF), scannf = F, nf = 5)
+
+pdf("Combined_PCA_gene_level.pdf")
+ade4::s.class(masterPCAGeneLevel$li, 
+              fac = as.factor(unlist(lapply(strsplit(rownames(masterPCAGeneLevel$tab), "_"), function(y) paste(y[3], y[4], collapse = "_")))))
+dev.off()
+
+# plot s.class diagrams on tx-level PCA data
+pdf("Individual_PCAs_transcript_level.pdf")
+par(mfrow = c(3,1))
+lapply(names(sleuthProcessedData), function(x){
+  ade4::s.class(sleuthProcessedData[[x]][["kallisto_pca"]]$li, 
+                fac = as.factor(unlist(lapply(strsplit(rownames(sleuthProcessedData[[x]][["kallisto_pca"]]$tab), "_"), function(y) y[3]))),
+                sub = x)
+})
+dev.off()
+
+masterDFTxLevel <- cbind(sleuthProcessedData[["OB"]][["kallisto_table_wide"]], 
+                         sleuthProcessedData[["PFC"]][["kallisto_table_wide"]],
+                         sleuthProcessedData[["HIPPO"]][["kallisto_table_wide"]])
+masterPCATxLevel <- ade4::dudi.pca(t(masterDFTxLevel), scannf = F, nf = 5)
+
+pdf("Combined_PCA_transcript_level.pdf")
+ade4::s.class(masterPCATxLevel$li, 
+              fac = as.factor(unlist(lapply(strsplit(rownames(masterPCATxLevel$tab), "_"), function(y) paste(y[3], y[4], collapse = "_")))))
+dev.off()
+
+# get transcript level differential expression results for each group
+
+sleuthResultsList <- lapply(sleuthProcessedData, function(x){
+  sleuthResults <- sleuth_results(x[["sleuth_object"]], test = "conditionhemi", test_type = "wald")
+})
+
+sapply(sleuthResultsList, function(x){
+  table(x$qval < 0.1)
+})
+
+#-------------------------------------------------------------------------------
 # look at what proportions of reads where used up by ERCC spike-ins
 totalCounts <- apply(kt.raw_counts, 2, sum)
 ERCCCounts <- apply(kt.raw_counts[grep("ERCC", rownames(kt.raw_counts)), ], 2, sum)
