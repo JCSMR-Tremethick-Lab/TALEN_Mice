@@ -12,7 +12,7 @@ rule kallisto_quant_se:
         outdir = config["processed_dir"],
         bootstraps = config["kallisto"]["bootstraps"],
     input:
-        read1 = "fastq/" + lambda wildcards: config["units"][wildcards.unit],
+        read1 = lambda wildcards: config["units"][wildcards.unit],
         ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     output:
         "{outdir}/{reference_version}/kallisto_se/{unit}"
@@ -22,7 +22,7 @@ rule kallisto_quant_se:
                            --output-dir={output} \
                            --threads=4 \
                            --bootstrap-samples={params.bootstraps} \
-                           {input.read1}
+                           {params.raw_data} + "/" + {input.read1}
         """
 
 rule kallisto_quant:
