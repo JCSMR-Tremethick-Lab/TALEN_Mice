@@ -1,0 +1,57 @@
+{
+    "references" :
+    {
+        "genome" : "/home/skurscheid/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
+        "GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
+        "version" : "GRCm38_ensembl84_ERCC",
+        "DEX_GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf"
+    },
+    "kallisto" :
+    {
+        "bootstraps" : "100"
+    },
+    "kallisto_index" :
+    {
+      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
+    },
+    "STAR" :
+    {
+      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
+      "runThreadN" : "8"
+    },
+    "units" :
+    {
+      "HIPPO_rep1" : "SRR1574882_1.fastq",
+      "HIPPO_rep2" : "SRR1574883_1.fastq",
+      "HIPPO_rep3" : "SRR1574884_1.fastq",
+      "HIPPO_rep4" : "SRR1574885_1.fastq",
+      "PFC_rep1" : "SRR1574886_1.fastq",
+      "PFC_rep2" : "SRR1574887_1.fastq",
+      "PFC_rep3" : "SRR1574888_1.fastq",
+      "PFC_rep4" : "SRR1574889_1.fastq"
+    },
+    "Groups" :
+    {
+      "WT" :
+        {
+          "HIPPO" : ["HIPPO_rep1", "HIPPO_rep2", "HIPPO_rep3", "HIPPO_rep4"],
+          "PFC" : ["PFC_rep1", "PFC_rep2", "PFC_rep3", "PFC_rep4"]
+    },
+    "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
+    "trim_dir" : "trimmed_data",
+    "processed_dir" : "processed_data",
+    "aligned_dir" : "aligned_data",
+    "reports_dir" : "reports",
+    "temp_dir" : "temp_data",
+    "alignment_quality" : "20",
+    "raw_dir" : "fastq",
+    "id_dir" : "sequencing_targets",
+    "id_file" : "ID_list.txt",
+    "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
+    "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
+    "DEXSeq_dir" : "/home/skurscheid/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
+    "Picard" :
+    {
+      "sampling" : "0.2",
+    },
+}

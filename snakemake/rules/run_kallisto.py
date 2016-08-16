@@ -4,15 +4,19 @@ __date__ = "2016-04-10"
 
 from snakemake.exceptions import MissingInputException
 
-def getIDs( file ):
-    fo = open(file, "r")
-    line = [x.strip() for x in fo.readlines()]
-    line = ' '.join(line)
-    return line
+local rules:
+    run_kallisto_quant_se
+
+rule runkallisto_quant_se:
+    input:
+        expand("{outdir}/{reference_version}/kallisto_se/{unit}",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["version"],
+               unit = config["units"])
 
 rule kallisto_quant:
     message:
-        "Running kallisto..."
+        "Running kallisto with paired end data..."
     params:
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
@@ -30,6 +34,28 @@ rule kallisto_quant:
                            --bootstrap-samples={params.bootstraps} \
                            {input[0]} {input[1]}
         """
+
+rule kallisto_quant_se:
+    message:
+        "Running kallisto with single end data..."
+    params:
+        raw_data = config["raw_dir"],
+        outdir = config["processed_dir"],
+        bootstraps = config["kallisto"]["bootstraps"],
+    input:
+        read1 = lambda wildcards: config["units"][wildcards.unit],
+        ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
+    output:
+        "{outdir}/{reference_version}/kallisto_se/{unit}"
+    shell:
+        """
+            kallisto quant --index={input.ki} \
+                           --output-dir={output} \
+                           --threads=4 \
+                           --bootstrap-samples={params.bootstraps} \
+                           {input.read1}
+        """
+
 
 # rule kallisto_quant_pseudobam:
 #     message:
