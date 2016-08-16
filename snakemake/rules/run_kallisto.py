@@ -13,7 +13,7 @@ rule kallisto_quant_se:
         bootstraps = config["kallisto"]["bootstraps"],
     input:
         unit = lambda wildcards: config["units"][wildcards.unit],
-        read1 = params.raw_data + "/" + unit,
+        read1 = "./fastq/" + unit,
         ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     output:
         "{outdir}/{reference_version}/kallisto_se/{unit}"
