@@ -12,7 +12,8 @@ rule kallisto_quant_se:
         outdir = config["processed_dir"],
         bootstraps = config["kallisto"]["bootstraps"],
     input:
-        read1 = lambda wildcards: config["units"][wildcards.unit],
+        unit = lambda wildcards: config["units"][wildcards.unit],
+        read1 = params.raw_data + "/" + unit,
         ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     output:
         "{outdir}/{reference_version}/kallisto_se/{unit}"
