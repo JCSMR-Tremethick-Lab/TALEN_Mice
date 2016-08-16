@@ -4,16 +4,6 @@ __date__ = "2016-04-10"
 
 from snakemake.exceptions import MissingInputException
 
-localrules:
-    run_kallisto_quant_se
-
-rule runkallisto_quant_se:
-    input:
-        expand("{outdir}/{reference_version}/kallisto_se/{unit}",
-               outdir = config["processed_dir"],
-               reference_version = config["references"]["version"],
-               unit = config["units"])
-
 rule kallisto_quant_se:
     message:
         "Running kallisto with single end data..."
