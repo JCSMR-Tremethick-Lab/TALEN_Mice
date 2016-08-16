@@ -8,7 +8,7 @@
     },
     "kallisto" :
     {
-        "bootstraps" : "100"
+        "bootstraps" : "10"
     },
     "kallisto_index" :
     {

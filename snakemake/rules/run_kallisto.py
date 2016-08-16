@@ -22,7 +22,7 @@ rule kallisto_quant_se:
                            --output-dir={output} \
                            --threads=4 \
                            --bootstrap-samples={params.bootstraps} \
-                           {params.raw_data} + "/" + {input.read1}
+                           "{params.raw_data}/{input.read1}"
         """
 
 rule kallisto_quant:
