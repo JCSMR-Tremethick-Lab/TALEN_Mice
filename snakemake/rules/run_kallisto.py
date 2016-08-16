@@ -4,7 +4,7 @@ __date__ = "2016-04-10"
 
 from snakemake.exceptions import MissingInputException
 
-local rules:
+localrules:
     run_kallisto_quant_se
 
 rule runkallisto_quant_se:
