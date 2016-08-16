@@ -22,6 +22,8 @@ rule kallisto_quant_se:
                            --output-dir={output} \
                            --threads=4 \
                            --single \
+                           --fragment-length=200 \
+                           --sd=50 \
                            --bootstrap-samples={params.bootstraps} \
                            {input.read1}
         """
