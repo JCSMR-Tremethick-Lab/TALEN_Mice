@@ -21,6 +21,7 @@ rule kallisto_quant_se:
             kallisto quant --index={input.ki} \
                            --output-dir={output} \
                            --threads=4 \
+                           --single \
                            --bootstrap-samples={params.bootstraps} \
                            {input.read1}
         """
