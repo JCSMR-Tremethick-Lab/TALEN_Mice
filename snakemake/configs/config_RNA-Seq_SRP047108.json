@@ -36,6 +36,7 @@
         {
           "HIPPO" : ["HIPPO_rep1", "HIPPO_rep2", "HIPPO_rep3", "HIPPO_rep4"],
           "PFC" : ["PFC_rep1", "PFC_rep2", "PFC_rep3", "PFC_rep4"]
+        }
     },
     "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
     "trim_dir" : "trimmed_data",
@@ -49,9 +50,5 @@
     "id_file" : "ID_list.txt",
     "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
     "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
-    "DEXSeq_dir" : "/home/skurscheid/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
-    "Picard" :
-    {
-      "sampling" : "0.2",
-    },
+    "DEXSeq_dir" : "/home/skurscheid/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/"
 }
