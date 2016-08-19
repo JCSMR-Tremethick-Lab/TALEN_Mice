@@ -24,5 +24,6 @@ rule run_rnaseq_qc:
             -r {input.genome} \
             -strat gc \
             -gc {input.gc} \
-            -s {input[0]}
+            -s {input[0]} \
+            -o {output}
         """
