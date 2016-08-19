@@ -5,8 +5,14 @@
         "virtual_free" : "48G",
         "h_vmem" : "48.1G",
         "threads" : 2,
-	"std1_out_dir" : "/home/skurscheid/qsub_output",
-	"error_out_dir" : "/home/skurscheid/qsub_error"
+	       "std1_out_dir" : "/home/skurscheid/qsub_output",
+	        "error_out_dir" : "/home/skurscheid/qsub_error"
+    },
+    "run_rnaseq_qc" :
+    {
+      "virtual_free" : "48G",
+      "h_vmem" : "48.1G",
+      "threads" : 2
     },
     "collect_insert_size_metrics" :
     {
