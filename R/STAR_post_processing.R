@@ -7,33 +7,12 @@ require(rtracklayer)
 require(RColorBrewer)
 require(RUVSeq)
 require(NOISeq)
+require(deepToolsUtils)
 
 # load external functions
 source("~/Development/GeneralPurpose/R/amILocal.R")
 source("~/Development/GeneralPurpose/R/heatmap.3.R")
 source("~/Development/GeneralPurpose/R/lsos.R")
-
-# define some local functions
-makeHTSeqCountMatrix <- function(files = NULL){
-  if(is.null(files)) {stop("Filenames missing")}
-  n <- length(files)
-  for (i in 1:n){
-    s <- unlist(lapply(strsplit(names(files)[i], "\\."), function(x) x[1]))
-    if (i == 1) {
-      mat0 <- read.table(files[i], header = F, as.is = T, sep = ("\t"))
-      rn <- mat0[,i]
-      mat0 <- as.matrix(mat0[,-1])
-      colnames(mat0) <- s
-      rownames(mat0) <- rn
-    } else {
-      mat1 <- read.table(files[i], header = F, as.is = T, sep = ("\t"))
-      mat1 <- as.matrix(mat1[,-1])
-      colnames(mat1) <- s
-      mat0 <- cbind(mat0, mat1)
-    }
-  }
-  return(mat0)
-}
 
 # global variables
 ensemblHost <- "mar2016.archive.ensembl.org"
@@ -44,17 +23,19 @@ if (amILocal("JCSMR027564ML")){
   setwd("~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis")
   load("~/mount/gduserv/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
   dataPath <- "~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/HTSeq/count/"
+  pathPrefix <- "~/mount/gduserv/"
 } else {
   setwd("~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis")
   load("~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
   dataPath <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/HTSeq/count/"
+  pathPrefix <-  "~"
 }
 
 files <- list.files(path = dataPath, full.names = T)
 names(files) <- list.files(path = dataPath, full.names = F)
 
 if (!file.exists("htSeqCountMatrix.rda")){
-  htSeqCountMatrix <- makeHTSeqCountMatrix(files)
+  htSeqCountMatrix <- deepToolsUtils::makeHTSeqCountMatrix(files)
   # re-order columns into corresponding sample/condition groups
   reOrdCol <- c(grep("wt_HIPPO", colnames(htSeqCountMatrix)),
                 grep("hemi_HIPPO", colnames(htSeqCountMatrix)),
@@ -76,6 +57,7 @@ if (!file.exists("htSeqCountMatrix.rda")){
 # quick summary of the count data
 totalCounts <- apply(htSeqCountMatrix, 2, sum)
 ERCCCounts <- apply(htSeqCountMatrix[grep("ERCC", rownames(htSeqCountMatrix)), ], 2, sum)
+ERCCPerc <- ERCCCounts / totalCounts * 100
 
 # preparing annotation data from Ensembl ----------------------------------
 if (!file.exists("ensGenes.rda")){
@@ -138,6 +120,8 @@ names(htSeqCountMatrix.brain) <- c("OB", "PFC", "HIPPO")
 
 analysis_version <- 2
 analysis_output_file <- paste("DifferentialGeneExpressionAnalysis_", analysis_version, ".rda", sep = "")
+
+
 # actual processing -------------------------------------------------------
 if (!file.exists(analysis_output_file)){
   processedData <- lapply(names(htSeqCountMatrix.brain), function(x){

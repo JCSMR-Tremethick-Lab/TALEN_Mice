@@ -1,79 +1,80 @@
 {
-    "references" :
-    {
-        "genome" : "/home/skurscheid/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
-        "GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
-        "version" : "GRCm38_ensembl84_ERCC",
-        "DEX_GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf",
-        "transcript_GC" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gc_content.txt"
-    },
-    "kallisto" :
-    {
-        "bootstraps" : "100"
-    },
-    "kallisto_index" :
-    {
-      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
-    },
-    "STAR" :
-    {
-      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
-      "runThreadN" : "8"
-    },
-    "units" :
-    {
-      "10_13_wt_OB_AGTCAA" : ["7-AGTCAA_S7_R1_001.fastq.gz", "7-AGTCAA_S7_R2_001.fastq.gz"],
-      "10_14_hemi_OB_GTCCGC" : ["11-GTCCGC_S11_R1_001.fastq.gz", "11-GTCCGC_S11_R2_001.fastq.gz"],
-      "10_16_hemi_HIPPO_CTTGTA" : ["6-CTTGTA_S6_R1_001.fastq.gz", "6-CTTGTA_S6_R2_001.fastq.gz"],
-      "10_25_wt_OB_AGTTCC" : ["8-AGTTCC_S8_R1_001.fastq.gz", "8-AGTTCC_S8_R2_001.fastq.gz"],
-      "10_26_hemi_OB_GTGAAA" : ["12-GTGAAA_S12_R1_001.fastq.gz", "12-GTGAAA_S12_R2_001.fastq.gz"],
-      "10_27_hemi_PFC_ACTGAT" : ["17-ACTGAT_S17_R1_001.fastq.gz", "17-ACTGAT_S17_R2_001.fastq.gz"],
-      "10_28_hemi_HIPPO_CAGATC" : ["5-CAGATC_S5_R1_001.fastq.gz", "5-CAGATC_S5_R2_001.fastq.gz"],
-      "10_28_hemi_PFC_ATTCCT" : ["18-ATTCCT_S18_R1_001.fastq.gz", "18-ATTCCT_S18_R2_001.fastq.gz"],
-      "10_35_wt_HIPPO_CGATGT" : ["1-CGATGT_S1_R1_001.fastq.gz", "1-CGATGT_S1_R2_001.fastq.gz"],
-      "10_35_wt_PFC_GTGGCC" : ["13-GTGGCC_S13_R1_001.fastq.gz", "13-GTGGCC_S13_R2_001.fastq.gz"],
-      "10_42_wt_HIPPO_TGACCA" : ["2-TGACCA_S2_R1_001.fastq.gz", "2-TGACCA_S2_R2_001.fastq.gz"],
-      "10_42_wt_PFC_GTTTCG" : ["14-GTTTCG_S14_R1_001.fastq.gz", "14-GTTTCG_S14_R2_001.fastq.gz"],
-      "10_50_wt_OB_ATGTCA" : ["9-ATGTCA_S9_R1_001.fastq.gz", "9-ATGTCA_S9_R2_001.fastq.gz"],
-      "10_9_hemi_OB_CCGTCC" : ["10-CCGTCC_S10_R1_001.fastq.gz", "10-CCGTCC_S10_R2_001.fastq.gz"],
-      "1_12_wt_HIPPO_ACAGTG" : ["3-ACAGTG_S3_R1_001.fastq.gz", "3-ACAGTG_S3_R2_001.fastq.gz"],
-      "1_12_wt_PFC_CGTACG" : ["15-CGTACG_S15_R1_001.fastq.gz", "15-CGTACG_S15_R2_001.fastq.gz"],
-      "1_21_hemi_HIPPO_GCCAAT" : ["4-GCCAAT_S4_R1_001.fastq.gz", "4-GCCAAT_S4_R2_001.fastq.gz"],
-      "1_21_hemi_PFC_GAGTGG" : ["16-GAGTGG_S16_R1_001.fastq.gz", "16-GAGTGG_S16_R2_001.fastq.gz"]
-    },
-    "Groups" :
-    {
-      "OB" :
-        {
-          "WT" : ["10_13_wt_OB_AGTCAA", "10_25_wt_OB_AGTTCC", "10_50_wt_OB_ATGTCA"],
-          "HEMI" : ["10_14_hemi_OB_GTCCGC", "10_26_hemi_OB_GTGAAA", "10_9_hemi_OB_CCGTCC"]
-        },
-      "PFC" :
+  "references" :
+  {
+      "genome" : "/home/skurscheid/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
+      "GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
+      "version" : "GRCm38_ensembl84_ERCC",
+      "DEX_GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf",
+      "transcript_GC" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gc_content.txt",
+      "GTF_conformed" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.conformed.gtf"
+  },
+  "kallisto" :
+  {
+      "bootstraps" : "100"
+  },
+  "kallisto_index" :
+  {
+    "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
+  },
+  "STAR" :
+  {
+    "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
+    "runThreadN" : "8"
+  },
+  "units" :
+  {
+    "10_13_wt_OB_AGTCAA" : ["7-AGTCAA_S7_R1_001.fastq.gz", "7-AGTCAA_S7_R2_001.fastq.gz"],
+    "10_14_hemi_OB_GTCCGC" : ["11-GTCCGC_S11_R1_001.fastq.gz", "11-GTCCGC_S11_R2_001.fastq.gz"],
+    "10_16_hemi_HIPPO_CTTGTA" : ["6-CTTGTA_S6_R1_001.fastq.gz", "6-CTTGTA_S6_R2_001.fastq.gz"],
+    "10_25_wt_OB_AGTTCC" : ["8-AGTTCC_S8_R1_001.fastq.gz", "8-AGTTCC_S8_R2_001.fastq.gz"],
+    "10_26_hemi_OB_GTGAAA" : ["12-GTGAAA_S12_R1_001.fastq.gz", "12-GTGAAA_S12_R2_001.fastq.gz"],
+    "10_27_hemi_PFC_ACTGAT" : ["17-ACTGAT_S17_R1_001.fastq.gz", "17-ACTGAT_S17_R2_001.fastq.gz"],
+    "10_28_hemi_HIPPO_CAGATC" : ["5-CAGATC_S5_R1_001.fastq.gz", "5-CAGATC_S5_R2_001.fastq.gz"],
+    "10_28_hemi_PFC_ATTCCT" : ["18-ATTCCT_S18_R1_001.fastq.gz", "18-ATTCCT_S18_R2_001.fastq.gz"],
+    "10_35_wt_HIPPO_CGATGT" : ["1-CGATGT_S1_R1_001.fastq.gz", "1-CGATGT_S1_R2_001.fastq.gz"],
+    "10_35_wt_PFC_GTGGCC" : ["13-GTGGCC_S13_R1_001.fastq.gz", "13-GTGGCC_S13_R2_001.fastq.gz"],
+    "10_42_wt_HIPPO_TGACCA" : ["2-TGACCA_S2_R1_001.fastq.gz", "2-TGACCA_S2_R2_001.fastq.gz"],
+    "10_42_wt_PFC_GTTTCG" : ["14-GTTTCG_S14_R1_001.fastq.gz", "14-GTTTCG_S14_R2_001.fastq.gz"],
+    "10_50_wt_OB_ATGTCA" : ["9-ATGTCA_S9_R1_001.fastq.gz", "9-ATGTCA_S9_R2_001.fastq.gz"],
+    "10_9_hemi_OB_CCGTCC" : ["10-CCGTCC_S10_R1_001.fastq.gz", "10-CCGTCC_S10_R2_001.fastq.gz"],
+    "1_12_wt_HIPPO_ACAGTG" : ["3-ACAGTG_S3_R1_001.fastq.gz", "3-ACAGTG_S3_R2_001.fastq.gz"],
+    "1_12_wt_PFC_CGTACG" : ["15-CGTACG_S15_R1_001.fastq.gz", "15-CGTACG_S15_R2_001.fastq.gz"],
+    "1_21_hemi_HIPPO_GCCAAT" : ["4-GCCAAT_S4_R1_001.fastq.gz", "4-GCCAAT_S4_R2_001.fastq.gz"],
+    "1_21_hemi_PFC_GAGTGG" : ["16-GAGTGG_S16_R1_001.fastq.gz", "16-GAGTGG_S16_R2_001.fastq.gz"]
+  },
+  "Groups" :
+  {
+    "OB" :
       {
-        "WT" : ["10_35_wt_PFC_GTGGCC", "10_42_wt_PFC_GTTTCG", "1_12_wt_PFC_CGTACG"],
-        "HEMI" : ["10_27_hemi_PFC_ACTGAT", "10_28_hemi_PFC_ATTCCT", "1_21_hemi_PFC_GAGTGG"]
+        "WT" : ["10_13_wt_OB_AGTCAA", "10_25_wt_OB_AGTTCC", "10_50_wt_OB_ATGTCA"],
+        "HEMI" : ["10_14_hemi_OB_GTCCGC", "10_26_hemi_OB_GTGAAA", "10_9_hemi_OB_CCGTCC"]
       },
-      "HIPPO":
-      {
-        "WT" : ["10_35_wt_HIPPO_CGATGT", "10_42_wt_HIPPO_TGACCA", "1_12_wt_HIPPO_ACAGTG"],
-        "HEMI" : ["10_16_hemi_HIPPO_CTTGTA", "10_28_hemi_HIPPO_CAGATC", "1_21_hemi_HIPPO_GCCAAT"]
-      },
-    },
-    "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
-    "trim_dir" : "trimmed_data",
-    "processed_dir" : "processed_data",
-    "aligned_dir" : "aligned_data",
-    "reports_dir" : "reports",
-    "temp_dir" : "temp_data",
-    "alignment_quality" : "20",
-    "raw_dir" : "fastq",
-    "id_dir" : "sequencing_targets",
-    "id_file" : "ID_list.txt",
-    "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
-    "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
-    "DEXSeq_dir" : "/home/skurscheid/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
-    "Picard" :
+    "PFC" :
     {
-      "sampling" : "0.2",
+      "WT" : ["10_35_wt_PFC_GTGGCC", "10_42_wt_PFC_GTTTCG", "1_12_wt_PFC_CGTACG"],
+      "HEMI" : ["10_27_hemi_PFC_ACTGAT", "10_28_hemi_PFC_ATTCCT", "1_21_hemi_PFC_GAGTGG"]
     },
+    "HIPPO":
+    {
+      "WT" : ["10_35_wt_HIPPO_CGATGT", "10_42_wt_HIPPO_TGACCA", "1_12_wt_HIPPO_ACAGTG"],
+      "HEMI" : ["10_16_hemi_HIPPO_CTTGTA", "10_28_hemi_HIPPO_CAGATC", "1_21_hemi_HIPPO_GCCAAT"]
+    }
+  },
+  "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
+  "trim_dir" : "trimmed_data",
+  "processed_dir" : "processed_data",
+  "aligned_dir" : "aligned_data",
+  "reports_dir" : "reports",
+  "temp_dir" : "temp_data",
+  "alignment_quality" : "20",
+  "raw_dir" : "fastq",
+  "id_dir" : "sequencing_targets",
+  "id_file" : "ID_list.txt",
+  "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
+  "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
+  "DEXSeq_dir" : "/home/skurscheid/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
+  "Picard" :
+  {
+    "sampling" : ["0.2"]
+  }
 }

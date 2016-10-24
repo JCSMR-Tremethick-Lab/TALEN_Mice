@@ -3,6 +3,9 @@ require(readr)
 require(ade4)
 require(deepToolsUtils)
 
+#-------------------------------------------------
+# needs to be run in conjunction with "brain_expression_analysis.R"
+
 combined <- list(combined_hemi = paste(pathPrefix, 
                                        "/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_hemi", 
                                        sep = ""),
@@ -10,6 +13,7 @@ combined <- list(combined_hemi = paste(pathPrefix,
                                      "/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto_wt",
                                      sep = ""))
 
+edgeR_analysis_version <- 4
 edgeR_analysis_output_combined <- paste("edgeR_analysis_V", edgeR_analysis_version, "_output_combined.rda", sep = "")
 
 
@@ -32,11 +36,11 @@ if(!file.exists(edgeR_analysis_output_combined)){
                       tissue = tissue, 
                       strain = strain)
     s2c <- dplyr::mutate(s2c, path = kal_dirs)
+    # read in kallisto data with tximport
     s2c$files <- paste(s2c$path, "abundance.tsv", sep = "/")
     s2c <- s2c[order(s2c$tissue, s2c$strain),]
     files <- s2c$files
     names(files) <- s2c$sample
-    # read in kallisto data with tximport
     txi <- tximport::tximport(files,
                               type = "kallisto",
                               tx2gene = t2g,
@@ -113,108 +117,54 @@ htSeqCountMatrixList <- list(wt_tissue = colnames(htSeqCountMatrix)[grep("wt", c
                              hemi_tissue = colnames(htSeqCountMatrix)[grep("hemi", colnames(htSeqCountMatrix))],
                              wt_pfc_vs_ob = colnames(htSeqCountMatrix)[grep("PFC|OB", colnames(htSeqCountMatrix))][grep("wt", colnames(htSeqCountMatrix)[grep("PFC|OB", colnames(htSeqCountMatrix))])],
                              hemi_pfc_vs_ob = colnames(htSeqCountMatrix)[grep("PFC|OB", colnames(htSeqCountMatrix))][grep("hemi", colnames(htSeqCountMatrix)[grep("PFC|OB", colnames(htSeqCountMatrix))])],
+                             wt_hippo_vs_pfc = colnames(htSeqCountMatrix)[grep("PFC|HIPPO", colnames(htSeqCountMatrix))][grep("wt", colnames(htSeqCountMatrix)[grep("PFC|HIPPO", colnames(htSeqCountMatrix))])],
+                             hemi_hippo_vs_pfc = colnames(htSeqCountMatrix)[grep("PFC|HIPPO", colnames(htSeqCountMatrix))][grep("hemi", colnames(htSeqCountMatrix)[grep("PFC|HIPPO", colnames(htSeqCountMatrix))])],
                              tissue_hippo = colnames(htSeqCountMatrix)[grep("HIPPO", colnames(htSeqCountMatrix))],
                              tissue_pfc = colnames(htSeqCountMatrix)[grep("PFC", colnames(htSeqCountMatrix))],
                              tissue_ob = colnames(htSeqCountMatrix)[grep("OB", colnames(htSeqCountMatrix))])
 
 if(!file.exists(plainEdgeROutput)){
-  RUVSeqEdgeRAnalysis <- lapply(names(htSeqCountMatrixList), function(x){
+  edgeRAnalysis <- lapply(names(htSeqCountMatrixList), function(x){
     print(paste("Processing", x, "samples", sep = " "))
-#    options(mc.cores = mc.cores)
     countMatrix <- htSeqCountMatrix[, htSeqCountMatrixList[[x]]]
     sample_id <- unlist(lapply(strsplit(colnames(countMatrix), "_"), function(x) paste(x[1:4], collapse = "_")))
-
-    # preparing factors for design matrix
-    individual <- as.factor(unlist(lapply(strsplit(sample_id, "_"), function(x) paste(x[1:2], collapse = "_"))))
-    tissue <- as.factor(unlist(lapply(strsplit(sample_id , "_"), function(x) paste(x[4], collapse = "_"))))
-    strain <- as.factor(unlist(lapply(strsplit(sample_id, "_"), function(x) paste(x[1], collapse = "_"))))
-    s2c <- data.frame(sample = sample_id, 
-                      individual = individual, 
-                      tissue = tissue, 
-                      strain = strain)
-    #---------------------------------------------
-    # differential expression analysis using plain vanilla edgeR
-    design <- model.matrix(~ tissue, data = s2c)
-    y <- edgeR::DGEList(counts = countMatrix, group = s2c$tissue)
-    keep <- rowSums(cpm(y)>1) >= 2
-    y <- y[keep, , keep.lib.sizes=FALSE]
-    y <- edgeR::calcNormFactors(y, method = "TMM")
-    y <- edgeR::estimateDisp(y, design)
-    fit <- edgeR::glmQLFit(y, design)
-    
-    if (length(grep("combined", x))>0){
-      # OB vs HIPPO
-      qlfOB <- edgeR::glmQLFTest(fit, coef = 2)
-      lrtOB <- edgeR::glmLRT(fit, coef = 2)
-      ttOB <- edgeR::topTags(lrtOB, n = 20000)
-      annotatedTTOB <- merge(ttOB[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id", all.x = T, sort = F)
-      annotatedTTOB <- annotatedTTOB[order(annotatedTTOB$FDR), ]
-      
-      #PFC vs HIPPO
-      qlfPFC <- edgeR::glmQLFTest(fit, coef = 3)
-      lrtPFC <- edgeR::glmLRT(fit, coef = 3)
-      ttPFC <- edgeR::topTags(lrtPFC, n = 20000)
-      annotatedTTPFC <- merge(ttPFC[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id", all.x = T, sort = F)
-      annotatedTTPFC <- annotatedTTPFC[order(annotatedTTPFC$FDR), ]
-      
-      # OB & PFC vs HIPPO
-      qlfAll <- edgeR::glmQLFTest(fit, coef = 2:ncol(design))
-      lrtAll <- edgeR::glmLRT(fit, coef = 2:ncol(design))
-      ttAll <- edgeR::topTags(lrtAll, n = 20000)
-      annotatedTTAll <- merge(ttAll[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id", all.x = T, sort = F)
-      annotatedTTAll <- annotatedTTAll[order(annotatedTTAll$FDR), ]
-      # return all objects
-      return(list(DGEList = y,
-                  glmQLFt = fit,
-                  glmQLRT = lrtAll,
-                  topTagsAll = ttAll,
-                  AnnotatedTopTagsAll = annotatedTTAll,
-                  topTagsOB = ttOB,
-                  AnnotatedTopTagsOB = annotatedTTOB,
-                  topTagsPFC = ttPFC,
-                  AnnotatedTopTagsPFC = annotatedTTPFC))
+    if (unlist(strsplit(x, "_"))[1] == "tissue"){
+      p <-3
     } else {
-      qlfAll <- edgeR::glmQLFTest(fit, coef = 2:ncol(design))
-      lrtAll <- edgeR::glmLRT(fit, coef = 2:ncol(design))
-      ttAll <- edgeR::topTags(lrtAll, n = 20000)
-      annotatedTTAll <- merge(ttAll[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id", all.x = T, sort = F)
-      annotatedTTAll <- annotatedTTAll[order(annotatedTTAll$FDR), ]
-      # return all objects
-      return(list(DGEList = y,
-                  glmQLFt = fit,
-                  glmQLRT = lrtAll,
-                  topTagsAll = ttAll,
-                  AnnotatedTopTagsAll = annotatedTTAll))
-      
+      p <- 4
     }
+    condition <- as.factor(unlist(lapply(strsplit(colnames(countMatrix), "_"), function(z) z[p])))
+    design <- model.matrix(~condition)
+    y <- DGEList(counts = countMatrix, group = condition)
+    y <- calcNormFactors(y, method="TMM")
+    y <- estimateGLMCommonDisp(y, design)
+    y <- estimateGLMTagwiseDisp(y, design)
+    fit <- glmQLFit(y, design)
+    qlf <- glmQLFTest(fit, coef = colnames(fit$design)[grep("condition", colnames(fit$design))])
+    lrt <- glmQLFTest(fit, coef = colnames(fit$design)[grep("condition", colnames(fit$design))])
+    tt <- topTags(lrt, n = 20000)
+    annotatedTT <- merge(tt[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id")
+    annotatedTT <- annotatedTT[order(annotatedTT$FDR),]
+    # return all objects
+    return(list(DGEList = y,
+                qlmFit = fit,
+                glmQLFt = qlf,
+                glmQLRT = lrt,
+                topTags = tt,
+                AnnotatedTopTagsAll = annotatedTT))
   })
-  names(plainEdgeRAnalysisERCC) <- names(htSeqCountMatrixList)
-  save(plainEdgeRAnalysisERCC, file = plainEdgeROutput)
+  names(edgeRAnalysis) <- names(htSeqCountMatrixList)
+  save(edgeRAnalysis, file = plainEdgeROutput)
 } else {
   load(plainEdgeROutput)
 }
 
+sapply(edgeRAnalysis, function(x){
+  table(x[["AnnotatedTopTagsAll"]]$FDR < 0.1)
+})
 
-if (unlist(strsplit(x, "_"))[1] == "tissue"){
-  p <-3
-} else {
-  p <- 4
-}
-condition <- as.factor(unlist(lapply(strsplit(colnames(filtered), "_"), function(z) z[p])))
-design <- model.matrix(~condition, data = pData(set1))
-y <- DGEList(counts = counts(set1), group = condition)
-y <- calcNormFactors(y, method="upperquartile")
-y <- estimateGLMCommonDisp(y, design)
-y <- estimateGLMTagwiseDisp(y, design)
-fit <- glmQLFit(y, design)
-qlf <- glmQLFTest(fit, coef = colnames(fit$design)[grep("condition", colnames(fit$design))])
-lrt <- glmQLFTest(fit, coef= colnames(fit$design)[grep("condition", colnames(fit$design))])
-tt <- topTags(lrt, n = 20000)
-annotatedTT <- merge(tt[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id")
-annotatedTT <- annotatedTT[order(annotatedTT$FDR),]
 
 # edgeR on RUV-Seq normalised data ----------------------------------------
-
 RUVSeqEdgeROutput = "RUVSeq_edgeR_analysis_output.rda"
 if(!file.exists(RUVSeqEdgeROutput)){
   RUVSeqEdgeRAnalysisERCC <- lapply(names(htSeqCountMatrixList), function(x){
@@ -322,38 +272,7 @@ sapply(RUVSeqEdgeRAnalysisERCC, function(x){
   table(x[["AnnotatedTopTagsRUVs"]]$FDR < 0.1)
 })
 
-
-# extract scaled gene level data and combine for WT and hemi --------------
-combinedMatrix <- cbind(edgeRProcessedDataCombined[["combined_wt"]][["txiScaledGeneCounts"]][["abundance"]],
-                        edgeRProcessedDataCombined[["combined_hemi"]][["txiScaledGeneCounts"]][["abundance"]])
-colnames(combinedMatrix) <- unlist(lapply(strsplit(colnames(filteredMatrix), "_"), function(x) paste(x[1:4], collapse = "_")))
-
-filter <- apply(combinedMatrix, 1, function(y) length(y[y>5])>=1)
-filteredMatrix <- combinedMatrix[filter, ]
-genes <- rownames(filteredMatrix)[grep("ENS", rownames(filtered))]
-
-combinedSD <- apply(filteredMatrix, 1, sd)
-heatmap.3(log2(filteredMatrix[combinedSD > 15, ] + 1), 
-          trace = "none",
-          labRow = F,
-          cexCol = 0.65)
-
-topGenesWT <- edgeRProcessedDataCombined[["combined_wt"]][["AnnotatedTopTagsAll"]][1:1000,]
-topGenesHemi <- edgeRProcessedDataCombined[["combined_hemi"]][["AnnotatedTopTagsAll"]][1:1000,]
-intersect(topGenesWT$Row.names, topGenesHemi$Row.names)
-
-# perform PCA and plot diagram --------------------------------------------
-combinedPCA <- ade4::dudi.pca(t(filteredMatrix), scannf = F, nf = 6)
-fact <- unlist(lapply(strsplit(colnames(filteredMatrix), "_"), function(x) paste(x[3:4], collapse = "_")))
-pdf("Combined_PCA_gene_level.pdf")
-s.class(combinedPCA$li, fac = as.factor(fact), addaxes = T)
-dev.off()
-
-screeplot(combinedPCA)
-s.arrow(combinedPCA$li)
-
 # SLEUTH analysis
-
 sleuth_combined_analysis_version <- 2
 sleuth_combined_analysis_output <- paste("sleuth_analysis_V", sleuth_combined_analysis_version, "_output_combined.rda", sep = "")
 
@@ -434,3 +353,47 @@ if(!file.exists(sleuth_combined_analysis_output)){
   load(sleuth_combined_analysis_output)
 }
 
+sleuth_combined_analysis_compressed_output <- paste("sleuth_analysis_V", sleuth_combined_analysis_version, "_compressed_output_combined.rda", sep = "")
+if (!file.exists(sleuth_combined_analysis_compressed_output)){
+  sleuthProcessedDataCombinedCompressed <- lapply(names(sleuthProcessedDataCombined), function(x){
+    sleuthProcessedDataCombined[[x]][grep("sleuth_object", names(sleuthProcessedDataCombined[[x]]), invert = T)]
+  })
+  names(sleuthProcessedDataCombinedCompressed) <- names(sleuthProcessedDataCombined)
+  save(sleuthProcessedDataCombinedCompressed, file = sleuth_combined_analysis_compressed_output)
+} else {
+  load(sleuth_combined_analysis_compressed_output)
+}
+
+# extract scaled gene level data and combine for WT and hemi --------------
+combinedMatrix <- cbind(edgeRProcessedDataCombined[["combined_wt"]][["txiScaledGeneCounts"]][["abundance"]],
+                        edgeRProcessedDataCombined[["combined_hemi"]][["txiScaledGeneCounts"]][["abundance"]])
+
+topGenesWT <- edgeRProcessedDataCombined[["combined_wt"]][["AnnotatedTopTagsAll"]][1:1000,]
+topGenesHemi <- edgeRProcessedDataCombined[["combined_hemi"]][["AnnotatedTopTagsAll"]][1:1000,]
+intersect(topGenesWT$Row.names, topGenesHemi$Row.names)
+
+sapply(edgeRProcessedDataCombined, function(x){
+  table(x[["AnnotatedTopTagsAll"]]$FDR < 0.1)
+})
+
+filter <- apply(combinedMatrix, 1, function(y) length(y[y>5])>=1)
+filteredMatrix <- combinedMatrix[filter, ]
+genes <- rownames(filteredMatrix)[grep("ENS", rownames(filteredMatrix))]
+colnames(combinedMatrix) <- unlist(lapply(strsplit(colnames(filteredMatrix), "_"), function(x) paste(x[1:4], collapse = "_")))
+
+sd1 <- apply(filteredMatrix, 1, sd)
+sd1 <- sort(sd1, decreasing = T)
+heatmap.3(log2(filteredMatrix[sd1 > 15, ] + 1), 
+          trace = "none",
+          labRow = F,
+          cexCol = 0.65)
+
+
+# perform PCA and plot diagram --------------------------------------------
+combinedPCA <- ade4::dudi.pca(t(filteredMatrix), scannf = F, nf = 6)
+fact <- unlist(lapply(strsplit(colnames(filteredMatrix), "_"), function(x) paste(x[3:4], collapse = "_")))
+pdf("Combined_PCA_gene_level.pdf")
+s.class(combinedPCA$li, fac = as.factor(fact), addaxes = T)
+dev.off()
+screeplot(combinedPCA)
+s.arrow(combinedPCA$li)

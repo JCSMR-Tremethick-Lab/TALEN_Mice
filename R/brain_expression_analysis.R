@@ -22,29 +22,27 @@ if (amILocal("JCSMR027564ML")){
   if (length(grep("gduserv", mount)) == 0) {system("sshfs skurscheid@gduserv.anu.edu.au: ~/mount/gduserv/")}
   BPPARAM <- BiocParallel::MulticoreParam(workers = 7)
   mc.cores <- 8L
-  setwd("~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis")
-  load("~/mount/gduserv/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
-  dataPath <- "~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/DEXSeq/count/"
-  kallisto_base_dir <- "~/mount/gduserv/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto"
+  pathPrefix <- "~/mount/gduserv/"
   # biomaRt connection
   mouse <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
   attribs <- biomaRt::listAttributes(mouse)
-  pathPrefix = "~/mount/gduserv"
-  if (file.exists("~/mount/gduserv/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf")) {
-    flattenedfile <- "~/mount/gduserv/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf"
-  } else {
-    stop("GTF file missing!")
-  }
 } else {
   BPPARAM <- BiocParallel::MulticoreParam(workers = 16)
   mc.cores <- 16L
-  pathPrefix = "~"
-  setwd("~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis")
-  load("~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/t2g.rda")
-  dataPath <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/DEXSeq/count/"
-  flattenedfile <- "~/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf"
-  kallisto_base_dir <- "~/Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto"
+  pathPrefix <- "~"
+  options(width = 137)
 }
+
+lDir <- function(x, y){
+  paste(x, y, sep = "/")
+}
+
+setwd(lDir(pathPrefix, "Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/R_analysis"))
+dataPathDEXSeq <- lDir(pathPrefix, "Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/DEXSeq/count/")
+dataPathHTSeq <- lDir(pathPrefix, "Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/HTSeq/count")
+flattenedfile <- lDir(pathPrefix, "Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf")
+kallisto_base_dir <- lDir(pathPrefix, "Data/Tremethick/TALENs/NB501086_0063_TSoboleva_JCSMR_standed_RNAseq/processed_data/GRCm38_ensembl84_ERCC/kallisto")
+
 
 # use Ensembl 84 for annotation
 if (!file.exists("t2g.rda")){
@@ -135,6 +133,7 @@ base_dirs <- c(OB = paste(pathPrefix, "/Data/Tremethick/TALENs/NB501086_0063_TSo
 sleuth_analysis_version <- 4
 sleuth_analysis_output <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output.rda", sep = "")
 sleuth_analysis_output_combined <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output_combined.rda", sep = "")
+sleuth_analysis_outputCompressed <- paste("sleuth_analysis_V", sleuth_analysis_version, "_Compressed_output.rda", sep = "")
 
 previous_sleuth_analysis_version <- sleuth_analysis_version - 1
 previous_sleuth_analysis_output <- paste("sleuth_analysis_V", previous_sleuth_analysis_version, "_output.rda", sep = "")
@@ -180,16 +179,25 @@ if (!file.exists(sleuth_analysis_output)){
   load(sleuth_analysis_output)
 }
 
+if (!file.exists(sleuth_analysis_outputCompressed)){
+  sleuthProcessedDataCompressed <- lapply(names(sleuthProcessedData), function(x){
+    sleuthProcessedData[[x]][grep("sleuth_object", names(sleuthProcessedData[[x]]), invert = T)]
+  })
+  names(sleuthProcessedDataCompressed) <- names(sleuthProcessedData)
+  save(sleuthProcessedDataCompressed, file = sleuth_analysis_outputCompressed)
+} else {
+  load(sleuth_analysis_outputCompressed)
+}
 
 # Use tximport package to create gene level counts from kallisto --------
 # then proceed to run RUVseq followed by edgeR
 
-edgeR_analysis_version <- 4
+edgeR_analysis_version <- 5
 edgeR_analysis_output <- paste("edgeR_analysis_V", edgeR_analysis_version, "_output.rda", sep = "")
 
-previous_edgeR_analysis_version <- edgeR_analysis_version - 1
-previous_edgeR_analysis_output <- paste("edgeR_analysis_V", previous_edgeR_analysis_version, "_output.rda", sep = "")
-if (file.exists(previous_edgeR_analysis_output)) {file.remove(previous_edgeR_analysis_output)}
+# previous_edgeR_analysis_version <- edgeR_analysis_version - 1
+# previous_edgeR_analysis_output <- paste("edgeR_analysis_V", previous_edgeR_analysis_version, "_output.rda", sep = "")
+# if (file.exists(previous_edgeR_analysis_output)) {file.remove(previous_edgeR_analysis_output)}
 
 # actual edgeR analysis
 if (!file.exists(edgeR_analysis_output)){
@@ -267,7 +275,7 @@ if (!file.exists(edgeR_analysis_output)){
     lrt1 <- edgeR::glmLRT(fit1, coef=1)
     tt1 <- edgeR::topTags(lrt1, n = 5000)
     annotatedTT1 <- merge(tt1[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id", all.x = T, sort = F)
-    annotatedTT1 <- annotatedTT1[sort(annotatedTT1$FDR), ]
+    annotatedTT1 <- annotatedTT1[order(annotatedTT1$FDR), ]
     # return all objects
     return(list(txiGeneCounts = txi,
                 condition = condition,

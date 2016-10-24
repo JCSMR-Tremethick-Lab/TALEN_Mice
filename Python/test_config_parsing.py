@@ -1,11 +1,36 @@
 import json
 from pprint import pprint
 
+wildcards = dict()
+wildcards = {"outdir" : "processed_data",
+             "reference_version" : "hg38",
+             "unit" : "10_9_hemi_OB_CCGTCC",
+             "tissue" : "OB",
+             "condition" : "WT_vs_HEMI"}
+
+
 def getFASTQ(wildcards, assayID):
     fn = []
     for i in wildcards[assayID]:
         fn.append("./" + i)
     return(fn)
+
+
+def writeBAMFilesList(wildcards):
+    f = open('workfile', 'w+')
+    f.write(wildcards["unit"] +
+              "\t" +
+              "./" +
+              wildcards["outdir"] +
+              "/" +
+              wildcards["reference_version"] +
+              "/STAR/full/" +
+              wildcards["unit"] +
+              ".aligned.bam" +
+              "\tNA\n")
+    f.close()
+
+
 
 def getGroups(wildcards):
     cond1 = []
@@ -18,14 +43,8 @@ def getGroups(wildcards):
         cond2.append("./" + wildcards.outdir + "/" + wildcards.reference_version + "/STAR/full/" + i + ".aligned.bam")
     return(cond1, cond2)
 
-wildcards = dict()
-wildcards = {"processed_dir" : "processed_data",
-             "genome_version" : "hg38",
-             "units" : "10_9_hemi_OB_CCGTCC",
-             "tissue" : "OB",
-             "condition" : "WT_vs_HEMI"}
 
-with open("config.json") as data_file:
+with open("/Users/u1001407/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/configs/config_RNA-Seq.json") as data_file:
     config = json.load(data_file)
 
 def dummFunc():
