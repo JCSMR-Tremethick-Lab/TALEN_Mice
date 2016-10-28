@@ -11,6 +11,13 @@ rule read_distribution:
                reference_version = config["references"]["version"],
                unit = config["units"])
 
+rule geneBody_coverage:
+    input:
+        expand("{outdir}/{reference_version}/RSeQC/geneBody_coverage/report",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["version"],
+               unit = config["units"])
+
 rule run_read_distributions:
     message:
         "Running RSeQC read_distribution.py"
@@ -25,4 +32,19 @@ rule run_read_distributions:
     shell:
         """
             {params.binary} -i {input.bam} -r {input.gene_models} > {output}
+        """
+
+rule run_geneBody_coverage:
+    message:
+        "Running RSeQC geneBody_coverage.py"
+    params:
+        binary = config["RSeQC"]["binaries"]["geneBody_coverage.py"]
+    input:
+        directory = config["processed_dir"] + config["references"]["version"] + "STAR/full",
+        gene_models = config["RSeQC"]["bedFiles"]["genes"]
+    output:
+        "{outdir}/{reference_version}/RSeQC/geneBody_coverage/report"
+    shell:
+        """
+            {params.binary} -i {input.directory} -r {input.gene_models} -f pdf -o {output}
         """
