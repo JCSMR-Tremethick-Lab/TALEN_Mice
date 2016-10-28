@@ -1,12 +1,12 @@
 {
   "references" :
   {
-      "genome" : "/home/skurscheid/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
-      "GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
+      "genome" : "/home/sebastian/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
+      "GTF" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
       "version" : "GRCm38_ensembl84_ERCC",
-      "DEX_GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf",
-      "transcript_GC" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gc_content.txt",
-      "GTF_conformed" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.conformed.gtf"
+      "DEX_GTF" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf",
+      "transcript_GC" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gc_content.txt",
+      "GTF_conformed" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.conformed.gtf"
   },
   "kallisto" :
   {
@@ -14,11 +14,11 @@
   },
   "kallisto_index" :
   {
-    "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
+    "GRCm38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
   },
   "STAR" :
   {
-    "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
+    "GRCm38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
     "runThreadN" : "8"
   },
   "units" :
@@ -70,11 +70,23 @@
   "raw_dir" : "fastq",
   "id_dir" : "sequencing_targets",
   "id_file" : "ID_list.txt",
-  "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
-  "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
-  "DEXSeq_dir" : "/home/skurscheid/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
+  "HTSeq_dir" : "/home/sebastian/miniconda2/envs/HTSeq/bin",
+  "cutadapt_dir" : "/home/sebastian/miniconda2/envs/snakemake/bin",
+  "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
   "Picard" :
   {
     "sampling" : ["0.2"]
+  },
+  "RSeQC" :
+  {
+    "binaries" :
+    {
+      "read_distribution.py" : "/home/sebastian/miniconda3/envs/py27/bin/read_distribution.py",
+      "geneBody_coverage.py" : "/home/sebastian/miniconda3/envs/py27/bin/geneBody_coverage.py"
+    },
+    "bedFiles" :
+    {
+      "genes" : "/home/sebastian/Data/RSeQC/Mus_musculus.GRCm38.84.bed12"
+    }
   }
 }
