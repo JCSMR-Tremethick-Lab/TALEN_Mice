@@ -86,7 +86,7 @@
     },
     "bedFiles" :
     {
-      "genes" : "/home/sebastian/Data/References/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.bed12"
+      "genes" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.bed12"
     }
   }
 }

@@ -40,7 +40,7 @@ rule run_geneBody_coverage:
     params:
         binary = config["RSeQC"]["binaries"]["geneBody_coverage.py"]
     input:
-        directory = config["processed_dir"] + config["references"]["version"] + "STAR/full",
+        directory = config["processed_dir"] + "/" + config["references"]["version"] + "/STAR/full",
         gene_models = config["RSeQC"]["bedFiles"]["genes"]
     output:
         "{outdir}/{reference_version}/RSeQC/geneBody_coverage/report"
