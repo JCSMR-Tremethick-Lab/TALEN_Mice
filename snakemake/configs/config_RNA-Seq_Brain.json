@@ -82,7 +82,8 @@
     "binaries" :
     {
       "read_distribution.py" : "/home/sebastian/miniconda3/envs/py27/bin/read_distribution.py",
-      "geneBody_coverage.py" : "/home/sebastian/miniconda3/envs/py27/bin/geneBody_coverage.py"
+      "geneBody_coverage.py" : "/home/sebastian/miniconda3/envs/py27/bin/geneBody_coverage.py",
+      "tin.py" : "~/miniconda3/envs/py27/bin/tin.py"
     },
     "bedFiles" :
     {

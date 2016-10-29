@@ -17,6 +17,12 @@ rule geneBody_coverage:
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],
                unit = config["units"])
+rule tin:
+    input:
+        expand("{outdir}/{reference_version}/RSeQC/tin/{unit}.txt",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["version"],
+               unit = config["units"])
 
 rule run_read_distributions:
     message:
@@ -47,4 +53,19 @@ rule run_geneBody_coverage:
     shell:
         """
             {params.binary} -i {input.directory} -r {input.gene_models} -f pdf -o {output}
+        """
+
+rule run_tin:
+    message:
+        "Running RSeQC tin.py"
+    params:
+        binary = config["RSeQC"]["binaries"]["tin.py"]
+    input:
+        bam = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
+        gene_models = config["RSeQC"]["bedFiles"]["genes"]
+    output:
+        "{outdir}/{reference_version}/RSeQC/tin/{unit}.txt"
+    shell:
+        """
+            {params.binary} -i {input.bam} -r {input.gene_models} > {output}
         """
