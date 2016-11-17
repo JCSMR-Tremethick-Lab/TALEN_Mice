@@ -61,46 +61,46 @@ ERCCPerc <- ERCCCounts / totalCounts * 100
 
 # preparing annotation data from Ensembl ----------------------------------
 if (!file.exists("ensGenes.rda")){
-mouse <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
-attribs <- biomaRt::listAttributes(mouse)
-ensGenes <- biomaRt::getBM(attributes = c("ensembl_gene_id",
-                                          "external_gene_name",
-                                          "chromosome_name",
-                                          "start_position",
-                                          "end_position",
-                                          "strand",
-                                          "band",
-                                          "description",
-                                          "percentage_gc_content",
-                                          "gene_biotype"),
-                           mart = mouse)
-save(ensGenes, file = "ensGenes.rda")
-
-ensTranscripts <- biomaRt::getBM(attributes = c("ensembl_gene_id",
-                                                "ensembl_transcript_id",
-                                                "transcript_length"),
-                                 mart = mouse,
-                                 filter = "ensembl_gene_id",
-                                 values = ensGenes$ensembl_gene_id)
-save(ensTranscripts, file = "ensTranscripts.rda")
-
-mylength <- sapply(ensGenes$ensembl_gene_id, function(x){
-  y <- ensTranscripts[which(ensTranscripts$ensembl_gene_id == x), ]
-  y <- y[which.max(y$transcript_length), ]$transcript_length
-})
-save(mylength, file = "mylength.rda")
-
-mygc <- ensGenes$percentage_gc_content
-names(mygc) <- ensGenes$ensembl_gene_id
-save(mygc, file = "mygc.rda")
-
-mybiotypes <- ensGenes$gene_biotype
-names(mybiotypes) <- ensGenes$ensembl_gene_id
-save(mybiotypes, file = "mybiotypes.rda")
-
-mychroms <- data.frame(Chr = ensGenes$chromosome_name, GeneStart = ensGenes$start_position, GeneEnd = ensGenes$end_position)
-rownames(mychroms) <- ensGenes$ensembl_gene_id
-save(mychroms, file = "mychroms.rda")
+  mouse <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
+  attribs <- biomaRt::listAttributes(mouse)
+  ensGenes <- biomaRt::getBM(attributes = c("ensembl_gene_id",
+                                            "external_gene_name",
+                                            "chromosome_name",
+                                            "start_position",
+                                            "end_position",
+                                            "strand",
+                                            "band",
+                                            "description",
+                                            "percentage_gc_content",
+                                            "gene_biotype"),
+                             mart = mouse)
+  save(ensGenes, file = "ensGenes.rda")
+  
+  ensTranscripts <- biomaRt::getBM(attributes = c("ensembl_gene_id",
+                                                  "ensembl_transcript_id",
+                                                  "transcript_length"),
+                                   mart = mouse,
+                                   filter = "ensembl_gene_id",
+                                   values = ensGenes$ensembl_gene_id)
+  save(ensTranscripts, file = "ensTranscripts.rda")
+  
+  mylength <- sapply(ensGenes$ensembl_gene_id, function(x){
+    y <- ensTranscripts[which(ensTranscripts$ensembl_gene_id == x), ]
+    y <- y[which.max(y$transcript_length), ]$transcript_length
+  })
+  save(mylength, file = "mylength.rda")
+  
+  mygc <- ensGenes$percentage_gc_content
+  names(mygc) <- ensGenes$ensembl_gene_id
+  save(mygc, file = "mygc.rda")
+  
+  mybiotypes <- ensGenes$gene_biotype
+  names(mybiotypes) <- ensGenes$ensembl_gene_id
+  save(mybiotypes, file = "mybiotypes.rda")
+  
+  mychroms <- data.frame(Chr = ensGenes$chromosome_name, GeneStart = ensGenes$start_position, GeneEnd = ensGenes$end_position)
+  rownames(mychroms) <- ensGenes$ensembl_gene_id
+  save(mychroms, file = "mychroms.rda")
 } else {
   load("ensGenes.rda")
   load("ensTranscripts.rda")
@@ -264,6 +264,11 @@ if (!file.exists(analysis_output_file)){
 # write top table to CSV
 sapply(names(processedData), function(x){
   write.csv(processedData[[x]][["AnnotatedTopTags"]][order(processedData[[x]][["AnnotatedTopTags"]]$FDR),], file = paste("TALEN_mouse_", x, "_Differential_Gene_Expression.csv", sep = ""))
+})
+
+# table using the analysis results without RUVg
+sapply(names(processedData), function(x){
+  write.csv(processedData[[x]][["AnnotatedTopTags_noRUV"]][order(processedData[[x]][["AnnotatedTopTags"]]$FDR),], file = paste("TALEN_mouse_", x, "_Differential_Gene_Expression_no_ERCC.csv", sep = ""))
 })
 
 sapply(names(processedData), function(x){
