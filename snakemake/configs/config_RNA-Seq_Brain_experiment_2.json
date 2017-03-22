@@ -1,0 +1,79 @@
+{
+  "references" :
+  {
+      "genome" : "/home/sebastian/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
+      "GTF" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
+      "version" : "GRCm38_ensembl84",
+      "DEX_GTF" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf",
+      "transcript_GC" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gc_content.txt",
+      "GTF_conformed" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.conformed.gtf"
+  },
+  "kallisto" :
+  {
+      "bootstraps" : "10"
+  },
+  "kallisto_index" :
+  {
+    "GRCm38_ensembl84" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ki"
+  },
+  "STAR" :
+  {
+    "GRCm38_ensembl84" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index/",
+    "runThreadN" : "8"
+  },
+  "units" :
+  {
+    "mmus_pfc_10_42_wt_naive" : ["Tanya_1_S1_R1_001.fastq.gz", "Tanya_1_S1_R2_001.fastq.gz"],
+    "mmus_pfc_10_118_wt_naive" : ["Tanya_2_S2_R1_001.fastq.gz", "Tanya_2_S2_R2_001.fastq.gz"],
+    "mmus_pfc_10_150_wt_naive" : ["Tanya_3_S3_R1_001.fastq.gz", "Tanya_3_S3_R2_001.fastq.gz"],
+    "mmus_pfc_10_37_mut_naive" : ["Tanya_4_S4_R1_001.fastq.gz", "Tanya_4_S4_R2_001.fastq.gz"],
+    "mmus_pfc_10_117_mut_naive" : ["Tanya_5_S5_R1_001.fastq.gz", "Tanya_5_S5_R2_001.fastq.gz"],
+    "mmus_pfc_10_149_mut_naive" : ["Tanya_6_S6_R1_001.fastq.gz", "Tanya_6_S6_R2_001.fastq.gz"],
+    "mmus_pfc_10_46_wt_FC" : ["Tanya_7_S7_R1_001.fastq.gz", "Tanya_7_S7_R2_001.fastq.gz"],
+    "mmus_pfc_10_52_wt_FC" : ["Tanya_8_S8_R1_001.fastq.gz", "Tanya_8_S8_R2_001.fastq.gz"],
+    "mmus_pfc_10_122_wt_FC" : ["Tanya_9_S9_R1_001.fastq.gz", "Tanya_9_S9_R2_001.fastq.gz"],
+    "mmus_pfc_10_45_mut_FC" : ["Tanya_10_S10_R1_001.fastq.gz", "Tanya_10_S10_R2_001.fastq.gz"],
+    "mmus_pfc_10_51_mut_FC" : ["Tanya_11_S11_R1_001.fastq.gz", "Tanya_11_S11_R2_001.fastq.gz"],
+    "mmus_pfc_10_107_mut_FC" : ["Tanya_12_S12_R1_001.fastq.gz", "Tanya_12_S12_R2_001.fastq.gz"],
+  },
+  "Groups" :
+  {
+    "PFC" :
+    {
+      "WT_naive" : ["mmus_pfc_10_42_wt_naive", "mmus_pfc_10_118_wt_naive", "mmus_pfc_10_150_wt_naive"],
+      "MUT_naive" : ["mmus_pfc_10_37_mut_naive", "mmus_pfc_10_117_mut_naive", "mmus_pfc_10_149_mut_naive"],
+      "WT_FC" : ["mmus_pfc_10_46_wt_FC", "mmus_pfc_10_52_wt_FC", "mmus_pfc_10_122_wt_FC"],
+      "MUT_FC" : ["mmus_pfc_10_45_mut_FC", "mmus_pfc_10_51_mut_FC", "mmus_pfc_10_107_mut_FC"]
+    }
+  },
+  "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
+  "trim_dir" : "trimmed_data",
+  "processed_dir" : "processed_data",
+  "aligned_dir" : "aligned_data",
+  "reports_dir" : "reports",
+  "temp_dir" : "temp_data",
+  "alignment_quality" : "20",
+  "raw_dir" : "fastq",
+  "id_dir" : "sequencing_targets",
+  "id_file" : "ID_list.txt",
+  "HTSeq_dir" : "/home/sebastian/miniconda2/envs/HTSeq/bin",
+  "cutadapt_dir" : "/home/sebastian/miniconda2/envs/snakemake/bin",
+  "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
+  "Picard" :
+  {
+    "sampling" : ["0.2"]
+  },
+  "RSeQC" :
+  {
+    "binaries" :
+    {
+      "read_distribution.py" : "/home/sebastian/miniconda3/envs/py27/bin/read_distribution.py",
+      "geneBody_coverage.py" : "/home/sebastian/miniconda3/envs/py27/bin/geneBody_coverage.py",
+      "tin.py" : "/home/sebastian/miniconda3/envs/py27/bin/tin.py"
+    },
+    "bedFiles" :
+    {
+      "genes" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.bed12"
+    }
+  }
+}
