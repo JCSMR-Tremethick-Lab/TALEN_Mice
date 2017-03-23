@@ -58,7 +58,7 @@
   "id_file" : "ID_list.txt",
   "HTSeq_dir" : "/home/sebastian/miniconda3/envs/HTSeq/bin",
   "cutadapt_dir" : "/home/sebastian/miniconda3/envs/snakemake/bin",
-  "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
+  "DEXSeq_dir" : "/R/x86_64-redhat-linux-gnu-library/3.3/DEXSeq/python_scripts/",
   "Picard" :
   {
     "sampling" : ["0.2"]

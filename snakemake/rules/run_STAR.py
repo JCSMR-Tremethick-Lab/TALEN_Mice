@@ -22,8 +22,8 @@ def getGroups(wildcards):
 
 rule star_align_full:
     version:
-        0.4
-    params:
+        0.5
+    threads:
         runThreadN = config["STAR"]["runThreadN"]
     input:
         rules.cutadapt_pe.output,
@@ -33,7 +33,7 @@ rule star_align_full:
     shell:
         """
             STAR --runMode alignReads \
-                 --runThreadN {params.runThreadN} \
+                 --runThreadN {threads} \
                  --genomeDir {input.index} \
                  --readFilesIn {input[0]} {input[1]} \
                  --readFilesCommand zcat \
@@ -43,6 +43,7 @@ rule star_align_full:
                  --outSAMtype BAM SortedByCoordinate \
                  --outStd BAM_SortedByCoordinate \
                  --alignEndsType EndToEnd\
+                 --quantMode GeneCounts \
                  > {output}
         """
 
@@ -56,35 +57,11 @@ rule bam_index_STAR_output:
     wrapper:
         "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
-rule run_htseq_count:
-    version:
-        0.3
-    params:
-        htseq_dir = config["HTSeq_dir"],
-        gtf = config["references"]["GTF"]
-    input:
-        bam = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
-        index = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
-    output:
-        "{outdir}/{reference_version}/HTSeq/count/{unit}.txt"
-    shell:
-        """
-            {params.htseq_dir}/htseq-count --format=bam \
-                                           --order=pos \
-                                           --stranded=reverse \
-                                           --type=exon \
-                                           --idattr=gene_id \
-                                           --order=pos \
-                                           {input.bam} \
-                                           {params.gtf} \
-                                           > {output}
-        """
-
 rule run_dexseq_count:
     version:
         0.1
     params:
-        dexseq_dir = config["DEXSeq_dir"],
+        dexseq_dir = home + config["DEXSeq_dir"],
         dex_gtf = config["references"]["DEX_GTF"]
     input:
         bam = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
@@ -107,7 +84,8 @@ rule collect_insert_size_metrics:
     version:
         0.1
     params:
-        sampling = config["Picard"]["sampling"]
+        sampling = config["Picard"]["sampling"],
+        jar_file = home + "/bin/picard.jar"
     input:
         rules.star_align_full.output
     output:
@@ -117,7 +95,7 @@ rule collect_insert_size_metrics:
         """
             java -Djava.io.tmpdir=/home/skurscheid/tmp \
             -Xmx36G \
-            -jar /home/skurscheid/Bioinformatics/picard-tools-1.131/picard.jar CollectInsertSizeMetrics \
+            -jar {params.jar_file} CollectInsertSizeMetrics \
             I={input} \
             O={output.txt} \
             H={output.pdf} \
@@ -129,7 +107,7 @@ rule run_rMats:
         0.1
     params:
         gtf = config["references"]["GTF"],
-        bin = "/home/skurscheid/Bioinformatics/rMATS.3.2.2.beta/RNASeq-MATS.py"
+        bin = home + "/Bioinformatics/rMATS.3.2.5/RNASeq-MATS.py"
     input:
         getGroups
     output:
