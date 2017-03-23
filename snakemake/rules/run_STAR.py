@@ -24,7 +24,7 @@ rule star_align_full:
     version:
         0.5
     threads:
-        runThreadN = config["STAR"]["runThreadN"]
+        lambda wildcards: int(str(config["STAR"]["runThreadN"]).strip("['']"))
     input:
         rules.cutadapt_pe.output,
         index = lambda wildcards: config["STAR"][wildcards.reference_version]
@@ -85,7 +85,8 @@ rule collect_insert_size_metrics:
         0.1
     params:
         sampling = config["Picard"]["sampling"],
-        jar_file = home + "/bin/picard.jar"
+        jar_file = home + "/bin/picard.jar",
+        tmp_dir = home + "/tmp"
     input:
         rules.star_align_full.output
     output:
@@ -93,7 +94,7 @@ rule collect_insert_size_metrics:
         pdf = "{outdir}/{reference_version}/PICARD/insert_size_metrics/{unit}.insert_size_metrics.pdf"
     shell:
         """
-            java -Djava.io.tmpdir=/home/skurscheid/tmp \
+            java -Djava.io.tmpdir= {params.temp_dir} \
             -Xmx36G \
             -jar {params.jar_file} CollectInsertSizeMetrics \
             I={input} \
