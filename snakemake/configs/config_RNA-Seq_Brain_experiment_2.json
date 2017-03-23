@@ -56,8 +56,8 @@
   "raw_dir" : "fastq",
   "id_dir" : "sequencing_targets",
   "id_file" : "ID_list.txt",
-  "HTSeq_dir" : "/home/sebastian/miniconda2/envs/HTSeq/bin",
-  "cutadapt_dir" : "/home/sebastian/miniconda2/envs/snakemake/bin",
+  "HTSeq_dir" : "/home/sebastian/miniconda3/envs/HTSeq/bin",
+  "cutadapt_dir" : "/home/sebastian/miniconda3/envs/snakemake/bin",
   "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
   "Picard" :
   {
