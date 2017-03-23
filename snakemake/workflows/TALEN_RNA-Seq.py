@@ -10,7 +10,9 @@ rule:
 localrules:
     all
 
-include_prefix="/home/skurscheid/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
+home = os.environ['HOME']
+
+include_prefix = home + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
 
 # include:
 #     include_prefix + "perform_fastqc.py"
