@@ -9,7 +9,7 @@ def getAllFASTQ(wildcards):
     fn = []
     for i in config["units"]:
         for j in config["units"][i]:
-            fn.append("./fastq/" + i + "/" + j)
+            fn.append("fastq/" + i + "/" + j)
     return(fn)
 
 rule dummy:
@@ -17,7 +17,6 @@ rule dummy:
         expand("{rdir}", rdir = config["reports_dir"])
 
 rule fastqc:
-    message: "Performing FastQC..."
     params:
         rdir = config["reports_dir"],
         data_dir = config["raw_dir"]
@@ -26,4 +25,4 @@ rule fastqc:
     output:
         "reports"
     shell:
-        "/usr/local/bin/fastqc {input} --noextract --outdir  {output}"
+        "fastqc {input} --noextract --outdir  {output}"
