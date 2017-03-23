@@ -22,8 +22,8 @@ include:
     include_prefix + "run_kallisto.py"
 include:
     include_prefix + "run_STAR.py"
-include:
-    include_prefix + "run_RNASeqQC.py"
+# include:
+#     include_prefix + "run_RNASeqQC.py"
 
 
 rule all:
@@ -53,7 +53,7 @@ rule all:
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],
                unit = config["units"]),
-        expand("{outdir}/{reference_version}/RNASeqQC/{unit}/",
-               outdir = config["processed_dir"],
-               reference_version = config["references"]["version"],
-               unit = config["units"])
+        # expand("{outdir}/{reference_version}/RNASeqQC/{unit}/",
+        #        outdir = config["processed_dir"],
+        #        reference_version = config["references"]["version"],
+        #        unit = config["units"])
