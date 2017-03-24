@@ -96,7 +96,7 @@ rule collect_insert_size_metrics:
         pdf = "{outdir}/{reference_version}/PICARD/insert_size_metrics/{unit}.insert_size_metrics.pdf"
     shell:
         """
-            java -Djava.io.tmpdir= {params.tmp_dir} \
+            java -Djava.io.tmpdir={params.tmp_dir} \
             -Xmx36G \
             -jar {params.jar_file} CollectInsertSizeMetrics \
             I={input} \
