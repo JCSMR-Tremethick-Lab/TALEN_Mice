@@ -25,6 +25,8 @@ rule star_align_full:
         0.5
     threads:
         lambda wildcards: int(str(config["STAR"]["runThreadN"]).strip("['']"))
+    params:
+            tmp_dir = home + "/tmp"
     input:
         rules.cutadapt_pe.output,
         index = lambda wildcards: config["STAR"][wildcards.reference_version]
@@ -37,7 +39,7 @@ rule star_align_full:
                  --genomeDir {input.index} \
                  --readFilesIn {input[0]} {input[1]} \
                  --readFilesCommand zcat \
-                 --outTmpDir /home/skurscheid/tmp/{wildcards.unit} \
+                 --outTmpDir {params.tmp_dir}/{wildcards.unit} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
                  --outSAMtype BAM SortedByCoordinate \
