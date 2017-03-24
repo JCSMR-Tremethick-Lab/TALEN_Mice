@@ -64,7 +64,8 @@ rule run_dexseq_count:
         0.1
     params:
         dexseq_dir = home + config["DEXSeq_dir"],
-        dex_gtf = config["references"]["DEX_GTF"]
+        dex_gtf = home + config["references"]["DEX_GTF"],
+        python_bin = home + config["python27_bin"]
     input:
         bam = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
         index = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
@@ -72,7 +73,7 @@ rule run_dexseq_count:
         "{outdir}/{reference_version}/DEXSeq/count/{unit}.txt"
     shell:
         """
-            python {params.dexseq_dir}/dexseq_count.py --format=bam \
+            {params.python_bin} {params.dexseq_dir}/dexseq_count.py --format=bam \
                                                        --paired=yes \
                                                        --order=pos \
                                                        --stranded=reverse \
