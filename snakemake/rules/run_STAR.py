@@ -4,7 +4,7 @@ __date__ = "2016-04-22"
 
 from snakemake.exceptions import MissingInputException
 
-wrapper_dir = "/home/skurscheid/Development/snakemake-wrappers/bio"
+wrapper_dir = home + "/Development/snakemake-wrappers/bio"
 
 def getGroups(wildcards):
     cond1 = []
