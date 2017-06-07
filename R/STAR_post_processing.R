@@ -118,7 +118,7 @@ htSeqCountMatrix.hippo <- htSeqCountMatrix[, grep("HIPPO", colnames(htSeqCountMa
 htSeqCountMatrix.brain <- list(list(htSeqCountMatrix.ob), list(htSeqCountMatrix.pfc), list(htSeqCountMatrix.hippo))
 names(htSeqCountMatrix.brain) <- c("OB", "PFC", "HIPPO")
 
-analysis_version <- 2
+analysis_version <- 3
 analysis_output_file <- paste("DifferentialGeneExpressionAnalysis_", analysis_version, ".rda", sep = "")
 
 
@@ -152,26 +152,26 @@ if (!file.exists(analysis_output_file)){
                                chromosome = mychroms, 
                                factors = myfactors)
     # actual data exploration
-    myexplodata <- dat(mydata, type = "biodetection")
-    mybiodetection <- dat(mydata, k = 0, type = "biodetection", factor = NULL)
-    mycountsbio <- dat(mydata, factor = NULL, type = "countsbio")
-    mysaturation <- dat(mydata, k = 0, ndepth = 10, type = "saturation")
+    myexplodata <- NOISeq::dat(mydata, type = "biodetection")
+    mybiodetection <- NOISeq::dat(mydata, k = 0, type = "biodetection", factor = NULL)
+    mycountsbio <- NOISeq::dat(mydata, factor = NULL, type = "countsbio")
+    mysaturation <- NOISeq::dat(mydata, k = 0, ndepth = 10, type = "saturation")
     # checking biases
     # length
-    mylengthbias <- dat(mydata, factor = "Tissue", type = "lengthbias")
-    myGCbias <- dat(mydata, factor = "Tissue", type = "GCbias")
+    mylengthbias <- NOISeq::dat(mydata, factor = "Tissue", type = "lengthbias")
+    myGCbias <- NOISeq::dat(mydata, factor = "Tissue", type = "GCbias")
     # compositional bias
-    mycd <- dat(mydata, type = "cd", norm = FALSE, refColumn = 1)
+    mycd <- NOISeq::dat(mydata, type = "cd", norm = FALSE, refColumn = 1)
     #---------------------------------------------
     # upper quartile normalization
-    set <- betweenLaneNormalization(set, which="upper")
-    rleUQ <- plotRLE(set, outline = FALSE, col = colors[condition])
-    pcaUQ <- plotPCA(set, col = colors[condition])
+    set <- EDASeq::betweenLaneNormalization(set, which="upper")
+    rleUQ <- EDASeq::plotRLE(set, outline = FALSE, col = colors[condition])
+    pcaUQ <- EDASeq::plotPCA(set, col = colors[condition])
     #---------------------------------------------
     # RUVg using spike ins
-    set1 <- RUVg(set, spikes, k = 1)
-    rleRUVg <- plotRLE(set1, outline=FALSE, col=colors[condition])
-    pcaRUVg <- plotPCA(set1, col=colors[condition], cex=1.2)
+    set1 <- RUVSeq::RUVg(set, spikes, k = 1)
+    rleRUVg <- EDASeq::plotRLE(set1, outline=FALSE, col=colors[condition])
+    pcaRUVg <- EDASeq::plotPCA(set1, col=colors[condition], cex=1.2)
     #---------------------------------------------
     # NOISeq post-normalization & RUV
     mydataNorm <- NOISeq::readData(data = normCounts(set1), 
@@ -181,38 +181,38 @@ if (!file.exists(analysis_output_file)){
                                chromosome = mychroms, 
                                factors = myfactors)
     # actual data exploration
-    myexplodataNorm <- dat(mydataNorm, type = "biodetection", norm = TRUE)
-    mybiodetectionNorm <- dat(mydataNorm, k = 0, type = "biodetection", factor = NULL, norm = TRUE)
-    mycountsbioNorm <- dat(mydataNorm, factor = NULL, type = "countsbio",  norm = TRUE)
-    mysaturationNorm <- dat(mydataNorm, k = 0, ndepth = 10, type = "saturation", norm = TRUE)
+    myexplodataNorm <- NOISeq::dat(mydataNorm, type = "biodetection", norm = TRUE)
+    mybiodetectionNorm <- NOISeq::dat(mydataNorm, k = 0, type = "biodetection", factor = NULL, norm = TRUE)
+    mycountsbioNorm <- NOISeq::dat(mydataNorm, factor = NULL, type = "countsbio",  norm = TRUE)
+    mysaturationNorm <- NOISeq::dat(mydataNorm, k = 0, ndepth = 10, type = "saturation", norm = TRUE)
     # checking biases
     # length
-    mylengthbiasNorm <- dat(mydataNorm, factor = "Tissue", type = "lengthbias", norm = TRUE)
-    myGCbiasNorm <- dat(mydataNorm, factor = "Tissue", type = "GCbias", norm = TRUE)
+    mylengthbiasNorm <- NOISeq::dat(mydataNorm, factor = "Tissue", type = "lengthbias", norm = TRUE)
+    myGCbiasNorm <- NOISeq::dat(mydataNorm, factor = "Tissue", type = "GCbias", norm = TRUE)
     # compositional bias
-    mycdNorm <- dat(mydataNorm, type = "cd", refColumn = 1, norm = TRUE)
+    mycdNorm <- NOISeq::dat(mydataNorm, type = "cd", refColumn = 1, norm = TRUE)
     #---------------------------------------------
     # differential expression analysis using edgeR
     # here including the RUVg factor to account for "unwanted variation"
     design <- model.matrix(~condition + W_1, data = pData(set1))
-    y <- DGEList(counts = counts(set1), group = condition)
-    y <- calcNormFactors(y, method="upperquartile")
-    y <- estimateGLMCommonDisp(y, design)
-    y <- estimateGLMTagwiseDisp(y, design)
-    fit <- glmFit(y, design)
-    lrt <- glmLRT(fit, coef=2)
-    tt <- topTags(lrt, n = 5000)
+    y <- edgeR::DGEList(counts = counts(set1), group = condition)
+    y <- edgeR::calcNormFactors(y, method="upperquartile")
+    y <- edgeR::estimateGLMCommonDisp(y, design)
+    y <- edgeR::estimateGLMTagwiseDisp(y, design)
+    fit <- edgeR::glmFit(y, design)
+    lrt <- edgeR::glmLRT(fit, coef=2)
+    tt <- edgeR::topTags(lrt, n = 5000)
     annotatedTT <- merge(tt[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id")
     #---------------------------------------------
     # differential expression analysis using plain vanilla edgeR
     design1 <- model.matrix(~condition, data = pData(set))
-    y1 <- DGEList(counts = counts(set), group = condition)
-    y1 <- calcNormFactors(y1, method="upperquartile")
-    y1 <- estimateGLMCommonDisp(y1, design1)
-    y1 <- estimateGLMTagwiseDisp(y1, design1)
-    fit1 <- glmFit(y1, design1)
-    lrt1 <- glmLRT(fit1, coef=2)
-    tt1 <- topTags(lrt1, n = 5000)
+    y1 <- edgeR::DGEList(counts = counts(set)[genes,], group = condition)
+    y1 <- edgeR::calcNormFactors(y1, method="upperquartile")
+    y1 <- edgeR::estimateGLMCommonDisp(y1, design1)
+    y1 <- edgeR::estimateGLMTagwiseDisp(y1, design1)
+    fit1 <- edgeR::glmFit(y1, design1)
+    lrt1 <- edgeR::glmLRT(fit1, coef=2)
+    tt1 <- edgeR::topTags(lrt1, n = 5000)
     annotatedTT1 <- merge(tt1[[1]], ensGenes, by.x = "row.names", by.y = "ensembl_gene_id", all.x = T, sort = F)
     #---------------------------------------------
     # return all objects

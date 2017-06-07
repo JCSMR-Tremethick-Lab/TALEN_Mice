@@ -1,0 +1,153 @@
+---
+title: "Sleuth analysis of TALEN mice pre-frontal cortex, comparing WT and MUT under naive and fear-conditioned conditions."
+output: html_notebook
+---
+
+# Preparing environment and data
+
+## Load libraries and external functions
+```{r load_libraries, message=FALSE}
+require(rhdf5)
+require(sleuth)
+require(biomaRt)
+require(tidyr)
+require(rtracklayer)
+require(BiocParallel)
+require(tximport)
+require(readr)
+require(RUVSeq)
+
+source("~/Development/GeneralPurpose/R/amILocal.R")
+source("~/Development/GeneralPurpose/R/heatmap.3.R")
+source("~/Development/GeneralPurpose/R/lsos.R")
+
+```
+
+
+## Set global variables
+```{r set_global_variables}
+ensemblHost <- "mar2016.archive.ensembl.org"
+colors <- RColorBrewer::brewer.pal(3, "Set2")
+
+# setting working directory and data sources ------------------------------
+if (amILocal("JCSMR027564ML")){
+  mount <- system("mount", intern = T)
+  if (length(grep("gduserv", mount)) == 0) {system("sshfs skurscheid@gduserv.anu.edu.au: ~/mount/gduserv/")}
+  BPPARAM <- BiocParallel::MulticoreParam(workers = 7)
+  mc.cores <- 8L
+  pathPrefix <- "~/mount/gduserv/"
+  # biomaRt connection
+  mouse <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
+  attribs <- biomaRt::listAttributes(mouse)
+} else {
+  BPPARAM <- BiocParallel::MulticoreParam(workers = 16)
+  mc.cores <- 16L
+  pathPrefix <- "~"
+  options(width = 137)
+}
+
+lDir <- function(x, y){
+  paste(x, y, sep = "/")
+}
+
+if (dir.exists(lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/R_analysis"))){
+  setwd(lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/R_analysis"))
+} else {
+  dir.create(lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/R_analysis"))
+  setwd(lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/R_analysis"))
+}
+
+kallisto_base_dir <- lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/processed_data/GRCm38_ensembl84/kallisto")
+sleuth_analysis_version <- 1
+sleuth_analysis_output <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output.rda", sep = "")
+sleuth_analysis_output_combined <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output_combined.rda", sep = "")
+sleuth_analysis_outputCompressed <- paste("sleuth_analysis_V", sleuth_analysis_version, "_Compressed_output.rda", sep = "")
+
+previous_sleuth_analysis_version <- sleuth_analysis_version - 1
+previous_sleuth_analysis_output <- paste("sleuth_analysis_V", previous_sleuth_analysis_version, "_output.rda", sep = "")
+previous_sleuth_analysis_output_combined <- paste("sleuth_analysis_V", previous_sleuth_analysis_version, "_output_combined.rda", sep = "")
+
+```
+
+## Prepare access to Ensembl
+...in case we need to download annotation data
+
+```{r prepare_annotations}
+if (!file.exists("t2g.rda")){
+  mouse <- useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
+  attribs <- listAttributes(mouse)
+  # annotate transcripts
+  # Ensembl 84 includes version number in FASTA IDs, therefore have to conactenate them in, other wise mapping does not work
+  t2g <- getBM(attributes = c("ensembl_transcript_id", 
+                              "ensembl_gene_id", 
+                              "external_gene_name", 
+                              "version", 
+                              "transcript_version"), 
+               mart = mouse)
+  t2g$ensembl_transcript_id <- paste(t2g$ensembl_transcript_id, t2g$transcript_version, sep = ".")
+  t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
+  rownames(t2g) <- t2g$target_id
+  save(t2g, file = "t2g.rda")
+} else {
+  load("t2g.rda")
+}
+
+if (!file.exists("ensGenes.rda")){
+  mouse <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
+  attribs <- biomaRt::listAttributes(mouse)
+  ensGenes <- biomaRt::getBM(attributes = c("ensembl_gene_id",
+                                            "external_gene_name",
+                                            "chromosome_name",
+                                            "start_position",
+                                            "end_position",
+                                            "strand",
+                                            "band",
+                                            "description",
+                                            "percentage_gc_content",
+                                            "gene_biotype"),
+                             mart = mouse)
+  save(ensGenes, file = "ensGenes.rda")
+  
+  ensTranscripts <- biomaRt::getBM(attributes = c("ensembl_gene_id",
+                                                  "ensembl_transcript_id",
+                                                  "transcript_length"),
+                                   mart = mouse,
+                                   filter = "ensembl_gene_id",
+                                   values = ensGenes$ensembl_gene_id)
+  save(ensTranscripts, file = "ensTranscripts.rda")
+  
+  mylength <- sapply(ensGenes$ensembl_gene_id, function(x){
+    y <- ensTranscripts[which(ensTranscripts$ensembl_gene_id == x), ]
+    y <- y[which.max(y$transcript_length), ]$transcript_length
+  })
+  save(mylength, file = "mylength.rda")
+  
+  mygc <- ensGenes$percentage_gc_content
+  names(mygc) <- ensGenes$ensembl_gene_id
+  save(mygc, file = "mygc.rda")
+  
+  mybiotypes <- ensGenes$gene_biotype
+  names(mybiotypes) <- ensGenes$ensembl_gene_id
+  save(mybiotypes, file = "mybiotypes.rda")
+  
+  mychroms <- data.frame(Chr = ensGenes$chromosome_name, GeneStart = ensGenes$start_position, GeneEnd = ensGenes$end_position)
+  rownames(mychroms) <- ensGenes$ensembl_gene_id
+  save(mychroms, file = "mychroms.rda")
+} else {
+  load("ensGenes.rda")
+  load("ensTranscripts.rda")
+  load("mylength.rda")
+  load("mygc.rda")
+  load("mybiotypes.rda")
+  load("mychroms.rda")
+}
+
+```
+
+
+# Actual transcript-level differential expression analysis
+
+```{r load_kallisto_data}
+
+```
+
