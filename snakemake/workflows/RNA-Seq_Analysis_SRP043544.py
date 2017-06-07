@@ -24,6 +24,31 @@ include:
 include:
     include_prefix + "run_kallisto.py"
 
+rule kallisto_quant:
+    message:
+        "Running kallisto with paired end data..."
+    params:
+        raw_data = config["raw_dir"],
+        outdir = config["processed_dir"],
+        bootstraps = config["kallisto"]["bootstraps"],
+    input:
+        expand(join("{raw_dir}/{unit}"),
+                raw_dir = config["raw_dir"],
+                unit = [ y \
+                            for x in config["units"].keys() \
+                                for y in config["units"][x]])
+        ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
+    output:
+        "{outdir}/{reference_version}/kallisto/{unit}"
+    shell:
+        """
+            kallisto quant --index={input.ki} \
+                           --output-dir={output} \
+                           --threads=4 \
+                           --bootstrap-samples={params.bootstraps} \
+                           {input[0]} {input[1]}
+        """
+
 rule all:
     input:
         expand("{outdir}/{reference_version}/kallisto/{unit}",

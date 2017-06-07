@@ -28,8 +28,8 @@ rule cutadapt_pe:
     input:
         getFASTQ
     output:
-        "./trimmed_data/{unit}_R1_001.QT.CA.fastq.gz",
-        "./trimmed_data/{unit}_R2_001.QT.CA.fastq.gz"
+        "trimmed_data/{unit}_R1_001.QT.CA.fastq.gz",
+        "trimmed_data/{unit}_R2_001.QT.CA.fastq.gz"
     shell:
         """
             {params.cutadapt_dir}/cutadapt {params.trim_params} \
@@ -40,5 +40,5 @@ rule cutadapt_pe:
 rule dummy_cutadapt:
      """Trim all reads with all supplied trimming parameters"""
      input:
-         expand("./{trim_data}/{unit}_R1_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"]),
-         expand("./{trim_data}/{unit}_R2_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"])
+         expand("{trim_data}/{unit}_R1_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"]),
+         expand("{trim_data}/{unit}_R2_001.QT.CA.fastq.gz", unit = config["units"], trim_data = config["trim_dir"])
