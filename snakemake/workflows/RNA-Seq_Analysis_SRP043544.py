@@ -3,6 +3,7 @@ __license__ = "MIT"
 __date__ = "2015-04-22"
 
 from snakemake.exceptions import MissingInputException
+from os.path import join
 import os
 
 rule:
@@ -25,7 +26,7 @@ rule kallisto_quant:
         outdir = config["processed_dir"],
         bootstraps = config["kallisto"]["bootstraps"],
     input:
-        expand(join("{raw_dir}/{unit}"),
+        expand("{raw_dir}/{unit}",
                 raw_dir = config["raw_dir"],
                 unit = [ y \
                             for x in config["units"].keys() \
