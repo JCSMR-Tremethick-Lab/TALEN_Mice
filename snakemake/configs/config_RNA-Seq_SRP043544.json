@@ -1,0 +1,57 @@
+{
+    "references" :
+    {
+        "genome" : "/home/skurscheid/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
+        "GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
+        "version" : "GRCm38_ensembl84_ERCC",
+        "DEX_GTF" : "/home/skurscheid/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf"
+    },
+    "kallisto" :
+    {
+        "bootstraps" : "50"
+    },
+    "kallisto_index" :
+    {
+      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
+    },
+    "STAR" :
+    {
+      "GRCm38_ensembl84_ERCC" : "/home/skurscheid/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
+      "runThreadN" : "8"
+    },
+    "units" :
+    {
+      "scrambled_shRNA_naive_1" : ["SRR1460457_1.fastq", "SRR1460457_2.fastq"],
+      "scrambled_shRNA_naive_2" : ["SRR1460458_1.fastq", "SRR1460458_2.fastq"],
+      "scrambled_shRNA_naive_3" : ["SRR1460459_1.fastq", "SRR1460459_2.fastq"],
+      "H2AZ_shRNA_naive_1" : ["SRR1460460_1.fastq", "SRR1460460_2.fastq"],
+      "H2AZ_shRNA_naive_2" : ["SRR1460461_1.fastq", "SRR1460461_2.fastq"],
+      "H2AZ_shRNA_naive_3" : ["SRR1460462_1.fastq", "SRR1460462_2.fastq"],
+      "H2AZ_shRNA_fc_1" : ["SRR1460463_1.fastq", "SRR1460463_2.fastq"],
+      "H2AZ_shRNA_fc_2" : ["SRR1460464_1.fastq", "SRR1460464_2.fastq"],
+      "H2AZ_shRNA_fc_3" : ["SRR1460465_1.fastq", "SRR1460465_2.fastq"]
+    },
+    "Groups" :
+    {
+          "scrambled_shRNA_naive" : ["scrambled_shRNA_naive_1", "scrambled_shRNA_naive_2", "scrambled_shRNA_naive_3"],
+          "H2AZ_shRNA_naive" : ["H2AZ_shRNA_naive_1", "H2AZ_shRNA_naive_2", "H2AZ_shRNA_naive_3"],
+          "H2AZ_shRNA_fc" : ["H2AZ_shRNA_fc_1", "H2AZ_shRNA_fc_2", "H2AZ_shRNA_fc_3"]
+    },
+    "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
+    "trim_dir" : "trimmed_data",
+    "processed_dir" : "processed_data",
+    "aligned_dir" : "aligned_data",
+    "reports_dir" : "reports",
+    "temp_dir" : "temp_data",
+    "alignment_quality" : "20",
+    "raw_dir" : "fastq",
+    "id_dir" : "sequencing_targets",
+    "id_file" : "ID_list.txt",
+    "HTSeq_dir" : "/home/skurscheid/miniconda2/envs/HTSeq/bin",
+    "cutadapt_dir" : "/home/skurscheid/miniconda2/envs/snakemake/bin",
+    "DEXSeq_dir" : "/home/skurscheid/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
+    "Picard" :
+    {
+      "sampling" : "0.2"
+    }
+}
