@@ -3,14 +3,19 @@ __license__ = "MIT"
 __date__ = "2015-04-22"
 
 from snakemake.exceptions import MissingInputException
+import os
 
 rule:
-    version: 0.3
+    version: 0.4
 
 localrules:
     all
 
-include_prefix="/home/skurscheid/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
+
+home = os.environ['HOME']
+
+
+include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
 
 # include:
 #     include_prefix + "perform_fastqc.py"
@@ -18,8 +23,6 @@ include:
     include_prefix + "perform_cutadapt.py"
 include:
     include_prefix + "run_kallisto.py"
-include:
-    include_prefix + "run_STAR.py"
 
 rule all:
     input:
