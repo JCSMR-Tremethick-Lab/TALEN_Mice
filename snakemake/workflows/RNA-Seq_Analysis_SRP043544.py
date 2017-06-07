@@ -36,7 +36,7 @@ rule kallisto_quant:
                 raw_dir = config["raw_dir"],
                 unit = [ y \
                             for x in config["units"].keys() \
-                                for y in config["units"][x]])
+                                for y in config["units"][x]]),
         ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     output:
         "{outdir}/{reference_version}/kallisto/{unit}"
