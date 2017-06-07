@@ -17,13 +17,6 @@ home = os.environ['HOME']
 
 include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
 
-# include:
-#     include_prefix + "perform_fastqc.py"
-include:
-    include_prefix + "perform_cutadapt.py"
-include:
-    include_prefix + "run_kallisto.py"
-
 rule kallisto_quant:
     message:
         "Running kallisto with paired end data..."
