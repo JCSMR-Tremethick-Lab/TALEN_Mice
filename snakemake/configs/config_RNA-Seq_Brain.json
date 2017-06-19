@@ -74,6 +74,7 @@
   "HTSeq_dir" : "/home/sebastian/miniconda2/envs/HTSeq/bin",
   "cutadapt_dir" : "/home/sebastian/miniconda2/envs/snakemake/bin",
   "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
+  "python27_bin" : "/miniconda3/envs/py27/bin/python",
   "Picard" :
   {
     "sampling" : ["0.2"]
