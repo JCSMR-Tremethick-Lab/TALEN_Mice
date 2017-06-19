@@ -23,6 +23,11 @@ include:
 include:
     include_prefix + "run_STAR.py"
 
+rule run_kallisto:
+        expand("{outdir}/{reference_version}/kallisto/{unit}",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["version"],
+               unit = config["units"])
 
 rule all:
     input:

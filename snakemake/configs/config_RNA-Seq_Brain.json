@@ -10,11 +10,12 @@
   },
   "kallisto" :
   {
-      "bootstraps" : "100"
+      "bootstraps" : "30"
   },
   "kallisto_index" :
   {
-    "GRCm38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki"
+    "GRCm38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki",
+    "GRCm38_ensembl84_cDNA" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.cdna.ki"
   },
   "STAR" :
   {
