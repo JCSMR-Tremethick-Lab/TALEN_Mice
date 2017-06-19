@@ -1,0 +1,73 @@
+{
+  "references" :
+  {
+      "genome" : "/home/sebastian/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.fa",
+      "GTF" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gtf",
+      "version" : ["GRCm38_ensembl84_ERCC", "GRCm38_ensembl84_cDNA"],
+      "DEX_GTF" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf",
+      "transcript_GC" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gc_content.txt",
+      "GTF_conformed" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.conformed.gtf"
+  },
+  "kallisto" :
+  {
+      "bootstraps" : "30"
+  },
+  "kallisto_index" :
+  {
+    "GRCm38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki",
+    "GRCm38_ensembl84_cDNA" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.cdna.ki"
+  },
+  "STAR" :
+  {
+    "GRCm38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
+    "runThreadN" : "8"
+  },
+    "units" :
+    {
+        "NMG3-60hemi_S1" : ["NMG3-60hemi_S1_R1_001.fastq.gz", "NMG3-60hemi_S1_R2_001.fastq.gz"],
+        "NMG3-62wt_S2": ["NMG3-62wt_S2_R1_001.fastq.gz", "NMG3-62wt_S2_R2_001.fastq.gz"],
+        "NMG3-74wt_S3" : ["NMG3-74wt_S3_R1_001.fastq.gz", "NMG3-74wt_S3_R2_001.fastq.gz"],
+        "NMG3-75hemi_S4" : ["NMG3-75hemi_S4_R1_001.fastq.gz", "NMG3-75hemi_S4_R2_001.fastq.gz"],
+        "NMG3-76wt_S5" : ["NMG3-76wt_S5_R1_001.fastq.gz", "NMG3-76wt_S5_R2_001.fastq.gz"],
+        "NMG3-77hemi_S6" : ["NMG3-77hemi_S6_R1_001.fastq.gz", "NMG3-77hemi_S6_R1_001.fastq.gz"]
+    },
+  "Groups" :
+  {
+    "Testes" :
+    {
+      "WT" : ["NMG3-62wt_S2", "NMG3-74wt_S3", "NMG3-76wt_S5"],
+      "HEMI" : ["NMG3-60hemi_S1", "NMG3-75hemi_S4", "NMG3-77hemi_S6"]
+    },
+  },
+  "trim_params": "-q 10 -a AGATCGGAAGAGC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT --minimum-length=30",
+  "trim_dir" : "trimmed_data",
+  "processed_dir" : "processed_data",
+  "aligned_dir" : "aligned_data",
+  "reports_dir" : "reports",
+  "temp_dir" : "temp_data",
+  "alignment_quality" : "20",
+  "raw_dir" : "fastq",
+  "id_dir" : "sequencing_targets",
+  "id_file" : "ID_list.txt",
+  "HTSeq_dir" : "/home/sebastian/miniconda2/envs/HTSeq/bin",
+  "cutadapt_dir" : "/home/sebastian/miniconda2/envs/snakemake/bin",
+  "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
+  "python27_bin" : "/miniconda3/envs/py27/bin/python",
+  "Picard" :
+  {
+    "sampling" : ["0.2"]
+  },
+  "RSeQC" :
+  {
+    "binaries" :
+    {
+      "read_distribution.py" : "/home/sebastian/miniconda3/envs/py27/bin/read_distribution.py",
+      "geneBody_coverage.py" : "/home/sebastian/miniconda3/envs/py27/bin/geneBody_coverage.py",
+      "tin.py" : "~/miniconda3/envs/py27/bin/tin.py"
+    },
+    "bedFiles" :
+    {
+      "genes" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.bed12"
+    }
+  }
+}
