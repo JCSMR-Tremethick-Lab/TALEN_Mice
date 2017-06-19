@@ -5,8 +5,8 @@ __date__ = "2016-04-10"
 from snakemake.exceptions import MissingInputException
 
 rule kallisto_quant_se:
-    message:
-        "Running kallisto with single end data..."
+    threads:
+        4
     params:
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
@@ -20,7 +20,7 @@ rule kallisto_quant_se:
         """
             kallisto quant --index={input.ki} \
                            --output-dir={output} \
-                           --threads=4 \
+                           --threads={threads} \
                            --single \
                            --fragment-length=200 \
                            --sd=50 \
@@ -29,8 +29,8 @@ rule kallisto_quant_se:
         """
 
 rule kallisto_quant:
-    message:
-        "Running kallisto with paired end data..."
+    threads:
+        4
     params:
         raw_data = config["raw_dir"],
         outdir = config["processed_dir"],
@@ -44,7 +44,7 @@ rule kallisto_quant:
         """
             kallisto quant --index={input.ki} \
                            --output-dir={output} \
-                           --threads=4 \
+                           --threads={threads} \
                            --bootstrap-samples={params.bootstraps} \
                            {input[0]} {input[1]}
         """
