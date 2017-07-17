@@ -18,6 +18,49 @@ home = os.environ['HOME']
 
 include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
 
+rule star_align_full:
+    version:
+        0.5
+    threads:
+        lambda wildcards: int(str(config["STAR"]["runThreadN"]).strip("['']"))
+    params:
+        tmp_dir = home + "/tmp"
+    input:
+        expand("{raw_dir}/{unit}",
+                raw_dir = config["raw_dir"],
+                unit = [ y \
+                            for x in config["units"].keys() \
+                                for y in config["units"][x]]),
+        index = lambda wildcards: config["STAR"][wildcards.reference_version]
+    output:
+        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
+    shell:
+        """
+            STAR --runMode alignReads \
+                 --runThreadN {threads} \
+                 --genomeDir {input.index} \
+                 --readFilesIn {input[0]} {input[1]} \
+                 --readFilesCommand zcat \
+                 --outTmpDir {params.tmp_dir}/{wildcards.unit} \
+                 --outSAMmode Full \
+                 --outSAMattributes Standard \
+                 --outSAMtype BAM SortedByCoordinate \
+                 --outStd BAM_SortedByCoordinate \
+                 --alignEndsType EndToEnd\
+                 --quantMode GeneCounts \
+                 > {output}
+        """
+
+rule bam_index_STAR_output:
+    version:
+        0.2
+    input:
+        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
+    output:
+        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
+    wrapper:
+        "file://" + wrapper_dir + "/samtools/index/wrapper.py"
+
 rule kallisto_quant:
     message:
         "Running kallisto with paired end data..."
