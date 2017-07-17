@@ -29,7 +29,16 @@
       "H2AZ_shRNA_naive_3" : ["SRR1460462_1.fastq", "SRR1460462_2.fastq"],
       "H2AZ_shRNA_fc_1" : ["SRR1460463_1.fastq", "SRR1460463_2.fastq"],
       "H2AZ_shRNA_fc_2" : ["SRR1460464_1.fastq", "SRR1460464_2.fastq"],
-      "H2AZ_shRNA_fc_3" : ["SRR1460465_1.fastq", "SRR1460465_2.fastq"]
+      "H2AZ_shRNA_fc_3" : ["SRR1460465_1.fastq", "SRR1460465_2.fastq"],
+      "SRR1460457" : ["SRR1460457_1.fastq", "SRR1460457_2.fastq"],
+      "SRR1460458" : ["SRR1460458_1.fastq", "SRR1460458_2.fastq"],
+      "SRR1460459" : ["SRR1460459_1.fastq", "SRR1460459_2.fastq"],
+      "SRR1460460" : ["SRR1460460_1.fastq", "SRR1460460_2.fastq"],
+      "SRR1460461" : ["SRR1460461_1.fastq", "SRR1460461_2.fastq"],
+      "SRR1460462" : ["SRR1460462_1.fastq", "SRR1460462_2.fastq"],
+      "SRR1460463" : ["SRR1460463_1.fastq", "SRR1460463_2.fastq"],
+      "SRR1460464" : ["SRR1460464_1.fastq", "SRR1460464_2.fastq"],
+      "SRR1460465" : ["SRR1460465_1.fastq", "SRR1460465_2.fastq"]
     },
     "Groups" :
     {
