@@ -14,9 +14,8 @@ localrules:
 
 
 home = os.environ['HOME']
-
-
-include_prefix= os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
+include_prefix = os.environ['HOME'] + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/rules/"
+wrapper_dir = os.environ['HOME'] + "/Development/snakemake-wrappers/bio"
 
 rule star_align_full:
     version:
