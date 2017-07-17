@@ -91,3 +91,7 @@ rule all:
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],
                unit = config["units"])
+        expand("{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
+               outdir = config["processed_dir"],
+               reference_version = config["references"]["version"],
+               unit = config["units"])
