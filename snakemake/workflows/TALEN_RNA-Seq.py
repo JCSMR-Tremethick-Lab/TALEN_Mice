@@ -33,9 +33,9 @@ rule run_kallisto:
 rule convert_bam_to_bw:
     input:
         expand("{outdir}/{reference_version}/deepTools/bamCoverage/{unit}.bw",
-               outdir = config["processed_dir"],
-               reference_version = config["references"]["version"],
-               unit = config["units"])
+               outdir=config["processed_dir"],
+               reference_version="GRCm38_ensembl84",
+               unit=config["units"])
 
 rule all:
     input:
