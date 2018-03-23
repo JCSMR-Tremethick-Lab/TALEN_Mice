@@ -59,6 +59,29 @@ rule bam_index_STAR_output:
     wrapper:
         "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
+rule create_bigwig_from_bam:
+    version:
+        0.1
+    threads:
+        8
+    params:
+        deepTools_dir = home + config["deepTools_dir"]
+    input:
+        bam = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
+    output:
+        bigwig = protected("{outdir}/{reference_version}/deepTools/bamCoverage/{unit}.bw")
+    shell:
+        """
+            {params.deepTools_dir}/bamCoverage --bam {input.bam} \
+                                               --outFileName {output} \
+                                               --outFileFormat bigwig \
+                                               --binSize 1 \
+                                               --numberOfProcessors {threads} \
+                                               --normalizeUsingRPKM \
+                                               --smoothLength 10
+        """
+
+
 rule run_dexseq_count:
     version:
         0.1
