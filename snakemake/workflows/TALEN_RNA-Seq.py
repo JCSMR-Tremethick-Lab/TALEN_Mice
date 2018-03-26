@@ -22,6 +22,8 @@ include:
     include_prefix + "run_kallisto.py"
 include:
     include_prefix + "run_STAR.py"
+include:
+    include_prefix + "run_bowtie2.py"
 
 rule run_kallisto:
     input:
@@ -29,6 +31,20 @@ rule run_kallisto:
                outdir = config["processed_dir"],
                reference_version = config["references"]["version"],
                unit = config["units"])
+
+rule run_bowtie2:
+    input:
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{condition}{unit}/hits.bam",
+                outdir = config["processed_dir"],
+                reference_version = config["references"]["version"],
+                condition = "wt",
+                unit = ["1", "2", "3"]),
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{condition}{unit}/hits.bam",
+                outdir = config["processed_dir"],
+                reference_version = config["references"]["version"],
+                condition = "hemi",
+                unit = ["1", "2", "3"]),
+
 
 rule convert_bam_to_bw:
     input:
