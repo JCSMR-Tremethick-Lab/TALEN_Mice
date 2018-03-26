@@ -36,12 +36,12 @@ rule run_bowtie2:
     input:
         expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{condition}{unit}/hits.bam",
                 outdir = config["processed_dir"],
-                reference_version = config["references"]["version"],
+                reference_version="GRCm38_ensembl84",
                 condition = "wt",
                 unit = ["1", "2", "3"]),
         expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{condition}{unit}/hits.bam",
                 outdir = config["processed_dir"],
-                reference_version = config["references"]["version"],
+                reference_version="GRCm38_ensembl84",
                 condition = "hemi",
                 unit = ["1", "2", "3"]),
 
