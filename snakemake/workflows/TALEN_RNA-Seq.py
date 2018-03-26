@@ -47,12 +47,12 @@ rule run_bowtie2:
 
 rule run_express:
     input:
-        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express",
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express/results.xprs",
                 outdir = config["processed_dir"],
                 reference_version="GRCm38_ensembl84",
                 condition = "wt",
                 unit = ["1", "2", "3"]),
-        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express",
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express/results.xprs",
                 outdir = config["processed_dir"],
                 reference_version="GRCm38_ensembl84",
                 condition = "hemi",

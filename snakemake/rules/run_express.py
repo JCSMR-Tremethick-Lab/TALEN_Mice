@@ -14,8 +14,9 @@ rule express_quantify:
         bam = rules.run_bowtie2.output,
         trans_and_introns = config["references"]["trans_and_introns_fasta"]
     output:
-        "{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express"
+        file = "{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express/results.xprs",
+        dir = "{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express/"
     shell:
         """
-            {params.bt2_dir}/express {input.trans_and_introns} {input.bam} --output-dir {output}
+            {params.bt2_dir}/express {input.trans_and_introns} {input.bam} --output-dir {output.dir}; touch {output.file}
         """
