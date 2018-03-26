@@ -45,6 +45,20 @@ rule run_bowtie2:
                 condition = "hemi",
                 unit = ["1", "2", "3"]),
 
+rule run_express:
+    input:
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express",
+                outdir = config["processed_dir"],
+                reference_version="GRCm38_ensembl84",
+                condition = "wt",
+                unit = ["1", "2", "3"]),
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express",
+                outdir = config["processed_dir"],
+                reference_version="GRCm38_ensembl84",
+                condition = "hemi",
+                unit = ["1", "2", "3"]),
+
+
 
 rule convert_bam_to_bw:
     input:
