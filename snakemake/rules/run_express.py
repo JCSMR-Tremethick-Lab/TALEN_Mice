@@ -11,7 +11,7 @@ rule express_quantify:
     threads:
         8
     input:
-        bam = rules.run_bowtie2.output,
+        bam = rules.bowtie2_align.output,
         trans_and_introns = config["references"]["trans_and_introns_fasta"]
     output:
         file = "{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express/results.xprs",
