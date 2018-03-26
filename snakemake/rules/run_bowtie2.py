@@ -22,6 +22,6 @@ rule bowtie2_align:
                                      --rdg 6,5\
                                      --rfg 6,5\
                                      --score-min L,-.6,-.4\
-                                     -X {params.bt_index}\
-                                     -1 {input.left} -2 {input.right} | samtools view -Sb - > {output}
+                                     -x {params.bt_index}\
+                                     -1 {input.left} -2 {input.right} | {params.bt2_dir}/samtools view -Sb - > {output}
         """
