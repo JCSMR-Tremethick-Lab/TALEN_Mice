@@ -10,8 +10,8 @@ rule tophat_align:
     threads:
         8
     input:
-        left = "{wildcards.outdir}/{wildcards.reference_version}/KMA_analysis/experiment/{wildcards.condition}/{wildcards.unit}/{wildcards.unit}_R1.fastq.gz",
-        right = "{wildcards.outdir}/{wildcards.reference_version}/KMA_analysis/experiment/{wildcards.condition}/{wildcards.unit}/{wildcards.unit}_R2.fastq.gz",
+        left = "{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/{unit}_R1.fastq.gz",
+        right = "{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/{unit}_R2.fastq.gz",
         bt_index = config["references"]["trans_and_introns"]
     output:
         "{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/hits.bam"
