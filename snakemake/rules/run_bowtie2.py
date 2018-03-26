@@ -7,14 +7,18 @@ from snakemake.exceptions import MissingInputException
 rule tophat_align:
     params:
         bt2_dir = home + "/miniconda3/bin"
+    threads:
+        8
     input:
-        left = "{wildcards.outdir}/{wildcards.reference_version}/KMA_analysis/experiment/{wildcards.condition}/{wildcards.unit}",
+        left = "{wildcards.outdir}/{wildcards.reference_version}/KMA_analysis/experiment/{wildcards.condition}/{wildcards.unit}/{wildcards.unit}_R1.fastq.gz",
+        right = "{wildcards.outdir}/{wildcards.reference_version}/KMA_analysis/experiment/{wildcards.condition}/{wildcards.unit}/{wildcards.unit}_R2.fastq.gz",
         bt_index = config["references"]["trans_and_introns"]
     output:
-        "{outdir}/{reference_version}/bowtie2/{unit}"
+        "{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/hits.bam"
     shell:
         """
             {params.bt2_dir}/bowtie2 -k 200 \
+                                     --threads {threads}\
                                      --rdg 6,5\
                                      --rfg 6,5\
                                      --score-min L,-.6,-.4\

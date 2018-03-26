@@ -6,7 +6,8 @@
       "version" : ["GRCm38_ensembl84_ERCC", "GRCm38_ensembl84_cDNA"],
       "DEX_GTF" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf",
       "transcript_GC" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gc_content.txt",
-      "GTF_conformed" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.conformed.gtf"
+      "GTF_conformed" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.conformed.gtf",
+      "trans_and_introns" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.introns/trans_and_introns"
   },
   "kallisto" :
   {
