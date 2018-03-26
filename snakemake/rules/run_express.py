@@ -9,7 +9,7 @@ rule express_quantify:
         bt2_dir = home + "/miniconda3/bin",
         bt_index = config["references"]["trans_and_introns"]
     threads:
-        8
+        1
     input:
         bam = rules.bowtie2_align.output,
         trans_and_introns = config["references"]["trans_and_introns_fasta"]
