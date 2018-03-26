@@ -24,6 +24,8 @@ include:
     include_prefix + "run_STAR.py"
 include:
     include_prefix + "run_bowtie2.py"
+include:
+    include_prefix + "run_express.py"
 
 rule run_kallisto:
     input:
