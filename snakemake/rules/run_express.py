@@ -18,5 +18,5 @@ rule express_quantify:
         dir = "{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{unit}/express/"
     shell:
         """
-            {params.bt2_dir}/express {input.trans_and_introns} {input.bam} --output-dir {output.dir}; touch {output.file}
+            {params.bt2_dir}/express {input.trans_and_introns} {input.bam} --output-dir {output.dir} --rf-stranded; touch {output.file}
         """
