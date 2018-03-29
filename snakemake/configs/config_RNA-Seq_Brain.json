@@ -20,6 +20,7 @@
   "STAR" :
   {
     "GRCm38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
+    "GRCm38_ensembl84" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index/",
     "runThreadN" : "8"
   },
   "units" :
