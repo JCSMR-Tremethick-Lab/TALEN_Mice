@@ -58,7 +58,7 @@ rule star_align_rMATs:
         tempDir = home + "/tmp/",
         tophatAnchor = "2"
     input:
-        index = lambda wildcards: config["STAR"][wildcards.reference_version]
+        index = lambda wildcards: config["STAR"][wildcards.reference_version],
         gtf = lambda wildcards: config["references"]["GTF"],
         rules.cutadapt_pe.output
     output:
