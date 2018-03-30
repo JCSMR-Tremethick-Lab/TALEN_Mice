@@ -58,9 +58,9 @@ rule star_align_rMATs:
         tempDir = home + "/tmp/",
         tophatAnchor = "2"
     input:
+        rules.cutadapt_pe.output,
         index = lambda wildcards: config["STAR"][wildcards.reference_version],
-        gtf = lambda wildcards: config["references"]["GTF"],
-        rules.cutadapt_pe.output
+        gtf = lambda wildcards: config["references"]["GTF"]
     output:
         protected("{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam")
     shell:
@@ -68,7 +68,7 @@ rule star_align_rMATs:
             STAR --runMode alignReads \
                  --runThreadN {threads} \
                  --genomeDir {input.index} \
-                 --readFilesIn {input.read1} {input.read2} \
+                 --readFilesIn {input[0]} {input[1]} \
                  --readFilesCommand zcat \
                  --outTmpDir {params.tempDir}{wildcards.unit} \
                  --outSAMmode Full \
