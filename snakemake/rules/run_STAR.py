@@ -53,7 +53,7 @@ rule star_align_rMATs:
     version:
         0.1
     threads:
-        lambda wildcards: int(str(config["program_parameters"]["kallisto"]["threads"]).strip("['']"))
+        30
     params:
         tempDir = home + "/tmp/",
         tophatAnchor = "2"
@@ -111,7 +111,7 @@ rule create_bigwig_from_bam:
     version:
         0.1
     threads:
-        8
+        16
     params:
         deepTools_dir = home + config["deepTools_dir"]
     input:
@@ -133,7 +133,7 @@ rule create_bigwig_from_rMATS_bam:
     version:
         0.1
     threads:
-        8
+        16
     params:
         deepTools_dir = home + config["deepTools_dir"],
     input:
