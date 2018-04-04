@@ -27,20 +27,11 @@ include:
 include:
     include_prefix + "run_express.py"
 
-rule convert_rMATS_bam_to_bw:
-    input:
-        expand("{outdir}/{reference_version}/rMATS/BWs/{unit}.bw",
-                       assayType = assayID,
-                       runID =  runID,
-                       outdir = config["processed_dir"],
-                       reference_version = config["references"]["version"],
-                       unit = config["units"])
-
 rule run_kallisto:
     input:
         expand("{outdir}/{reference_version}/kallisto/{unit}",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["version"],
+               reference_version = "GRCm38_ensembl84",
                unit = config["units"])
 
 rule run_bowtie2:
@@ -69,14 +60,19 @@ rule run_express:
                 condition = "hemi",
                 unit = ["1", "2", "3"]),
 
-
-
 rule convert_bam_to_bw:
     input:
         expand("{outdir}/{reference_version}/deepTools/bamCoverage/{unit}.bw",
                outdir=config["processed_dir"],
                reference_version="GRCm38_ensembl84",
                unit=config["units"])
+
+rule convert_rMATS_bam_to_bw:
+    input:
+        expand("{outdir}/{reference_version}/rMATS/BWs/{unit}.bw",
+                       outdir = config["processed_dir"],
+                       reference_version = "GRCm38_ensembl84",
+                       unit = config["units"])
 
 rule all:
     input:
