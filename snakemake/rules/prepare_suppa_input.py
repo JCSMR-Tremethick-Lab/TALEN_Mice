@@ -7,8 +7,20 @@ from snakemake.exceptions import MissingInputException
 def getTPMs(wildcards):
     fn = []
     for i in config["Groups"][wildcards["tissue"]][wildcards["condition"]]:
-        fn.append("/".join([wildcards["outdir"], wildcards["reference_version"], "suppa", i, "abundance.tpm.tsv"]))
+        fn.append("/".join([wildcards["outdir"], wildcards["reference_version"], "suppa", i, "abundance.tpm"]))
     return(" ".join(fn))
+
+rule make_tpm_tsv:
+    threads:
+        1
+    input:
+        "{outdir}/{reference_version}/kallisto/{unit}/abundance.tsv"
+    output:
+        "{outdir}/{reference_version}/suppa/{unit}/abundance.tpm"
+    shell:
+        """
+            awk '{split($1,a,"."); print a[1]"\t"$5}' < {input}/abundance.tsv > {output}
+        """
 
 rule collate_samples:
     threads:
@@ -18,8 +30,8 @@ rule collate_samples:
     input:
         replicates = getTPMs
     output:
-        "{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundances.tpm",
-        "{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundances"
+        "{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundance.tpm",
+        "{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundance"
     shell:
         """
             suppa.py joinFiles --file-extension tpm\

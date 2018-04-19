@@ -34,13 +34,6 @@ rule run_kallisto:
                reference_version = "GRCm38_ensembl84_cDNA",
                unit = config["units"])
 
-rule make_tpm_tsv_files:
-    input:
-        expand("{outdir}/{reference_version}/suppa/{unit}/abundance.tpm.tsv",
-               outdir = config["processed_dir"],
-               reference_version = "GRCm38_ensembl84_cDNA",
-               unit = config["units"])
-
 rule run_bowtie2:
     input:
         expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{condition}{unit}/hits.bam",
