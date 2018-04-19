@@ -36,7 +36,7 @@ rule run_kallisto:
 
 rule make_tpm_tsv_files:
     input:
-        expand("{outdir}/{reference_version}/kallisto/{unit}/abundance.tpm.tsv",
+        expand("{outdir}/{reference_version}/suppa/{unit}/abundance.tpm.tsv",
                outdir = config["processed_dir"],
                reference_version = "GRCm38_ensembl84_cDNA",
                unit = config["units"])
