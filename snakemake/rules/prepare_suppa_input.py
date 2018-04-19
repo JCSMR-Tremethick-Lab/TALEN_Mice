@@ -13,13 +13,15 @@ def getTPMs(wildcards):
 rule make_tpm_tsv:
     threads:
         1
+    params:
+	sample = lambda: wildcards["unit"]
     input:
         "{outdir}/{reference_version}/kallisto/{unit}/abundance.tsv"
     output:
         "{outdir}/{reference_version}/suppa/{unit}/abundance.tpm"
     shell:
         """
-            awk 'NR==1 {{print {input}}}; {{split($1,a,"."); print a[1]"\t"$5}}' < {input} > {output}
+            awk 'NR==1 {{print {params.sample}}}; {{split($1,a,"."); print a[1]"\t"$5}}' < {input} > {output}
         """
 
 rule collate_samples:
