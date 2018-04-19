@@ -14,7 +14,7 @@ rule make_tpm_tsv:
     threads:
         1
     params:
-	sample = lambda: wildcards["unit"]
+	   sample = lambda: wildcards["unit"]
     input:
         "{outdir}/{reference_version}/kallisto/{unit}/abundance.tsv"
     output:
