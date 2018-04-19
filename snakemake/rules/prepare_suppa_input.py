@@ -19,7 +19,7 @@ rule make_tpm_tsv:
         "{outdir}/{reference_version}/suppa/{unit}/abundance.tpm"
     shell:
         """
-            awk '{split($1,a,"."); print a[1]"\t"$5}' < {input}/abundance.tsv > {output}
+            awk '{{split($1,a,"."); print a[1]"\t"$5}}' < {input}/abundance.tsv > {output}
         """
 
 rule collate_samples:
