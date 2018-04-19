@@ -10,18 +10,6 @@ def getTPMs(wildcards):
         fn.append("/".join([wildcards["outdir"], wildcards["reference_version"], "kallisto", i, "abundance.tpm.tsv"]))
     return(" ".join(fn))
 
-rule make_tpm_tsv:
-    threads:
-        1
-    input:
-        "{outdir}/{reference_version}/kallisto/{unit}/abundance.tsv"
-    output:
-        "{outdir}/{reference_version}/kallisto/{unit}/abundance.tpm.tsv"
-    shell:
-        """
-            awk '{split($1,a,"."); print a[1]"\t"$5}' < {input}/abundance.tsv > {output}
-        """
-
 rule collate_samples:
     threads:
         1
