@@ -7,7 +7,7 @@ from snakemake.exceptions import MissingInputException
 def getTPMs(wildcards):
     fn = []
     for i in config["Groups"][wildcards["tissue"]][wildcards["condition"]]:
-        fn.append("/".join([wildcards["outdir"], wildcards["reference_version"], "suppa", wildcards["tissue"], wildcards["condition"], i, "abundance.tpm.tsv"]))
+        fn.append("/".join([wildcards["outdir"], wildcards["reference_version"], "kallisto", i, "abundance.tpm.tsv"]))
     return(" ".join(fn))
 
 rule make_tpm_tsv:
@@ -26,7 +26,7 @@ rule collate_samples:
     threads:
         1
     params:
-        suppa_dir = home + conifg[]
+        suppa_dir = home + config["suppa_dir"]
     input:
         replicates = getTPMs
     output:

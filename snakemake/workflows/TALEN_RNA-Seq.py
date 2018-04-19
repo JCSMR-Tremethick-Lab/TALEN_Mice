@@ -16,8 +16,8 @@ include_prefix = home + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/
 
 # include:
 #     include_prefix + "perform_fastqc.py"
-include:
-    include_prefix + "perform_cutadapt.py"
+#include:
+#    include_prefix + "perform_cutadapt.py"
 include:
     include_prefix + "run_kallisto.py"
 include:
@@ -80,7 +80,7 @@ rule prepare_suppa:
     input:
         expand("{outdir}/{reference_version}/suppa/{tissue}/{condition}/abundances.tpm",
                 outdir = config["processed_dir"],
-                reference_version = "GRCm38_ensembl84",
+                reference_version = "GRCm38_ensembl84_cDNA",
                 tissue = ["PFC", "OB", "HIPPO"],
                 condition = ["WT", "HEMI"])
 
