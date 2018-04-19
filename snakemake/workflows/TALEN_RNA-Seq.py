@@ -16,8 +16,8 @@ include_prefix = home + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/
 
 # include:
 #     include_prefix + "perform_fastqc.py"
-#include:
-#    include_prefix + "perform_cutadapt.py"
+include:
+    include_prefix + "perform_cutadapt.py"
 include:
     include_prefix + "run_kallisto.py"
 include:
@@ -32,6 +32,13 @@ include:
 rule run_kallisto:
     input:
         expand("{outdir}/{reference_version}/kallisto/{unit}",
+               outdir = config["processed_dir"],
+               reference_version = "GRCm38_ensembl84",
+               unit = config["units"])
+
+rule make_tpm_tsv_files:
+    input:
+        expand("{outdir}/{reference_version}/kallisto/{unit}/abundance.tpm.tsv",
                outdir = config["processed_dir"],
                reference_version = "GRCm38_ensembl84",
                unit = config["units"])
@@ -75,14 +82,6 @@ rule convert_rMATS_bam_to_bw:
                 outdir = config["processed_dir"],
                 reference_version = "GRCm38_ensembl84",
                 unit = config["units"])
-
-rule prepare_suppa:
-    input:
-        expand("{outdir}/{reference_version}/suppa/{tissue}/{condition}/abundances.tpm",
-                outdir = config["processed_dir"],
-                reference_version = "GRCm38_ensembl84_cDNA",
-                tissue = ["PFC", "OB", "HIPPO"],
-                condition = ["WT", "HEMI"])
 
 rule all:
     input:
