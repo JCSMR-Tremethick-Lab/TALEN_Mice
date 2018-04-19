@@ -14,7 +14,7 @@ rule make_tpm_tsv:
     threads:
         1
     input:
-        rules.kallisto_quant.output
+        "{outdir}/{reference_version}/kallisto/{unit}/abundance.tsv"
     output:
         "{outdir}/{reference_version}/kallisto/{unit}/abundance.tpm.tsv"
     shell:
@@ -35,6 +35,6 @@ rule collate_samples:
     shell:
         """
             suppa.py joinFiles --file-extension tpm\
-                               --input-files {input.replicates}
+                               --input-files {input.replicates}\
                                --output {output[1]}
         """
