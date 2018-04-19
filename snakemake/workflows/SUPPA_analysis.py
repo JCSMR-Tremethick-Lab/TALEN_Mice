@@ -26,7 +26,7 @@ rule make_tpm_tsv_files:
 
 rule prepare_suppa:
     input:
-        expand("{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundances.tpm",
+        expand("{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundance.tpm",
                 outdir = config["processed_dir"],
                 reference_version = "GRCm38_ensembl84_cDNA",
                 tissue = ["PFC", "OB", "HIPPO"],
