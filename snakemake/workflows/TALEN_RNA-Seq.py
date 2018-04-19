@@ -31,14 +31,14 @@ rule run_kallisto:
     input:
         expand("{outdir}/{reference_version}/kallisto/{unit}",
                outdir = config["processed_dir"],
-               reference_version = "GRCm38_ensembl84",
+               reference_version = "GRCm38_ensembl84_cDNA",
                unit = config["units"])
 
 rule make_tpm_tsv_files:
     input:
         expand("{outdir}/{reference_version}/kallisto/{unit}/abundance.tpm.tsv",
                outdir = config["processed_dir"],
-               reference_version = "GRCm38_ensembl84",
+               reference_version = "GRCm38_ensembl84_cDNA",
                unit = config["units"])
 
 rule run_bowtie2:
