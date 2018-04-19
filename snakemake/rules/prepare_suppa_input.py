@@ -28,13 +28,13 @@ rule collate_samples:
     params:
         suppa_dir = home + config["suppa_dir"]
     input:
-        replicates = getTPMs
+        getTPMs
     output:
         "{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundance.tpm",
         "{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundance"
     shell:
         """
             suppa.py joinFiles --file-extension tpm\
-                               --input-files {input.replicates}\
+                               --input-files {input}\
                                --output {output[1]}
         """
