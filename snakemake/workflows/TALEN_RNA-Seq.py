@@ -26,6 +26,8 @@ include:
     include_prefix + "run_bowtie2.py"
 include:
     include_prefix + "run_express.py"
+include:
+    include_prefix + "prepare_suppa_input.py"
 
 rule run_kallisto:
     input:
@@ -70,9 +72,17 @@ rule convert_bam_to_bw:
 rule convert_rMATS_bam_to_bw:
     input:
         expand("{outdir}/{reference_version}/rMATS/BWs/{unit}.bw",
-                       outdir = config["processed_dir"],
-                       reference_version = "GRCm38_ensembl84",
-                       unit = config["units"])
+                outdir = config["processed_dir"],
+                reference_version = "GRCm38_ensembl84",
+                unit = config["units"])
+
+rule prepare_suppa:
+    input:
+        expand("{outdir}/{reference_version}/suppa/{tissue}/{condition}/abundances.tpm",
+                outdir = config["processed_dir"],
+                reference_version = "GRCm38_ensembl84",
+                tissue = ["PFC", "OB", "HIPPO"],
+                condition = ["WT", "HEMI"])
 
 rule all:
     input:

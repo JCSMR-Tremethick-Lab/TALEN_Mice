@@ -79,6 +79,7 @@
   "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
   "python27_bin" : "/miniconda3/envs/py27/bin/python",
   "deepTools_dir" : "/miniconda3/envs/py27/bin",
+  "suppa_dir" : "/miniconda3/bin/",
   "Picard" :
   {
     "sampling" : ["0.2"]
