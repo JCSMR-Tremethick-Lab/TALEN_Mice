@@ -34,7 +34,7 @@ rule make_tpm_tsv:
     input:
         "{outdir}/{reference_version}/kallisto/{unit}/abundance.tsv"
     output:
-        "{outdir}/{reference_version}/kallisto/{unit}/abundance.tpm.tsv"
+        "{outdir}/{reference_version}/suppa/{unit}/abundance.tpm.tsv"
     shell:
         """
             awk '{split($1,a,"."); print a[1]"\t"$5}' < {input}/abundance.tsv > {output}
