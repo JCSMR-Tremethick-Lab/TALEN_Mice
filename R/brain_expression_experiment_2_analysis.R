@@ -40,14 +40,14 @@ lDir <- function(x, y){
   paste(x, y, sep = "/")
 }
 
-if (dir.exists(lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/R_analysis"))){
-  setwd(lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/R_analysis"))
+if (dir.exists(lDir(pathPrefix, "Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain_experiment_2/R_analysis"))){
+  setwd(lDir(pathPrefix, "Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain_experiment_2/R_analysis"))
 } else {
-  dir.create(lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/R_analysis"))
-  setwd(lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/R_analysis"))
+  dir.create(lDir(pathPrefix, "Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain_experiment_2/R_analysis"))
+  setwd(lDir(pathPrefix, "Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain_experiment_2/R_analysis"))
 }
 
-sleuth_analysis_version <- 1
+sleuth_analysis_version <- 3
 sleuth_analysis_output <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output.rda", sep = "")
 sleuth_analysis_output_combined <- paste("sleuth_analysis_V", sleuth_analysis_version, "_output_combined.rda", sep = "")
 sleuth_analysis_outputCompressed <- paste("sleuth_analysis_V", sleuth_analysis_version, "_Compressed_output.rda", sep = "")
@@ -56,12 +56,12 @@ previous_sleuth_analysis_version <- sleuth_analysis_version - 1
 previous_sleuth_analysis_output <- paste("sleuth_analysis_V", previous_sleuth_analysis_version, "_output.rda", sep = "")
 previous_sleuth_analysis_output_combined <- paste("sleuth_analysis_V", previous_sleuth_analysis_version, "_output_combined.rda", sep = "")
 
-kallisto_base_dir <- lDir(pathPrefix, "Data/Tremethick/TALENs/Mus_musculus_brain_experiment_2/processed_data/GRCm38_ensembl84/kallisto")
+kallisto_base_dir <- "/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain_experiment_2/processed_data/GRCm38_ensembl84_cDNA/kallisto"
 
 
 # use Ensembl 84 for annotation
 if (!file.exists("t2g.rda")){
-  mouse <- useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
+  mouse <- biomaRt::useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = ensemblHost)
   attribs <- listAttributes(mouse)
   # annotate transcripts
   # Ensembl 84 includes version number in FASTA IDs, therefore have to conactenate them in, other wise mapping does not work
@@ -134,7 +134,6 @@ if (!file.exists("ensGenes.rda")){
 # run analysis by brain region so that only pair-wise comparison
 if (file.exists(previous_sleuth_analysis_output)) {file.remove(previous_sleuth_analysis_output); file.remove(previous_sleuth_analysis_output_combined)}
 
-
 base_dirs <- list(pfc = kallisto_base_dir)
 if (!file.exists(sleuth_analysis_output)){
   sleuthProcessedData <- lapply(names(base_dirs), function(x){
@@ -149,6 +148,8 @@ if (!file.exists(sleuth_analysis_output)){
     treatment <- relevel(treatment, ref = "naive")
     s2c <- data.frame(sample = sample_id, condition = condition, treatment = treatment)
     s2c <- dplyr::mutate(s2c, path = kal_dirs)
+    s2c <- s2c[order(s2c$condition, s2c$treatment),]
+    rownames(s2c) <- 1:nrow(s2c)
     designMatrix <- model.matrix(~ condition * treatment, data = s2c)
     
     # here we test for the interaction between mutant & wt and try to determine which variability is explained by fear-conditionint alone
@@ -163,7 +164,7 @@ if (!file.exists(sleuth_analysis_output)){
     rt <- sleuth::sleuth_results(so, "conditionmut:treatmentFC", show_all = F)
     
     # do same analysis on gene level ----------------------------------------
-    so.gene <- sleuth::sleuth_prep(s2c, ~ condition * treatment, target_mapping = t2g, aggregation_column = "ens_gene")
+    so.gene <- sleuth::sleuth_prep(s2c, ~ condition * treatment, target_mapping = t2g, aggregation_column = "ens_gene", num_cores = 32)
     so.gene <- sleuth::sleuth_fit(so.gene, designMatrix)
     so.gene <- sleuth::sleuth_wt(so.gene, "conditionmut")
     so.gene <- sleuth::sleuth_wt(so.gene, "treatmentFC")
@@ -177,8 +178,10 @@ if (!file.exists(sleuth_analysis_output)){
     kt.gene <- melt(kt_wide.gene)
     kt.gene$groups <- unlist(lapply(strsplit(as.character(kt.gene$variable), "_"), function(x) paste(x[5:6], collapse = "_")))
     kt_wide.gene <- data.table::as.data.table(merge(kt_wide.gene, unique(subset(t2g, select =  c("ens_gene", "ext_gene", "description")), by = "ens_gene"), all.x = TRUE, all.y = FALSE))
-    rt.gene <- sleuth::sleuth_results(so.gene, "conditionmut:treatmentFC", show_all = F)
+    rt.gene <- sleuth::sleuth_esults(so.gene, "conditionmut:treatmentFC", show_all = F)
+    rt.gene.conditionmut <-  sleuth::sleuth_results(so.gene, "conditionmut", show_all = F)
     rt.gene <- as.data.table(merge(rt.gene, unique(subset(t2g, select = c("ens_gene", "ext_gene", "description")), by = "ens_gene"), all.x = T, all.y = F, by.x = "target_id", by.y = "ens_gene"))
+    rt.gene.conditionmut <- as.data.table(merge(rt.gene.conditionmut, unique(subset(t2g, select = c("ens_gene", "ext_gene", "description")), by = "ens_gene"), all.x = T, all.y = F, by.x = "target_id", by.y = "ens_gene"))
     
     # alternatively, and statistically probably not so clean, test  --------
     # look at difference between naive WT vs MUT
@@ -218,11 +221,17 @@ if (!file.exists(sleuth_analysis_output)){
     s2c.treatment.wt <- s2c[grep("wt", s2c$condition),]
     s2c.treatment.wt <- subset(s2c.treatment.wt, select = -(condition))
     so.treatment.wt <- sleuth::sleuth_prep(s2c.treatment.wt, ~ treatment, target_mapping = t2g)
+    so.gene.treatment.wt <- sleuth::sleuth_prep(s2c.treatment.wt, ~ treatment, target_mapping = t2g, aggregation_column = "ens_gene")
     designMatrix.treatment.wt <- model.matrix(~ treatment, data = s2c.treatment.wt)
     so.treatment.wt <- sleuth::sleuth_fit(so.treatment.wt, designMatrix.treatment.wt)
     so.treatment.wt <- sleuth::sleuth_wt(so.treatment.wt, "treatmentFC")
     so.treatment.wt <- sleuth::sleuth_fit(so.treatment.wt, ~1, "reduced")
     so.treatment.wt <- sleuth::sleuth_lrt(so.treatment.wt, "reduced", "full")
+    so.gene.treatment.wt <- sleuth::sleuth_fit(so.gene.treatment.wt, designMatrix.treatment.wt)
+    so.gene.treatment.wt <- sleuth::sleuth_wt(so.gene.treatment.wt, "treatmentFC")
+    so.gene.treatment.wt <- sleuth::sleuth_fit(so.gene.treatment.wt, ~1, "reduced")
+    so.gene.treatment.wt <- sleuth::sleuth_lrt(so.gene.treatment.wt, "reduced", "full")
+    
     rt.treatment.wt <- sleuth::sleuth_results(so.treatment.wt, "treatmentFC")
     rt.treatment.wt <- as.data.table(rt.treatment.wt)
     rt.treatment.wt <- rt.treatment.wt[!(is.na(qval))]
@@ -251,10 +260,10 @@ if (!file.exists(sleuth_analysis_output)){
                 kallisto_table = kt,
                 kallisto_table_wide = kt_wide,
                 kallisto_pca = kt.pca,
-                so.treatment.mut,
-                so.treatment.wt,
-                so.condition.fc,
-                so.condition.naive))
+                sleuth_object_mut_treat = so.treatment.mut,
+                sleuth_object_wt_treat = so.treatment.wt,
+                sleuth_object_fc_cond = so.condition.fc,
+                sleuth_object_naive_cond = so.condition.naive))
     })
   names(sleuthProcessedData) <- names(base_dirs)
   save(sleuthProcessedData, file = sleuth_analysis_output)
@@ -307,10 +316,9 @@ if (!file.exists(edgeR_analysis_output)){
     # read in kallisto data with tximport
     txi <- tximport::tximport(files,
                               type = "kallisto",
-                              tx2gene = t2g,
+                              tx2gene = subset(t2g, select = c("target_id", "ens_gene")),
                               geneIdCol = "ens_gene",
-                              txIdCol = "target_id",
-                              reader = read_tsv)
+                              txIdCol = "target_id")
     # RUVseq analysis starts here
     # have to round the estimated counts to integers
     original <- round(txi$counts, 0)

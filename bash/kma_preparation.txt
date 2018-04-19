@@ -1,0 +1,30 @@
+source activate py27
+
+# prepared Mus_musculus.GRCm38.introns 
+PRE=/home/sebastian/R/3.4.0_library/kma/pre-process
+# python $PRE/generate_introns.py --genome seq.fa --gtf trans.gtf --extend N --out out_dir
+cd /home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.introns
+cat trans.fa introns.fa > trans_and_introns.fa
+grep -c '>' trans_and_introns.fa
+bowtie2-build --offrate 1 trans_and_introns.fa trans_and_introns
+
+cd /home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_testes/kma_analysis
+ln -s ~/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.introns/ annotation
+
+bowtie2 --threads 7 -k 200 --rdg 6,5 --rfg 6,5 --score-min L,-.6,-.4 -x annotation/trans_and_introns \
+    -1 experiment/wt/wt1/wt1_R1.fastq.gz -2 experiment/wt/wt1/wt1_R2.fastq.gz| samtools view -Sb - > experiment/wt/wt1/wt1.bam 
+
+bowtie2 --threads 7 -k 200 --rdg 6,5 --rfg 6,5 --score-min L,-.6,-.4 -x annotation/trans_and_introns \
+    -1 experiment/wt/wt2/wt2_R1.fastq.gz -2 experiment/wt/wt2/wt2_R2.fastq.gz| samtools view -Sb - > experiment/wt/wt2/wt2.bam
+
+bowtie2 --threads 7 -k 200 --rdg 6,5 --rfg 6,5 --score-min L,-.6,-.4 -x annotation/trans_and_introns \
+    -1 experiment/wt/wt3/wt3_R1.fastq.gz -2 experiment/wt/wt3/wt3_R2.fastq.gz| samtools view -Sb - > experiment/wt/wt3/wt3.bam
+
+bowtie2 --threads 7 -k 200 --rdg 6,5 --rfg 6,5 --score-min L,-.6,-.4 -x annotation/trans_and_introns \
+    -1 experiment/hemi/hemi1/hemi1_R1.fastq.gz -2 experiment/hemi/hemi1/hemi1_R2.fastq.gz| samtools view -Sb - > experiment/hemi/hemi1/hemi1.bam
+
+bowtie2 --threads 7 -k 200 --rdg 6,5 --rfg 6,5 --score-min L,-.6,-.4 -x annotation/trans_and_introns \
+    -1 experiment/hemi/hemi2/hemi2_R1.fastq.gz -2 experiment/hemi/hemi2/hemi2_R2.fastq.gz| samtools view -Sb - > experiment/hemi/hemi2/hemi2.bam
+
+bowtie2 --threads 7 -k 200 --rdg 6,5 --rfg 6,5 --score-min L,-.6,-.4 -x annotation/trans_and_introns \
+    -1 experiment/hemi/hemi3/hemi3_R1.fastq.gz -2 experiment/hemi/hemi3/hemi3_R2.fastq.gz| samtools view -Sb - > experiment/hemi/hemi3/hemi3.bam
