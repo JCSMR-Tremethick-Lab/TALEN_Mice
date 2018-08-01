@@ -1,0 +1,204 @@
+{
+  "references":
+  {
+  "active": "GRCm38_mm10",
+  "database":
+  {
+      "biomart": "ensembl",
+      "dataset": "mmusculus_gene_ensembl"
+  },
+  "GRCm38_mm10":
+    {
+      "ensemblHost": "asia.ensembl.org",
+      "version": ["GRCm38_ensembl93"],
+      "genome":
+      {
+        "GRCm38_mm10": "/Data/References/Genomes/Homo_sapiens/GRCm38_mm10/Mus_musculus.GRCm38.dna.toplevel.fa"
+      },
+      "bowtie2":
+        {
+          "GRCm38_mm10": "/Data/References/Genomes/Homo_sapiens/GRCm38_mm10/GRCm38_mm10_masked"
+        }
+    }
+  },
+    "samples":
+    {
+      "CutRun":
+      {
+        "runID": ["180731_NB501086_0217_CutandRun_Tanya"],
+        "180731_NB501086_0217_CutandRun_Tanya":
+        {
+          "WT_01_H2AL2_3_7_18" : ["S1_S1_R1_001.fastq.gz", "S1_S1_R2_001.fastq.gz"],
+          "WT_01_IGG_3_7_18" : ["S4_S2_R1_001.fastq.gz", "S4_S2_R2_001.fastq.gz"],
+          "KO_01_H2AL2_3_7_18" : ["S5_S3_R1_001.fastq.gz", "S5_S3_R3_001.fastq.gz"],
+          "KO_02_H2AL2_24_6_18" : ["S11_S4_R1_001.fastq.gz", "S11_S4_R2_001.fastq.gz"],
+          "WT_02_H2AL2_24_6_18" : ["S13_S5_R1_001.fastq.gz", "S13_S5_R2_001.fastq.gz"],
+          "WT_01_H3K27me3_23_5_18" : ["S15_S6_R1_001.fastq.gz", "S15_S6_R2_001.fastq.gz"],
+          "WT_01_H3K36me3_23_5_18" : ["S16_S7_R1_001.fastq.gz", "S16_S7_R2_001.fastq.gz"]
+        },
+        "replicates":
+        {
+          "WT_H2AL2" : ["WT_01_H2AL2_3_7_18"],
+          "WT_IGG" : ["WT_01_IGG_3_7_18"],
+          "WT_H3K27me3" : ["WT_01_H3K27me3_23_5_18"],
+          "WT_H3K36me3" : ["WT_01_H3K36me3_23_5_18"],
+          "KO_H2AL2" : ["KO_01_H2AL2_3_7_18", "KO_02_H2AL2_24_6_18"]
+        },
+        "conditions":
+        {
+          "WT":
+          {
+            "180731_NB501086_0217_CutandRun_Tanya": ["WT_01_H2AL2_3_7_18", "WT_01_IGG_3_7_18", "WT_01_H3K27me3_23_5_18", "WT_01_H3K36me3_23_5_18"]
+          },
+          "KO":
+          {
+            "180731_NB501086_0217_CutandRun_Tanya": ["KO_01_H2AL2_3_7_18", "KO_02_H2AL2_24_6_18"]
+          }
+        }
+      }
+    },
+  "program_parameters":
+  {
+  "bt2_params":
+  {
+      "max_insert": ["1000"],
+      "threads": ["7"],
+      "platform": ["Illumina"]
+  },
+  "bt2_params_unmapped_reads":
+  {
+      "max_insert": ["1000000"],
+      "threads": ["7"],
+      "platform": ["Illumina"]
+  },
+  "macs2" :
+  {
+    "binary" : "/miniconda3/envs/py27/bin/macs2",
+    "gsize" : "hs",
+    "verbosity" : "3"
+  },
+  "deepTools":
+  {
+    "SES_sample_length": ["1000"],
+    "SES_numer_of_samples": ["10000000.0"],
+    "ignoreForNormalization": ["MT X"],
+    "binSize": ["10000"],
+    "threads": "8",
+    "deepTools_dir": "/miniconda3/envs/py27/bin",
+    "regionFiles":
+    {
+      "GRCh37_hg19_ensembl75":
+      {
+        "allGenes": "/Data/Tremethick/HP1-alpha/AnnotationData/GRCh37_hg19_ensembl75/allGenes.bed",
+        "conditionMCF10A_shH2AZHP1a" : "/Data/Tremethick/HP1-alpha/AnnotationData/GRCh37_hg19_ensembl75/conditionMCF10A_shH2AZHP1a.bed",
+        "conditionMCF10A_shHP1ab" : "/Data/Tremethick/HP1-alpha/AnnotationData/GRCh37_hg19_ensembl75/conditionMCF10A_shHP1ab.bed",
+        "conditionMCF10A_shHP1a" : "/Data/Tremethick/HP1-alpha/AnnotationData/GRCh37_hg19_ensembl75/conditionMCF10A_shHP1a.bed",
+        "conditionMCF10A_shHP1b" : "/Data/Tremethick/HP1-alpha/AnnotationData/GRCh37_hg19_ensembl75/conditionMCF10A_shHP1b.bed",
+        "conditionMCF10A_WT" : "/Data/Tremethick/HP1-alpha/AnnotationData/GRCh37_hg19_ensembl75/conditionMCF10A_WT.bed",
+        "intergenicRegions": "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/intergenicRegions10kb-200kb.bed",
+        "repeats" : "/Data/References/Annotations/Homo_sapiens/hg19/Ensembl/RepeatMasker.bed",
+        "dummy" : "dummy.bed"
+      },
+      "GRCh37_hg19_ensembl75_ERCC":
+      {
+        "allGenes": "/Data/References/Annotations/Homo_sapiens/GRCh37_hg19_ensembl75/allGenes.bed"
+      },
+      "GRCh38_ensembl84":
+      {
+        "allGenes": "/Data/References/Annotations/Homo_sapiens/GRCh38_ensembl84/allGenes.bed"
+      }
+    },
+    "bamCoverage":
+    {
+      "MNase":
+      {
+        "--binSize": "1",
+        "--smoothLength": "30"
+      },
+      "normal":
+      {
+        "--centerReads": " ",
+        "--binSize": "100",
+        "--smoothLength": "150"
+      }
+    },
+    "bamCompare":
+    {
+      "MNase":
+      {
+        "--binSize": "1",
+        "--smoothLength": "30"
+      },
+      "normal":
+      {
+        "--centerReads": " ",
+        "--binSize": "100",
+        "--smoothLength": "150"
+      }
+    },
+    "computeMatrix":
+    {
+      "scale-regions":
+      {
+        "default":
+        {
+          "--upstream": "3000",
+          "--downstream": "3000",
+          "--regionBodyLength": "5000",
+          "--unscaled5prime": "200",
+          "--unscaled3prime": "200"
+        },
+        "coding":
+        {
+          "--upstream": "3000",
+          "--downstream": "3000",
+          "--regionBodyLength": "5000",
+          "--unscaled5prime": "200",
+          "--unscaled3prime": "200"
+        },
+        "noncoding":
+        {
+          "--upstream": "0",
+          "--downstream": "0",
+          "--regionBodyLength": "20000",
+          "--unscaled5prime": "0",
+          "--unscaled3prime": "0"
+        }
+      },
+      "reference-point":
+      {
+        "--upstream": "1500",
+        "--downstream": "1500",
+        "--referencePoint": ""
+      }
+    }
+  },
+    "picard_tools":
+    {
+      "jar": "/bin/picard.jar",
+      "CollectInsertSizeMetrics":
+      {
+          "minimum_perc": "0.1"
+      }
+    },
+    "fastp" :
+    {
+      "fastp_bin" : "/miniconda3/bin/fastp"
+    },
+    "bowtie2":
+    {
+      "threads": "8",
+      "max_insert": "500"
+    }
+  },
+  "trim_dir": "trimmed_data",
+  "processed_dir": "processed_data",
+  "aligned_dir": "aligned_data",
+  "reports_dir": "reports",
+  "temp_dir": "/temp_data",
+  "alignment_quality": "20",
+  "raw_dir": "fastq",
+  "cutadapt_dir": "/miniconda3/envs/snakemake/bin",
+  "HTSeq_dir": "/miniconda3/envs/py27/bin",
+  "DEXSeq_dir": "/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/"
+}
