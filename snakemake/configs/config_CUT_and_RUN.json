@@ -61,14 +61,14 @@
   {
   "bt2_params":
   {
-      "max_insert": ["1000"],
+      "max_insert": ["200"],
       "threads": ["7"],
       "platform": ["Illumina"]
   },
   "bt2_params_unmapped_reads":
   {
-      "max_insert": ["1000000"],
-      "threads": ["7"],
+      "max_insert": ["200"],
+      "threads": ["8"],
       "platform": ["Illumina"]
   },
   "macs2" :
