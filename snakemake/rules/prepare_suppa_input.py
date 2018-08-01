@@ -14,14 +14,14 @@ rule make_tpm_tsv:
     threads:
         1
     params:
-        sample = lambda wildcards["unit"]
+        sample = lambda wildcards: wildcards["unit"]
     input:
         "{outdir}/{reference_version}/kallisto/{unit}/abundance.tsv"
     output:
         "{outdir}/{reference_version}/suppa/{unit}/abundance.tpm"
     shell:
         """
-            awk '{if (NR==1) {{print "{params.sample}"";}} {{split($1,a,"."); print a[1]"\t"$5}}}}' < {input} > {output}
+            awk '{{if(NR==1) {{print "{params.sample}";}} else {{split($1,a,"."); print a[1]"\t"$5}}}}' < {input} > {output}
         """
 
 rule collate_samples:
