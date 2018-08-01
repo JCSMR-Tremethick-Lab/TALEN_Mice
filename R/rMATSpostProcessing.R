@@ -39,7 +39,12 @@ table(MXE.MATS.JC$FDR < 0.1)
 # quick check of DE genes
 d <- "/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain_experiment_2/R_analysis/CSV_export"
 list.files(d)
-deData <- data.table::fread(file.path(d, "sleuth_results_naive_mutant_vs_wt.csv"))
-                            
+deData <- data.table::fread(file.path(d, "sleuth_results_wildtype_naive_vs_fear.csv"))
+# 22 DEG naive wt vs ko
+# 0 DEG fear wt vs ko <- high variability?
+# 2 DEG mutant fear vs naive
+# 280 DEG wildtype fear vs naive
+
+
                             
                             
