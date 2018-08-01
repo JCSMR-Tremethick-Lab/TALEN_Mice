@@ -1,19 +1,27 @@
 import json
 from pprint import pprint
 
+with open("config_RNA-Seq_Brain.json") as data_file:
+    config = json.load(data_file)
+
 wildcards = dict()
 wildcards = {"outdir" : "processed_data",
              "reference_version" : "hg38",
              "unit" : "10_9_hemi_OB_CCGTCC",
              "tissue" : "OB",
-             "condition" : "WT_vs_HEMI"}
-
+             "condition" : "WT"}
 
 def getFASTQ(wildcards, assayID):
     fn = []
     for i in wildcards[assayID]:
         fn.append("./" + i)
     return(fn)
+
+def getTPMs(wildcards):
+    fn = []
+    for i in config["Groups"][wildcards["tissue"]][wildcards["condition"]]:
+        fn.append("/".join([wildcards["outdir"], wildcards["reference_version"], "suppa", wildcards["tissue"], wildcards["condition"], i, "abundance.tpm.tsv"]))
+    return(",".join(fn))
 
 
 def writeBAMFilesList(wildcards):

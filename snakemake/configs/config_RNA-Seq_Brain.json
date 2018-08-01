@@ -6,7 +6,9 @@
       "version" : ["GRCm38_ensembl84_ERCC", "GRCm38_ensembl84_cDNA"],
       "DEX_GTF" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.DEXSeq.gtf",
       "transcript_GC" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.gc_content.txt",
-      "GTF_conformed" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.conformed.gtf"
+      "GTF_conformed" : "/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.84.conformed.gtf",
+      "trans_and_introns" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.introns/trans_and_introns",
+      "trans_and_introns_fasta" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.introns/trans_and_introns.fa"
   },
   "kallisto" :
   {
@@ -20,6 +22,7 @@
   "STAR" :
   {
     "GRCm38_ensembl84_ERCC" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index_ERCC/",
+    "GRCm38_ensembl84" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/STAR_Index/",
     "runThreadN" : "8"
   },
   "units" :
@@ -75,6 +78,8 @@
   "cutadapt_dir" : "/home/sebastian/miniconda2/envs/snakemake/bin",
   "DEXSeq_dir" : "/home/sebastian/R/x86_64-unknown-linux-gnu-library/DEXSeq/python_scripts/",
   "python27_bin" : "/miniconda3/envs/py27/bin/python",
+  "deepTools_dir" : "/miniconda3/envs/py27/bin",
+  "suppa_dir" : "/miniconda3/bin/",
   "Picard" :
   {
     "sampling" : ["0.2"]

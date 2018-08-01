@@ -26,7 +26,7 @@ rule star_align_full:
     threads:
         lambda wildcards: int(str(config["STAR"]["runThreadN"]).strip("['']"))
     params:
-            tmp_dir = home + "/tmp"
+        tmp_dir = home + "/tmp"
     input:
         rules.cutadapt_pe.output,
         index = lambda wildcards: config["STAR"][wildcards.reference_version]
@@ -49,6 +49,43 @@ rule star_align_full:
                  > {output}
         """
 
+rule star_align_rMATs:
+    version:
+        0.1
+    threads:
+        30
+    params:
+        tempDir = home + "/tmp/",
+        tophatAnchor = "2"
+    input:
+        rules.cutadapt_pe.output,
+        index = lambda wildcards: config["STAR"][wildcards.reference_version],
+        gtf = lambda wildcards: config["references"]["GTF"]
+    output:
+        protected("{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam")
+    shell:
+        """
+            STAR --runMode alignReads \
+                 --runThreadN {threads} \
+                 --genomeDir {input.index} \
+                 --readFilesIn {input[0]} {input[1]} \
+                 --readFilesCommand zcat \
+                 --outTmpDir {params.tempDir}{wildcards.unit} \
+                 --outSAMmode Full \
+                 --outSAMattributes Standard \
+                 --outSAMstrandField intronMotif\
+                 --outSAMtype BAM SortedByCoordinate \
+                 --outStd BAM_SortedByCoordinate \
+                 --alignEndsType EndToEnd\
+                 --chimSegmentMin 2\
+                 --outFilterMismatchNmax 3\
+                 --alignSJDBoverhangMin {params.tophatAnchor}\
+                 --alignIntronMax 299999\
+                 --sjdbGTFfile {input.gtf}\
+                 > {output[0]}
+        """
+
+
 rule bam_index_STAR_output:
     version:
         0.2
@@ -59,11 +96,22 @@ rule bam_index_STAR_output:
     wrapper:
         "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
+rule bam_index_STAR_rMATS_output:
+    version:
+        0.1
+    input:
+        "{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam"
+    output:
+        protected("{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam.bai")
+    wrapper:
+        "file://" + wrapper_dir + "/samtools/index/wrapper.py"
+
+
 rule create_bigwig_from_bam:
     version:
         0.1
     threads:
-        8
+        16
     params:
         deepTools_dir = home + config["deepTools_dir"]
     input:
@@ -81,6 +129,28 @@ rule create_bigwig_from_bam:
                                                --smoothLength 10
         """
 
+rule create_bigwig_from_rMATS_bam:
+    version:
+        0.1
+    threads:
+        16
+    params:
+        deepTools_dir = home + config["deepTools_dir"],
+    input:
+        bam = "{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam",
+        index = "{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam.bai"
+    output:
+        bigwig = protected("{outdir}/{reference_version}/rMATS/BWs/{unit}.bw")
+    shell:
+        """
+            {params.deepTools_dir}/bamCoverage --bam {input.bam} \
+                                               --outFileName {output} \
+                                               --outFileFormat bigwig \
+                                               --binSize 1 \
+                                               --numberOfProcessors {threads} \
+                                               --normalizeUsingRPKM \
+                                               --smoothLength 10
+        """
 
 rule run_dexseq_count:
     version:

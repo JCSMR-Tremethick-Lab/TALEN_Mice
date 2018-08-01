@@ -17,3 +17,6 @@ java -Djava.io.tmpdir=/home/skurscheid/tmp \
       OUTPUT=/home/skurscheid/Data/References/Genomes/Mus_musculus/mm10_GRCm38/Mus_musculus.GRCm38.dna.toplevel.dict \
       GENOME_ASSEMBLY=mm10_GRCm38 \
       SPECIES=Mus_musculus
+
+
+bowtie2 -k 200 --threads 8 --rdg 6,5 --rfg 6,5 --score-min L,-.6,-.4 -x /home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.introns/trans_and_introns -1 processed_data/GRCm38_ensembl84/KMA_analysis/experiment/wt/wt1/wt1_R1.fastq.gz -2 processed_data/GRCm38_ensembl84/KMA_analysis/experiment/wt/wt1/wt1_R2.fastq.gz > ./test.bam

@@ -2,13 +2,15 @@ require(rhdf5)
 require(sleuth)
 require(biomaRt)
 require(tidyr)
+library(data.table)
+library(tximport)
 
 source("~/Development/GeneralPurpose/R/heatmap.3.R")
 
 
 # setting working directory and data sources ------------------------------
-setwd("~/Data/Tremethick/TALENs/NB501086_0047_TSoboleva_JCSMR_stranded_RNASeq/R_analysis")
-base_dir <- "~/Data/Tremethick/TALENs/NB501086_0047_TSoboleva_JCSMR_stranded_RNASeq/processed_data/kallisto"
+setwd("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_testes/R_analysis/")
+base_dir <- "/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_testes/processed_data/GRCm38_ensembl84_ERCC/kallisto"
 
 # creating data.frame for experimental design and file names --------------
 sample_id <- dir(base_dir)
@@ -20,14 +22,24 @@ x <- factor(x, levels(x)[c(2,1)])
 s2c$condition <- x
 
 # transcript level differential expression analysis -----------------------------
-#use Ensembl 74 for annotation
-mouse <- useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = "dec2013.archive.ensembl.org")
+#use Ensembl 84 for annotation
+mouse <- useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", host = "mar2016.archive.ensembl.org")
 attribs <- listAttributes(mouse)
 # annotate transcripts
-t2g <- getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id", "external_gene_id"), mart = mouse)
-t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_id)
-rownames(t2g) <- t2g$target_id
-# re-run sleuth
+t2g <- getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id", "external_gene_name"), mart = mouse)
+t2g <- data.table::data.table(dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name))
+save(t2g, file = "t2g_ensembl84.rda")
+
+files <- paste(kal_dirs, "abundance.h5", sep = "/")
+txi <- tximport::tximport(files, tx2gene = t2g[,c("target_id", "ext_gene")], geneIdCol = "ext_gene", txIdCol = "target_id", type = "kallisto", ignoreTxVersion = T)
+sd1 <- apply(log2(txi$abundance + 1), 1, sd)
+summary(sd1)
+pca1 <- ade4::dudi.pca(t(log2(txi$abundance + 1)[sd1 > 0.15,]), nf = 6, scannf = F)
+ade4::s.arrow(pca1$li)
+
+## re-run sleuth 
+## omit NMG3-77hemi_S6
+## removing outliers does not improve DTE results
 so <- sleuth_prep(s2c, ~ condition, target_mapping = t2g)
 so <- sleuth_fit(so)
 so <- sleuth_wt(so, "conditionKO - Testis")
@@ -37,12 +49,20 @@ kt.transcripts <- kallisto_table(so)
 
 # gene level analysis -----------------------------------------------------
 options(mc.cores = 8L)
-so.gene <- sleuth_prep(s2c, ~condition, target_mapping = t2g, aggregation_column = 'ens_gene')
+so.gene <- sleuth_prep(s2c, ~condition, target_mapping = t2g, aggregation_column = 'ext_gene')
 so.gene <- sleuth_fit(so.gene)
-so.gene <- sleuth_wt(so.gene, "conditionKO")
-results_table.gene <- sleuth_results(so.gene, "conditionKO")
+so.gene <- sleuth_wt(so.gene, "conditionKO - Testis")
+results_table.gene <- data.table(sleuth_results(so.gene, "conditionKO - Testis"))
 results_table.gene$FC_estimated <- log2(exp(results_table.gene$b))
-rownames(results_table.gene) <- results_table.gene$target_id
+kt.gene <- data.table(kallisto_table(so.gene, use_filtered = F, normalized = T))
+setkey(kt.gene, "condition")
+kt.gene.mean <- kt.gene[, list("mean_tpm" = mean(tpm)), by = list(condition, target_id)]
+setkey(kt.gene.mean, "condition")
+
+var.test(kt.gene["KO - Testis"]$tpm, kt.gene["WT - Testis"]$tpm)
+sd(log2(kt.gene["KO - Testis"]$tpm + 1))
+sd(log2(kt.gene["WT - Testis"]$tpm + 1))
+
 
 # results table contains gene level differential expression, but kallisto_table is still transcript level
 kt.gene <- kallisto_table(so.gene, normalized = T)

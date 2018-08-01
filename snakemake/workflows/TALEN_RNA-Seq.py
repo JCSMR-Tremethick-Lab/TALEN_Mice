@@ -22,13 +22,43 @@ include:
     include_prefix + "run_kallisto.py"
 include:
     include_prefix + "run_STAR.py"
+include:
+    include_prefix + "run_bowtie2.py"
+include:
+    include_prefix + "run_express.py"
 
 rule run_kallisto:
     input:
         expand("{outdir}/{reference_version}/kallisto/{unit}",
                outdir = config["processed_dir"],
-               reference_version = config["references"]["version"],
+               reference_version = "GRCm38_ensembl84_cDNA",
                unit = config["units"])
+
+rule run_bowtie2:
+    input:
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{condition}{unit}/hits.bam",
+                outdir = config["processed_dir"],
+                reference_version="GRCm38_ensembl84",
+                condition = "wt",
+                unit = ["1", "2", "3"]),
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{condition}{unit}/hits.bam",
+                outdir = config["processed_dir"],
+                reference_version="GRCm38_ensembl84",
+                condition = "hemi",
+                unit = ["1", "2", "3"]),
+
+rule run_express:
+    input:
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{condition}{unit}/express/results.xprs",
+                outdir = config["processed_dir"],
+                reference_version="GRCm38_ensembl84",
+                condition = "wt",
+                unit = ["1", "2", "3"]),
+        expand("{outdir}/{reference_version}/KMA_analysis/experiment/{condition}/{condition}{unit}/express/results.xprs",
+                outdir = config["processed_dir"],
+                reference_version="GRCm38_ensembl84",
+                condition = "hemi",
+                unit = ["1", "2", "3"]),
 
 rule convert_bam_to_bw:
     input:
@@ -36,6 +66,13 @@ rule convert_bam_to_bw:
                outdir=config["processed_dir"],
                reference_version="GRCm38_ensembl84",
                unit=config["units"])
+
+rule convert_rMATS_bam_to_bw:
+    input:
+        expand("{outdir}/{reference_version}/rMATS/BWs/{unit}.bw",
+                outdir = config["processed_dir"],
+                reference_version = "GRCm38_ensembl84",
+                unit = config["units"])
 
 rule all:
     input:
