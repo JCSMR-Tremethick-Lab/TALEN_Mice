@@ -23,9 +23,9 @@ include_prefix = home + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/
 include:
     include_prefix + "run_fastp.py"
 include:
-    include_prefix + "run_bowtie2_cut_and_run.py"
+    include_prefix + "cut_and_run_first_alignment.py"
 include:
-    include_prefix + "unmapped_reads_extraction.py"
+    include_prefix + "cut_and_run_unmapped_reads_extraction.py"
 
 rule all:
     input:
