@@ -94,8 +94,8 @@ rule unmapped_reads_to_pe_fastq:
     input:
         rules.bam_sort_unmapped_reads.output
     output:
-        temp("{assayType}/unmapped_reads/{runID}/{library}.unmapped_r1.fastq"),
-        temp("{assayType}/unmapped_reads/{runID}/{library}.unmapped_r2.fastq")
+        temp("{assayType}/unmapped_reads/{reference_version}/{runID}/{library}.unmapped_r1.fastq"),
+        temp("{assayType}/unmapped_reads/{reference_version}/{runID}/{library}.unmapped_r2.fastq")
     shell:
         """
             bedtools bamtofastq -i {input} \
@@ -110,7 +110,7 @@ rule gzip_unmapped_fastq:
     input:
         rules.unmapped_reads_to_pe_fastq.output
     output:
-        protected("{assayType}/unmapped_reads/{runID}/{library}.unmapped_r1.fastq.gz"),
-        protected("{assayType}/unmapped_reads/{runID}/{library}.unmapped_r1.fastq.gz")
+        protected("{assayType}/unmapped_reads/{reference_version}/{runID}/{library}.unmapped_r1.fastq.gz"),
+        protected("{assayType}/unmapped_reads/{reference_version}/{runID}/{library}.unmapped_r2.fastq.gz")
     shell:
         "gzip {input[0]}; gzip {input[1]}"
