@@ -19,14 +19,14 @@ from snakemake.exceptions import MissingInputException
 # set local variables
 home = os.environ['HOME']
 REF_GENOME = config["references"]["active"]
-REF_VERSION = config["references"][REF_GENOME]["version"]
+REF_VERSION = config["references"][REF_GENOME]["version"][0]
 
 rule bowtie2_pe:
     version:
         "1"
     params:
         max_in = config["program_parameters"]["bt2_params"]["max_insert"],
-        bt2_index = home + config["references"][REF_GENOME]["bowtie2"][REF_VERSION]
+        bt2_index = config["references"][REF_GENOME]["bowtie2"][REF_VERSION]
     threads:
         lambda wildcards: int(str(config["program_parameters"]["bt2_params"]["threads"]).strip("['']"))
     input:
@@ -42,12 +42,12 @@ rule bowtie2_pe:
             --no-discordant \
             --maxins {params.max_in} \
             --threads {threads}\
-            --rg-id '{wildcards.sample}' \
-            --rg 'LB:{wildcards.sample}' \
-            --rg 'SM:{wildcards.sample}' \
+            --rg-id '{wildcards.library}' \
+            --rg 'LB:{wildcards.library}' \
+            --rg 'SM:{wildcards.library}' \
             --rg 'PL:Illumina' \
             --rg 'PU:NA' \
-            -1 {input.read1} \
-            -2 {input.read2} \
+            -1 {input.trimmed_read1} \
+            -2 {input.trimmed_read2} \
             | samtools view -Sb - > {output}
         """

@@ -13,11 +13,11 @@
       "version": ["GRCm38_ensembl93"],
       "genome":
       {
-        "GRCm38_mm10": "/Data/References/Genomes/Homo_sapiens/GRCm38_mm10/Mus_musculus.GRCm38.dna.toplevel.fa"
+        "GRCm38_ensembl93": "/Data/References/Genomes/Mus_musculus/GRCm38_mm10/Mus_musculus.GRCm38.dna.toplevel.fa"
       },
       "bowtie2":
         {
-          "GRCm38_mm10": "/Data/References/Genomes/Homo_sapiens/GRCm38_mm10/GRCm38_mm10_masked"
+          "GRCm38_ensembl93": "/Data/References/Genomes/Mus_musculus/GRCm38_mm10/GRCm38_mm10_masked"
         }
     }
   },
