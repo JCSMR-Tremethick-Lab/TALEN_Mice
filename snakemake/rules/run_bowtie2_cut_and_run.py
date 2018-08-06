@@ -112,9 +112,9 @@ rule bam_mark_duplicates:
             -Xmx24G \
             -jar {params.picard} MarkDuplicates \
             INPUT={input}\
-            OUTPUT={output}\
+            OUTPUT={output.out}\
             ASSUME_SORTED=TRUE\
-            METRICS_FILE={output}.metrics.txt
+            METRICS_FILE={output.metrics}
         """
 
 
