@@ -22,6 +22,8 @@ include:
     include_prefix + "run_fastp.py"
 include:
     include_prefix + "run_bowtie2_cut_and_run.py"
+include:
+    include_prefix + "unmapped_reads_extraction.py"
 
 rule all:
     input:

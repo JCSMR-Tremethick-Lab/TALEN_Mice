@@ -1,5 +1,18 @@
 import json
 from pprint import pprint
+from snakemake.io import expand
+
+REF_VERSION = "blablub"
+
+
+expand("{assayType}/bowtie2/{reference_version}/{runID}/{library}.{suffix1}",
+        assayType = "CutRun",
+        reference_version = REF_VERSION,
+        runID = "180731_NB501086_0217_CutandRun_Tanya",
+        library = ["WT_01_H2AL2_3_7_18", "WT_01_IGG_3_7_18", "KO_01_H2AL2_3_7_18", "KO_02_H2AL2_24_6_18", "WT_02_H2AL2_24_6_18", "WT_01_H3K27me3_23_5_18", "WT_01_H3K36me3_23_5_18"],
+        suffix1 = ["bam"],
+        suffix2 = ["unmapped_r1.fastq.gz", "unmapped_r2.fastq.gz"])
+
 
 with open("config_RNA-Seq_Brain.json") as data_file:
     config = json.load(data_file)
