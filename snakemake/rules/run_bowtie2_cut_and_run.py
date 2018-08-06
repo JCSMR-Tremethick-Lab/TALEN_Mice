@@ -120,7 +120,7 @@ rule bam_mark_duplicates:
 
 rule bam_rmdup:
     input:
-        rules.bam_mark_duplicates.output
+        rules.bam_mark_duplicates.output.out
     output:
         temp("{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam")
     shell:
