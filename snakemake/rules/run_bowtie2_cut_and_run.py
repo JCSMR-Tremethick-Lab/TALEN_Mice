@@ -65,3 +65,74 @@ rule bam_stats:
         """
             samtools flagstat {input} > {output}
         """
+
+
+# rules
+rule bam_quality_filter:
+    version:
+        "1.0"
+    params:
+        qual = config["alignment_quality"]
+    input:
+        rules.bowtie2_pe.output
+    output:
+        temp("{assayType}/samtools/quality_filtered/{reference_version}/{runID}/{library}.bam")
+    shell:
+        "samtools view -b -h -q {params.qual} {input} > {output}"
+
+
+rule bam_sort:
+    version:
+        "1.0"
+    threads:
+        4
+    input:
+        rules.bam_quality_filter.output
+    output:
+        temp("{assayType}/samtools/sorted/{reference_version}/{runID}/{library}.bam")
+    shell:
+        "samtools sort -@ {threads} {input} -T {wildcards.library}.sorted -o {output}"
+
+
+rule bam_mark_duplicates:
+    version:
+        "1.0"
+    params:
+        qual = config["alignment_quality"],
+        picard = home + config["picard"],
+        temp = home + config["temp_dir"]
+    input:
+        rules.bam_sort.output
+    output:
+        out = temp("{assayType}/picardTools/MarkDuplicates/{reference_version}/{runID}/{library}.bam"),
+        metrics = protected("{assayType}/picardTools/MarkDuplicates/{reference_version}/{runID}/{library}.metrics.txt")
+    shell:
+        """
+            java -Djava.io.tmpdir={params.temp} \
+            -Xmx24G \
+            -jar {params.picard} MarkDuplicates \
+            INPUT={input}\
+            OUTPUT={output}\
+            ASSUME_SORTED=TRUE\
+            METRICS_FILE={output}.metrics.txt
+        """
+
+
+rule bam_rmdup:
+    input:
+        rules.bam_mark_duplicates.output
+    output:
+        temp("{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam")
+    shell:
+        "samtools rmdup {input} {output}"
+
+
+rule bam_index:
+    params:
+        qual = config["alignment_quality"]
+    input:
+        rules.bam_rmdup.output
+    output:
+        protected("{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai")
+    shell:
+        "samtools index {input} {output}"

@@ -196,7 +196,7 @@
   "aligned_dir": "aligned_data",
   "reports_dir": "reports",
   "temp_dir": "/temp_data",
-  "alignment_quality": "20",
+  "alignment_quality": "10",
   "raw_dir": "fastq",
   "cutadapt_dir": "/miniconda3/envs/snakemake/bin",
   "HTSeq_dir": "/miniconda3/envs/py27/bin",
