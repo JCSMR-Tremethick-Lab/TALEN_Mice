@@ -99,7 +99,7 @@ rule bam_mark_duplicates:
         "1.0"
     params:
         qual = config["alignment_quality"],
-        picard = home + config["picard"],
+        picard = home + config["program_parameters"]["picard_tools"]["jar"],
         temp = home + config["temp_dir"]
     input:
         rules.bam_sort.output
