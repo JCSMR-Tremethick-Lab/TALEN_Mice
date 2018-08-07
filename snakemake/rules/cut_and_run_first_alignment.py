@@ -122,7 +122,7 @@ rule bam_rmdup:
     input:
         rules.bam_mark_duplicates.output.out
     output:
-        temp("{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam")
+        protected("{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam")
     shell:
         "samtools rmdup {input} {output}"
 
