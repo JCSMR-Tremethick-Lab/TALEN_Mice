@@ -28,8 +28,6 @@ include:
     include_prefix + "cut_and_run_first_alignment.py"
 include:
     include_prefix + "cut_and_run_unmapped_reads_extraction.py"
-include:
-    include_prefix + "cut_and_run_second_alignment.py"
 
 rule all:
     input:
