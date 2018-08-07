@@ -34,5 +34,5 @@
   },
   "temp_dir" : "temp_data",
   "alignment_quality" : "10",
-  "HTSeq_dir" : "/home/sebastian/miniconda3/envs/HTSeq/bin",
+  "HTSeq_dir" : "/home/sebastian/miniconda3/envs/HTSeq/bin"
 }
