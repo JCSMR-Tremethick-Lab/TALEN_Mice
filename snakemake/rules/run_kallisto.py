@@ -32,14 +32,13 @@ rule kallisto_quant:
     threads:
         4
     params:
-        raw_data = config["raw_dir"],
-        outdir = config["processed_dir"],
         bootstraps = config["kallisto"]["bootstraps"],
     input:
-        rules.cutadapt_pe.output,
+        trimmed_read1 = rules.run_fastp.output.trimmed_read1,
+        trimmed_read2 = rules.run_fastp.output.trimmed_read2,
         ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     output:
-        "{outdir}/{reference_version}/kallisto/{unit}"
+        "{assayType}/kallisto/{reference_version}/{runID}/{unit}"
     shell:
         """
             kallisto quant --index={input.ki} \

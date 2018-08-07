@@ -19,11 +19,9 @@ from snakemake.exceptions import MissingInputException
 
 home = os.environ['HOME']
 
-configfile: home + "/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/configs/config_CUT_and_RUN.json"
-
 rule run_fastp:
     version:
-        0.1
+        "1.1"
     threads:
         4
     input:
