@@ -50,8 +50,8 @@ rule bowtie2_pe_spikeIn:
             --rg 'SM:{wildcards.library}' \
             --rg 'PL:Illumina' \
             --rg 'PU:NA' \
-            -1 {input.trimmed_read1} \
-            -2 {input.trimmed_read2} \
+            -1 {input.read1} \
+            -2 {input.read2} \
             | samtools view -Sb - > {output}
         """
 
@@ -62,7 +62,7 @@ rule bam_stats_spikeIn:
     input:
         rules.bowtie2_pe_spikeIn.output
     output:
-        protected("{assayType}/bowtie2/{spikein_version}/{runID}/{library}.bam.stats.txt")
+        protected("{assayType}/samtools/flagstat/{spikein_version}/{runID}/spikeIn/{library}.bam.stats.txt")
     shell:
         """
             samtools flagstat {input} > {output}
