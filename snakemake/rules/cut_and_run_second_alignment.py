@@ -27,7 +27,7 @@ rule bowtie2_pe_spikeIn:
     version:
         "1"
     params:
-        max_in = config["program_parameters"]["bt2_params"]["max_insert"],
+        max_in = 5000,
         bt2_index = config["references"][SPIKEIN_GENOME]["bowtie2"][SPIKEIN_VERSION]
     threads:
         lambda wildcards: int(str(config["program_parameters"]["bt2_params"]["threads"]).strip("['']"))
