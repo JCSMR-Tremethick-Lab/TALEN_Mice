@@ -2,7 +2,7 @@
   "references":
   {
   "active": "GRCm38_mm10",
-  "spikeIn" : "Scerevisiae_R64",
+  "spikeIn" : ["Scerevisiae_R64", "Dmel_BDGP6"],
   "database":
   {
       "biomart": "ensembl",
@@ -32,6 +32,19 @@
       "bowtie2":
       {
         "Scerevisiae_R64-1-1" : "/Data/References/Genomes/Saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1"
+      }
+    },
+    "Dmel_BDGP6":
+    {
+      "ensemblHost": "asia.ensembl.org",
+      "version": ["Dmel_BDGP6_ensembl78"],
+      "genome":
+      {
+        "Dmel_BDGP6_ensembl78" : "/Data/References/Genomes/Drosophila_melanogaster/Drosophila_melanogaster.BDGP6.dna.toplevel.fa"
+      },
+      "bowtie2":
+      {
+        "Dmel_BDGP6_ensembl78" : "/Data/References/Genomes/Drosophila_melanogaster/Drosophila_melanogaster.BDGP6"
       }
     }
   },
