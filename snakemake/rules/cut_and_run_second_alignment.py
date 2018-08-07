@@ -56,11 +56,11 @@ rule bowtie2_pe_spikeIn:
         """
 
 
-rule bam_stats:
+rule bam_stats_spikeIn:
     version:
         "1"
     input:
-        rules.bowtie2_pe.output
+        rules.bowtie2_pe_spikeIn.output
     output:
         protected("{assayType}/bowtie2/{spikein_version}/{runID}/{library}.bam.stats.txt")
     shell:
@@ -69,34 +69,33 @@ rule bam_stats:
         """
 
 
-# rules
-rule bam_quality_filter:
+rule bam_quality_filter_spikeIn:
     version:
         "1.0"
     params:
         qual = config["alignment_quality"]
     input:
-        rules.bowtie2_pe.output
+        rules.bowtie2_pe_spikeIn.output
     output:
         temp("{assayType}/samtools/quality_filtered/{spikein_version}/{runID}/{library}.bam")
     shell:
         "samtools view -b -h -q {params.qual} {input} > {output}"
 
 
-rule bam_sort:
+rule bam_sort_spikeIn:
     version:
         "1.0"
     threads:
         4
     input:
-        rules.bam_quality_filter.output
+        rules.bam_quality_filter_spikeIn.output
     output:
         temp("{assayType}/samtools/sorted/{spikein_version}/{runID}/{library}.bam")
     shell:
         "samtools sort -@ {threads} {input} -T {wildcards.library}.sorted -o {output}"
 
 
-rule bam_mark_duplicates:
+rule bam_mark_duplicates_spikeIn:
     version:
         "1.0"
     params:
@@ -104,7 +103,7 @@ rule bam_mark_duplicates:
         picard = home + config["program_parameters"]["picard_tools"]["jar"],
         temp = home + config["temp_dir"]
     input:
-        rules.bam_sort.output
+        rules.bam_sort_spikeIn.output
     output:
         out = temp("{assayType}/picardTools/MarkDuplicates/{spikein_version}/{runID}/{library}.bam"),
         metrics = protected("{assayType}/picardTools/MarkDuplicates/{spikein_version}/{runID}/{library}.metrics.txt")
@@ -120,20 +119,20 @@ rule bam_mark_duplicates:
         """
 
 
-rule bam_rmdup:
+rule bam_rmdup_spikeIn:
     input:
-        rules.bam_mark_duplicates.output.out
+        rules.bam_mark_duplicates_spikeIn.output.out
     output:
         temp("{assayType}/samtools/rmdup/{spikein_version}/{runID}/{library}.bam")
     shell:
         "samtools rmdup {input} {output}"
 
 
-rule bam_index:
+rule bam_index_spikeIn:
     params:
         qual = config["alignment_quality"]
     input:
-        rules.bam_rmdup.output
+        rules.bam_rmdup_spikeIn.output
     output:
         protected("{assayType}/samtools/rmdup/{spikein_version}/{runID}/{library}.bam.bai")
     shell:
