@@ -36,7 +36,7 @@ rule bowtie2_pe_spikeIn:
         read1 = "{assayType}/unmapped_reads/" + REF_VERSION + "/{runID}/{library}.unmapped_r1.fastq.gz",
         read2 = "{assayType}/unmapped_reads/" + REF_VERSION + "/{runID}/{library}.unmapped_r2.fastq.gz"
     output:
-        protected("{assayType}/bowtie2/{spikein_version}/{runID}/{library}.bam")
+        protected("{assayType}/bowtie2/{spikein_version}/{runID}/spikeIn/{library}.bam")
     shell:
         """
             bowtie2 \
@@ -77,7 +77,7 @@ rule bam_quality_filter_spikeIn:
     input:
         rules.bowtie2_pe_spikeIn.output
     output:
-        temp("{assayType}/samtools/quality_filtered/{spikein_version}/{runID}/{library}.bam")
+        temp("{assayType}/samtools/quality_filtered/{spikein_version}/{runID}/spikeIn/{library}.bam")
     shell:
         "samtools view -b -h -q {params.qual} {input} > {output}"
 
@@ -90,7 +90,7 @@ rule bam_sort_spikeIn:
     input:
         rules.bam_quality_filter_spikeIn.output
     output:
-        temp("{assayType}/samtools/sorted/{spikein_version}/{runID}/{library}.bam")
+        temp("{assayType}/samtools/sorted/{spikein_version}/{runID}/spikeIn/{library}.bam")
     shell:
         "samtools sort -@ {threads} {input} -T {wildcards.library}.sorted -o {output}"
 
@@ -105,8 +105,8 @@ rule bam_mark_duplicates_spikeIn:
     input:
         rules.bam_sort_spikeIn.output
     output:
-        out = temp("{assayType}/picardTools/MarkDuplicates/{spikein_version}/{runID}/{library}.bam"),
-        metrics = protected("{assayType}/picardTools/MarkDuplicates/{spikein_version}/{runID}/{library}.metrics.txt")
+        out = temp("{assayType}/picardTools/MarkDuplicates/{spikein_version}/{runID}/spikeIn/{library}.bam"),
+        metrics = protected("{assayType}/picardTools/MarkDuplicates/{spikein_version}/{runID}/spikeIn/{library}.metrics.txt")
     shell:
         """
             java -Djava.io.tmpdir={params.temp} \
@@ -123,7 +123,7 @@ rule bam_rmdup_spikeIn:
     input:
         rules.bam_mark_duplicates_spikeIn.output.out
     output:
-        temp("{assayType}/samtools/rmdup/{spikein_version}/{runID}/{library}.bam")
+        temp("{assayType}/samtools/rmdup/{spikein_version}/{runID}/spikeIn/{library}.bam")
     shell:
         "samtools rmdup {input} {output}"
 
@@ -134,6 +134,6 @@ rule bam_index_spikeIn:
     input:
         rules.bam_rmdup_spikeIn.output
     output:
-        protected("{assayType}/samtools/rmdup/{spikein_version}/{runID}/{library}.bam.bai")
+        protected("{assayType}/samtools/rmdup/{spikein_version}/{runID}/spikeIn/{library}.bam.bai")
     shell:
         "samtools index {input} {output}"
