@@ -7,8 +7,7 @@ import os
 
 REF_GENOME = config["references"]["active"]
 REF_VERSION = config["references"][REF_GENOME]["version"]
-
-SPIKEIN_GENOME = config["references"]["spikeIn"]
+SPIKEIN_GENOME = "Dmel_BDGP6"
 SPIKEIN_VERSION = config["references"][SPIKEIN_GENOME]["version"][0]
 
 rule:
@@ -39,4 +38,3 @@ rule all:
                 runID = "180731_NB501086_0217_CutandRun_Tanya",
                 library = ["WT_01_H2AL2_3_7_18", "WT_01_IGG_3_7_18", "KO_01_H2AL2_3_7_18", "KO_02_H2AL2_24_6_18", "WT_02_H2AL2_24_6_18", "WT_01_H3K27me3_23_5_18", "WT_01_H3K36me3_23_5_18"],
                 suffix = ["bam.stats.txt"])
-

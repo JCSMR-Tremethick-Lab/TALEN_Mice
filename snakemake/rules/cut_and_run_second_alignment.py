@@ -20,7 +20,6 @@ from snakemake.exceptions import MissingInputException
 home = os.environ['HOME']
 REF_GENOME = config["references"]["active"]
 REF_VERSION = config["references"][REF_GENOME]["version"][0]
-SPIKEIN_GENOME = config["references"]["spikeIn"]
 SPIKEIN_VERSION = config["references"][SPIKEIN_GENOME]["version"][0]
 
 
