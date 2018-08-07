@@ -34,7 +34,7 @@ rule bowtie2_pe:
         trimmed_read1 = "{assayType}/trimmed/{runID}/{library}.end1.fastq.gz",
         trimmed_read2 = "{assayType}/trimmed/{runID}/{library}.end2.fastq.gz"
     output:
-        protected("{assayType}/bowtie2/{reference_version}/{runID}/{library}.bam")
+        ancient("{assayType}/bowtie2/{reference_version}/{runID}/{library}.bam")
     shell:
         """
             bowtie2 \
