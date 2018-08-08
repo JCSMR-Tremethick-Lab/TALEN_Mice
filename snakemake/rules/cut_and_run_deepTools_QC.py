@@ -24,14 +24,15 @@ def get_sample_labels(wildcards):
 
 REF_VERSION = "GRCm38_ensembl93"
 RUN_ID = "180731_NB501086_0217_CutandRun_Tanya"
+home = os.environ['HOME']
 
 rule multiBamSummary:
     version:
         "2"
     params:
-        deepTools_dir = home + config["deepTools_dir"],
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
         binSize = config["program_parameters"]["deepTools"]["binSize"],
-        labels = get_sample_labels
+        labels = lambda wildcards: [x for x in config["samples"][wildcards["assayType"]][wildcards["runID"]].keys()]
     threads:
         32
     input:
@@ -39,7 +40,7 @@ rule multiBamSummary:
                assayType = "CutRun",
                runID = RUN_ID,
                reference_version = REF_VERSION,
-               library = config["CutRun"]["samples"][RUN_ID],
+               library = config["samples"]["CutRun"][RUN_ID],
                suffix = ["bam"])
     output:
         npz = "{assayType}/deepTools/multiBamSummary/{reference_version}/{runID}/results.npz"
@@ -58,7 +59,7 @@ rule plotCorrelation_heatmap:
     version:
         "2"
     params:
-        deepTools_dir = home + config["deepTools_dir"],
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
         plotTitle = "Correlation heatmap - read counts"
     input:
         npz = rules.multiBamSummary.output.npz
@@ -82,7 +83,7 @@ rule plotPCA:
     version:
         "2"
     params:
-        deepTools_dir = home + config["deepTools_dir"],
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
         plotTitle = "PCA - read counts"
     input:
         npz = rules.multiBamSummary.output.npz
@@ -97,9 +98,9 @@ rule plotPCA:
 
 rule bamPEFragmentSize:
     params:
-        deepTools_dir = home + config["deepTools_dir"],
-        plotTitle = lambda wildcards: "BAM PE " + wildcards.duplicates + " fragment size",
-        labels = get_sample_labels
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
+        plotTitle = "BAM PE fragment size",
+        labels = lambda wildcards: [x for x in config["samples"][wildcards["assayType"]][wildcards["runID"]].keys()]
     threads:
         32
     input:
@@ -107,10 +108,10 @@ rule bamPEFragmentSize:
                assayType = "CutRun",
                runID = RUN_ID,
                reference_version = REF_VERSION,
-               library = config["CutRun"]["samples"][RUN_ID],
+               library = config["samples"]["CutRun"][RUN_ID],
                suffix = ["bam"])
     output:
-        "{assayType}/deepTools/bamPEFragmentSize/{reference_version}/{runID}/histogram_duplicates_marked.png"
+        "{assayType}/deepTools/bamPEFragmentSize/{reference_version}/{runID}/histogram.png"
     shell:
         """
             {params.deepTools_dir}/bamPEFragmentSize --bamfiles {input} \
@@ -122,9 +123,9 @@ rule bamPEFragmentSize:
 
 rule plotFingerprint:
     params:
-        deepTools_dir = home + config["deepTools_dir"],
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
         plotTitle = "BAM PE fingerprint",
-        labels = get_sample_labels
+        labels = lambda wildcards: [x for x in config["samples"][wildcards["assayType"]][wildcards["runID"]].keys()]
     threads:
         32
     input:
@@ -132,10 +133,10 @@ rule plotFingerprint:
                assayType = "CutRun",
                runID = RUN_ID,
                reference_version = REF_VERSION,
-               library = config["CutRun"]["samples"][RUN_ID],
+               library = config["samples"]["CutRun"][RUN_ID],
                suffix = ["bam"])
     output:
-        "{assayType}/deepTools/plotFingerprint/{reference_version}/{runID}/fingerprints_duplicates_marked.png"
+        "{assayType}/deepTools/plotFingerprint/{reference_version}/{runID}/fingerprints.png"
     shell:
         """
             {params.deepTools_dir}/plotFingerprint --bamfiles {input} \
@@ -149,11 +150,11 @@ rule plotFingerprint:
 
 rule all:
     input:
-        expand("{assayType}/deepTools/plotFingerprint/{reference_version}/{runID}/fingerprints_duplicates_marked.png",
+        expand("{assayType}/deepTools/plotFingerprint/{reference_version}/{runID}/fingerprints.png",
                 assayType = "CutRun",
                 reference_version = REF_VERSION,
                 runID = RUN_ID),
-        expand("{assayType}/deepTools/bamPEFragmentSize/{reference_version}/{runID}/histogram_duplicates_marked.png",
+        expand("{assayType}/deepTools/bamPEFragmentSize/{reference_version}/{runID}/histogram.png",
                 assayType = "CutRun",
                 reference_version = REF_VERSION,
                 runID = RUN_ID),

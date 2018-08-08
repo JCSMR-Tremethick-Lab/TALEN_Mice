@@ -18,6 +18,7 @@ import fnmatch
 from snakemake.exceptions import MissingInputException
 
 home = os.environ['HOME']
+dataDir = "/Data/TALENs/"
 
 rule run_fastp:
     version:
@@ -25,8 +26,8 @@ rule run_fastp:
     threads:
         4
     input:
-        read1 = lambda wildcards: wildcards["assayType"] + "/fastq/" + wildcards["runID"] + "/" + config["samples"][wildcards["assayType"]][wildcards["runID"]][wildcards["library"]][0],
-        read2 = lambda wildcards: wildcards["assayType"] + "/fastq/" + wildcards["runID"] + "/" + config["samples"][wildcards["assayType"]][wildcards["runID"]][wildcards["library"]][1]
+        read1 = lambda wildcards: dataDir + wildcards["assayType"] + "/" + wildcards["runID"] + "/" + config["samples"][wildcards["assayType"]][wildcards["runID"]][wildcards["library"]][0],
+        read2 = lambda wildcards: dataDir + wildcards["assayType"] + "/" + wildcards["runID"] + "/" + config["samples"][wildcards["assayType"]][wildcards["runID"]][wildcards["library"]][1]
     output:
         trimmed_read1 = "{assayType}/trimmed/{runID}/{library}.end1.fastq.gz",
         trimmed_read2 = "{assayType}/trimmed/{runID}/{library}.end2.fastq.gz",
