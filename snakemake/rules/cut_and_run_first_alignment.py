@@ -60,7 +60,7 @@ rule bam_stats:
     input:
         rules.bowtie2_pe.output
     output:
-        protected("{assayType}/bowtie2/{reference_version}/{runID}/{library}.bam.stats.txt")
+        "{assayType}/bowtie2/{reference_version}/{runID}/{library}.bam.stats.txt"
     shell:
         """
             samtools flagstat {input} > {output}
@@ -105,7 +105,7 @@ rule bam_mark_duplicates:
         rules.bam_sort.output
     output:
         out = temp("{assayType}/picardTools/MarkDuplicates/{reference_version}/{runID}/{library}.bam"),
-        metrics = protected("{assayType}/picardTools/MarkDuplicates/{reference_version}/{runID}/{library}.metrics.txt")
+        metrics = "{assayType}/picardTools/MarkDuplicates/{reference_version}/{runID}/{library}.metrics.txt"
     shell:
         """
             java -Djava.io.tmpdir={params.temp} \
@@ -122,7 +122,7 @@ rule bam_rmdup:
     input:
         rules.bam_mark_duplicates.output.out
     output:
-        protected("{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam")
+        "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam"
     shell:
         "samtools rmdup {input} {output}"
 
@@ -133,6 +133,6 @@ rule bam_index:
     input:
         rules.bam_rmdup.output
     output:
-        protected("{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai")
+        "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai"
     shell:
         "samtools index {input} {output}"

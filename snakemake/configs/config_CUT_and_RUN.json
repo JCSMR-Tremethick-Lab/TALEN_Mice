@@ -88,13 +88,13 @@
   {
   "bt2_params":
   {
-      "max_insert": ["200"],
+      "max_insert": ["500"],
       "threads": ["7"],
       "platform": ["Illumina"]
   },
   "bt2_params_unmapped_reads":
   {
-      "max_insert": ["200"],
+      "max_insert": ["500"],
       "threads": ["8"],
       "platform": ["Illumina"]
   },
