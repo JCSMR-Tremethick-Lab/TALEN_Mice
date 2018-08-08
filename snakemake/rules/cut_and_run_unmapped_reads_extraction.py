@@ -66,7 +66,7 @@ rule gzip_unmapped_fastq:
     input:
         rules.unmapped_reads_to_pe_fastq.output
     output:
-        protected("{assayType}/unmapped_reads/{reference_version}/{runID}/{library}.unmapped_r1.fastq.gz"),
-        protected("{assayType}/unmapped_reads/{reference_version}/{runID}/{library}.unmapped_r2.fastq.gz")
+        "{assayType}/unmapped_reads/{reference_version}/{runID}/{library}.unmapped_r1.fastq.gz",
+        "{assayType}/unmapped_reads/{reference_version}/{runID}/{library}.unmapped_r2.fastq.gz"
     shell:
         "gzip {input[0]}; gzip {input[1]}"
