@@ -4,6 +4,15 @@ from snakemake.io import expand
 
 REF_VERSION = "blablub"
 
+with open("config_RNA-Seq_round_spermatids.json") as data_file:
+    config = json.load(data_file)
+
+
+expand("{assayType}/kallisto/{reference_version}/{runID}/{library}",
+       assayType = "RNA-Seq",
+       reference_version = "GRCm38_ensembl84_ERCC",
+       runID = "NB501086_0219_TSoboleva_JCSMR_RNAseq",
+       library = [y for y in config["samples"]["NB501086_0219_TSoboleva_JCSMR_RNAseq"].keys()])
 
 expand("{assayType}/bowtie2/{reference_version}/{runID}/{library}.{suffix1}",
         assayType = "CutRun",
