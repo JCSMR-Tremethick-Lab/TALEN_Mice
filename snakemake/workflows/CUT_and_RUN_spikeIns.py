@@ -7,7 +7,7 @@ import os
 
 REF_GENOME = config["references"]["active"]
 REF_VERSION = config["references"][REF_GENOME]["version"]
-SPIKEIN_GENOME = "Dmel_BDGP6"
+SPIKEIN_GENOME = "Scerevisiae_R64"
 SPIKEIN_VERSION = config["references"][SPIKEIN_GENOME]["version"][0]
 
 rule:
