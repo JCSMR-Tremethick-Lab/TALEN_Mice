@@ -31,6 +31,7 @@ rule kallisto_quant:
         4
     params:
         bootstraps = config["kallisto"]["bootstraps"],
+	kallisto_bin = home + "/miniconda3/envs/kallisto/bin/kallisto"
     input:
         trimmed_read1 = rules.run_fastp.output.trimmed_read1,
         trimmed_read2 = rules.run_fastp.output.trimmed_read2,
@@ -39,7 +40,7 @@ rule kallisto_quant:
         directory("{assayType}/kallisto/{reference_version}/{runID}/{library}")
     shell:
         """
-            kallisto quant --index={input.ki} \
+            {params.kallisto_bin} quant --index={input.ki} \
                            --output-dir={output} \
                            --threads={threads} \
                            --bootstrap-samples={params.bootstraps} \

@@ -41,7 +41,7 @@ rule bam_sort_unmapped_reads:
     output:
         temp("{assayType}/bowtie2/{reference_version}/{runID}/{library}.unmapped.sorted.bam")
     shell:
-        "samtools sort -n {input} -T {wildcards.library}.sorted -o {output}"
+        "samtools sort -n {input} -T {wildcards.library}.unmapped.sorted -o {output}"
 
 
 rule unmapped_reads_to_pe_fastq:
