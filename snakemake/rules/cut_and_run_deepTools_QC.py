@@ -23,7 +23,7 @@ def get_sample_labels(wildcards):
     return(sl)
 
 REF_VERSION = "GRCm38_ensembl93"
-RUN_ID = config["samples"]["runID"]
+RUN_ID = config["samples"]["CutRun"]["runID"]
 home = os.environ['HOME']
 
 rule multiBamSummary:
