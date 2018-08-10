@@ -52,7 +52,7 @@
   {
     "CutRun":
     {
-      "runID": ["180731_NB501086_0217_CutandRun_Tanya"],
+      "runID": ["180731_NB501086_0217_CutandRun_Tanya", "NB501086_0221_TSoboleva_JCSMR_CutandRun"],
       "180731_NB501086_0217_CutandRun_Tanya":
       {
         "WT_01_H2AL2_3_7_18" : ["S1_S1_R1_001.fastq.gz", "S1_S1_R2_001.fastq.gz"],
@@ -62,6 +62,21 @@
         "WT_02_H2AL2_24_6_18" : ["S13_S5_R1_001.fastq.gz", "S13_S5_R2_001.fastq.gz"],
         "WT_01_H3K27me3_23_5_18" : ["S15_S6_R1_001.fastq.gz", "S15_S6_R2_001.fastq.gz"],
         "WT_01_H3K36me3_23_5_18" : ["S16_S7_R1_001.fastq.gz", "S16_S7_R2_001.fastq.gz"]
+      },
+      "NB501086_0221_TSoboleva_JCSMR_CutandRun" :
+      {
+        "WT_01_K36me3" : ["S1_S1_R1_001.fastq.gz", "S1_S1_R2_001.fastq.gz"],
+        "WT_02_K36me3" : ["S2_S2_R1_001.fastq.gz", "S2_S2_R2_001.fastq.gz"],
+        "WT_01_PolIIS5" : ["S3_S3_R1_001.fastq.gz", "S3_S3_R2_001.fastq.gz"],
+        "WT_02_PolIIS5" : ["S4_S4_R1_001.fastq.gz", "S4_S4_R2_001.fastq.gz"],
+        "KO_01_K36me3" : ["S5_S5_R1_001.fastq.gz", "S5_S5_R2_001.fastq.gz"],
+        "KO_02_K36me3" : ["S6_S6_R1_001.fastq.gz", "S6_S6_R2_001.fastq.gz"],
+        "KO_01_PolIIS5" : ["S7_S7_R1_001.fastq.gz", "S7_S7_R2_001.fastq.gz"],
+        "KO_02_PolIIS5" : ["S8_S8_R1_001.fastq.gz", "S8_S8_R2_001.fastq.gz"],
+        "WT_01_K36me3_35sec" : ["S9_S9_R1_001.fastq.gz", "S9_S9_R2_001.fastq.gz"],
+        "WT_02_K36me3_35sec" : ["S10_S10_R1_001.fastq.gz", "S10_S10_R2_001.fastq.gz"],
+        "KO_01_K36me3_35sec" : ["S11_S11_R1_001.fastq.gz", "S11_S11_R2_001.fastq.gz"],
+        "KO_02_K36me3_35sec" : ["S12_S12_R1_001.fastq.gz", "S12_S12_R2_001.fastq.gz"]
       },
       "replicates":
       {
