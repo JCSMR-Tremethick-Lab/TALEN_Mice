@@ -7,6 +7,7 @@ __date__ = "2018-08-10"
 
 from snakemake.exceptions import MissingInputException
 import os
+home = os.environ['HOME']
 
 """
 Rules for running deepTools analysis on ChIP-Seq data
@@ -15,29 +16,28 @@ For usage, include this in your workflow.
 
 rules all:
     input:
-        expand("{assayType}/deepTools/computeCoverage/{reference_version}/{runID}/{library}_RPKM.bw",
+        expand("{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_RPKM.bw",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
-               library [x for x in config["samples"][wildcards["assayType"]][wildcards["runID"]].keys()])
+               library [x for x in config["samples"][wildcards["assayType"]][wildcards["runID"]].keys()]),
+        expand("{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix.gz",
+               assayType = "CutRun",
+               reference_version = "GRCm38_ensembl93",
+               runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
+               region = "allGenes")
+
 
 def get_computeMatrix_input(wildcards):
     fn = []
     path = "/".join((wildcards["assayType"],
-                     "samtools",
-                     "rmdup",
+                     "deepTools",
+                     "bamCoverage",
                      wildcards["reference_version"],
                      wildcards["runID"]))
     for i in config["samples"][wildcards["assayType"]][wildcards["runID"]]:
-        fn.append("/".join((path, "_".join((i, wildcards["mode"], "RPKM.bw")))))
+        fn.append("/".join((path, "_".join((i, "RPKM.bw")))))
     return(fn)
-
-
-def cli_parameters_computeMatrix(wildcards):
-    a = config["program_parameters"]["deepTools"][wildcards["tool"]][wildcards["command"]]
-    if wildcards["command"] == "reference-point":
-        a["--referencePoint"] = wildcards.referencePoint
-    return(a)
 
 def cli_parameters_normalization(wildcards):
     if wildcards["norm"] == "RPKM":
@@ -58,20 +58,6 @@ def cli_parameters_bamCoverage(wildcards):
             b = b + f
     return(b.rstrip())
 
-def get_computeMatrix_input(wildcards):
-    fn = []
-    path = "/".join((wildcards["assayID"],
-                     wildcards["runID"],
-                     config["processed_dir"],
-                     config["references"][REF_GENOME]["version"][0],
-                     wildcards["application"],
-                     "bamCoverage",
-                     wildcards["mode"],
-                     wildcards["duplicates"]))
-    for i in config["samples"][wildcards["assayID"]][wildcards["runID"]]:
-        fn.append("/".join((path, "_".join((i, wildcards["mode"], "RPKM.bw")))))
-    return(fn)
-
 
 rule bamCoverage_normal:
     version:
@@ -85,7 +71,7 @@ rule bamCoverage_normal:
         bam = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam",
         index = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai"
     output:
-        "{assayType}/deepTools/computeCoverage/{reference_version}/{runID}/{library}_RPKM.bw"
+        "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_RPKM.bw"
     shell:
         """
         {params.deepTools_dir}/bamCoverage --bam {input.bam} \
@@ -99,18 +85,31 @@ rule bamCoverage_normal:
                                            --ignoreForNormalization {params.ignore}
         """
 
-# rule computeMatrix:
-#     version:
-#         "1"
-#     params:
-#         deepTools_dir = home + config["deepTools_dir"],
-#         program_parameters = lambda wildcards: ' '.join("{!s}={!s}".format(key, val.strip("\\'")) for (key, val) in cli_parameters_computeMatrix(wildcards).items())
-#     threads:
-#         32
-#     input:
-#         file = get_computeMatrix_input,
-#         region = lambda wildcards: home + config["program_parameters"]["deepTools"]["regionFiles"][wildcards.region]
-#     output:
-#         matrix_gz = "{assayType}/deepTools/computeMatrix/{reference_version}/{runID}/{region}/matrix.gz"
-#     wrapper:
-#         "file://" + wrapper_dir + "/deepTools/computeMatrix/wrapper.py"
+rule computeMatrix_scaled:
+    version:
+        "1"
+    params:
+        deepTools_dir = home + config["deepTools_dir"],
+        program_parameters = ,
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"]
+    threads:
+        32
+    input:
+        file = get_computeMatrix_input,
+        region = lambda wildcards: config["program_parameters"]["deepTools"]["regionFiles"][wildcards["region"]]
+    output:
+        matrix_gz = "{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix.gz"
+    shell:
+        """
+        {params.deepTools_dir}/computeCoverage scale-regions --numberOfProcessors {threads} \
+                                                             --smartLabels \
+                                                             --missingDataAsZero \
+                                                             --regionBodyLength 5000 \
+                                                             --beforeRegionStartLength 2000 \
+                                                             --afterRegionStartLength \
+                                                             --unscaled5prime 350 \
+                                                             --unscaled3prime 350 \
+                                                             --regionsFileName {input.region} \
+                                                             --scoreFileName {input.file} \
+                                                             --outFileName {output.matrix_gz}
+        """
