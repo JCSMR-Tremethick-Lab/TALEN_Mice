@@ -14,13 +14,13 @@ Rules for running deepTools analysis on ChIP-Seq data
 For usage, include this in your workflow.
 """
 
-rules all:
+rule all:
     input:
         expand("{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_RPKM.bw",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
-               library [x for x in config["samples"][wildcards["assayType"]][wildcards["runID"]].keys()]),
+               library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()]),
         expand("{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix.gz",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
@@ -89,27 +89,25 @@ rule computeMatrix_scaled:
     version:
         "1"
     params:
-        deepTools_dir = home + config["deepTools_dir"],
-        program_parameters = ,
         deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"]
     threads:
         32
     input:
         file = get_computeMatrix_input,
-        region = lambda wildcards: config["program_parameters"]["deepTools"]["regionFiles"][wildcards["region"]]
+        region = lambda wildcards: config["program_parameters"]["deepTools"]["regionFiles"][wildcards["reference_version"]][wildcards["region"]]
     output:
         matrix_gz = "{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix.gz"
     shell:
         """
-        {params.deepTools_dir}/computeCoverage scale-regions --numberOfProcessors {threads} \
-                                                             --smartLabels \
-                                                             --missingDataAsZero \
-                                                             --regionBodyLength 5000 \
-                                                             --beforeRegionStartLength 2000 \
-                                                             --afterRegionStartLength \
-                                                             --unscaled5prime 350 \
-                                                             --unscaled3prime 350 \
-                                                             --regionsFileName {input.region} \
-                                                             --scoreFileName {input.file} \
-                                                             --outFileName {output.matrix_gz}
+        {params.deepTools_dir}/computeMatrix scale-regions --numberOfProcessors {threads} \
+                                                           --smartLabels \
+                                                           --missingDataAsZero \
+                                                           --regionBodyLength 5000 \
+                                                           --beforeRegionStartLength 2000 \
+                                                           --afterRegionStartLength 2000 \
+                                                           --unscaled5prime 350 \
+                                                           --unscaled3prime 350 \
+                                                           --regionsFileName {input.region} \
+                                                           --scoreFileName {input.file} \
+                                                           --outFileName {output.matrix_gz}
         """
