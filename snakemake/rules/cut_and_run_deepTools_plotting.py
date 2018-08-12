@@ -38,7 +38,7 @@ def get_computeMatrix_input(wildcards):
                      wildcards["reference_version"],
                      wildcards["runID"]))
     for i in config["samples"][wildcards["assayType"]][wildcards["runID"]]:
-        fn.append("/".join((path, "_".join((i, wildcards["suffix"],".bw")))))
+        fn.append("/".join((path, "_".join((i, wildcards["suffix"] + ".bw")))))
     return(fn)
 
 def cli_parameters_normalization(wildcards):
