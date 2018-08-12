@@ -112,7 +112,6 @@ rule bamCoverage_1xgenome:
                                                --numberOfProcessors {threads} \
                                                --normalizeUsing {params.normalizeUsing} \
                                                --effectiveGenomeSize {params.effectiveGenomeSize} \
-                                               --extendReads \
                                                --ignoreForNormalization {params.ignore}
         """
 
