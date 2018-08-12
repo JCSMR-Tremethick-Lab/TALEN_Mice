@@ -16,11 +16,12 @@ For usage, include this in your workflow.
 
 rule all:
     input:
-        expand("{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_RPKM.bw",
+        expand("{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_{suffix}",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
-               library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()]),
+               library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()],
+               suffix = ["RPKM.bw", "1xgenome.bw"]),
         expand("{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix.gz",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
@@ -81,15 +82,49 @@ rule bamCoverage_normal:
                                            --binSize 25,
                                            --smoothLength "75",
                                            --numberOfProcessors {threads} \
-                                           --normalizeUsingRPKM \
+                                           --normalizeUsing RPKM \
                                            --ignoreForNormalization {params.ignore}
         """
+
+
+rule bamCoverage_1xgenome:
+    version:
+        1
+    params:
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
+        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"]
+    threads:
+        32
+    input:
+        bam = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam",
+        index = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai"
+    output:
+        "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_1xgenome.bw"
+    shell:
+        """
+        {params.deepTools_dir}/bamCoverage --bam {input.bam} \
+                                           --outFileName {output} \
+                                           --outFileFormat bigwig \
+                                           --centerReads,
+                                           --binSize 25, # given that we only have 38bp reads
+                                           --smoothLength 50,
+                                           --numberOfProcessors {threads} \
+                                           --normalizeUsing RPGC \
+                                           --effectiveGenomeSize 2308125349\ # from http://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html
+                                           --ignoreForNormalization {params.ignore}
+        """
+
 
 rule computeMatrix_scaled:
     version:
         "1"
     params:
-        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"]
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
+        regionBodyLength = 5000,
+        beforeRegionStartLength = 2000,
+        afterRegionStartLength = 2000,
+        unscaled5prime = 350,
+        unscaled3prime = 350
     threads:
         32
     input:
@@ -102,11 +137,11 @@ rule computeMatrix_scaled:
         {params.deepTools_dir}/computeMatrix scale-regions --numberOfProcessors {threads} \
                                                            --smartLabels \
                                                            --missingDataAsZero \
-                                                           --regionBodyLength 5000 \
-                                                           --beforeRegionStartLength 2000 \
-                                                           --afterRegionStartLength 2000 \
-                                                           --unscaled5prime 350 \
-                                                           --unscaled3prime 350 \
+                                                           --regionBodyLength {params.regionBodyLength} \
+                                                           --beforeRegionStartLength {params.beforeRegionStartLength} \
+                                                           --afterRegionStartLength {params.afterRegionStartLength} \
+                                                           --unscaled5prime {params.unscaled5prime} \
+                                                           --unscaled3prime {params.unscaled3prime} \
                                                            --regionsFileName {input.region} \
                                                            --scoreFileName {input.file} \
                                                            --outFileName {output.matrix_gz}
