@@ -78,9 +78,8 @@ rule bamCoverage_normal:
         {params.deepTools_dir}/bamCoverage --bam {input.bam} \
                                            --outFileName {output} \
                                            --outFileFormat bigwig \
-                                           --centerReads,
-                                           --binSize 25,
-                                           --smoothLength "75",
+                                           --binSize 25 \
+                                           --smoothLength 75\
                                            --numberOfProcessors {threads} \
                                            --normalizeUsing RPKM \
                                            --ignoreForNormalization {params.ignore}
@@ -94,7 +93,7 @@ rule bamCoverage_1xgenome:
         deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
         ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"]
     threads:
-        32
+        8
     input:
         bam = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam",
         index = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai"
@@ -105,12 +104,11 @@ rule bamCoverage_1xgenome:
         {params.deepTools_dir}/bamCoverage --bam {input.bam} \
                                            --outFileName {output} \
                                            --outFileFormat bigwig \
-                                           --centerReads,
-                                           --binSize 25, # given that we only have 38bp reads
-                                           --smoothLength 50,
+                                           --binSize 10 \ 
                                            --numberOfProcessors {threads} \
                                            --normalizeUsing RPGC \
-                                           --effectiveGenomeSize 2308125349\ # from http://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html
+                                           --effectiveGenomeSize 2150570000 \ 
+                                           --extendReads \
                                            --ignoreForNormalization {params.ignore}
         """
 
