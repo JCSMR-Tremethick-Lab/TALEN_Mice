@@ -80,11 +80,21 @@
       },
       "replicates":
       {
-        "WT_H2AL2" : ["WT_01_H2AL2_3_7_18"],
-        "WT_IGG" : ["WT_01_IGG_3_7_18"],
-        "WT_H3K27me3" : ["WT_01_H3K27me3_23_5_18"],
-        "WT_H3K36me3" : ["WT_01_H3K36me3_23_5_18"],
-        "KO_H2AL2" : ["KO_01_H2AL2_3_7_18", "KO_02_H2AL2_24_6_18"]
+        "180731_NB501086_0217_CutandRun_Tanya":
+        {
+          "WT_H2AL2" : ["WT_01_H2AL2_3_7_18"],
+          "WT_IGG" : ["WT_01_IGG_3_7_18"],
+          "WT_H3K27me3" : ["WT_01_H3K27me3_23_5_18"],
+          "WT_H3K36me3" : ["WT_01_H3K36me3_23_5_18"],
+          "KO_H2AL2" : ["KO_01_H2AL2_3_7_18", "KO_02_H2AL2_24_6_18"]
+        },
+        "NB501086_0221_TSoboleva_JCSMR_CutandRun" :
+        {
+          "WT_K36me3" : ["WT_01_K36me3", "WT_02_K36me3"],
+          "WT_PolIIS5" : ["WT_01_PolIIS5", "WT_02_PolIIS5"],
+          "KO_K36me3" : ["KO_01_K36me3", "KO_02_K36me3"],
+          "KO_PolIIS5" : ["KO_01_PolIIS5", "KO_02_PolIIS5"]
+        }
       },
       "conditions":
       {
