@@ -30,7 +30,8 @@ rule star_align_full:
     input:
         trimmed_read1 = rules.run_fastp.output.trimmed_read1,
         trimmed_read2 = rules.run_fastp.output.trimmed_read2,
-        index = lambda wildcards: config["STAR"][wildcards.reference_version]
+        index = lambda wildcards: config["STAR"][wildcards["reference_version"]]["index"],
+        gtf = lambda wildcards: config["STAR"][wildcards["reference_version"]["GTF"]
     output:
         "{assayType}/STAR/full/{reference_version}/{runID}/{library}.bam"
     shell:
@@ -60,8 +61,8 @@ rule star_align_rMATs:
     input:
         trimmed_read1 = rules.run_fastp.output.trimmed_read1,
         trimmed_read2 = rules.run_fastp.output.trimmed_read2,
-        index = lambda wildcards: config["STAR"][wildcards["reference_version"]],
-        gtf = lambda wildcards: config["references"]["GTF"]
+        index = lambda wildcards: config["STAR"][wildcards["reference_version"]]["index"],
+        gtf = lambda wildcards: config["STAR"][wildcards["reference_version"]["GTF"]
     output:
         "{assayType}/rMATs/BAMs/{reference_version}/{runID}/{library}.bam"
     shell:
