@@ -7,6 +7,15 @@ REF_VERSION = "blablub"
 with open("config_RNA-Seq_round_spermatids.json") as data_file:
     config = json.load(data_file)
 
+with open("config_CUT_and_RUN.json") as data_file:
+    config = json.load(data_file)
+
+wildcards = {"outdir" : "processed_data",
+             "reference_version" : "GRCm38_ensembl93",
+             "assayType" : "CutRun",
+             "runID" : "NB501086_0221_TSoboleva_JCSMR_CutandRun"
+             }
+
 
 expand("{assayType}/kallisto/{reference_version}/{runID}/{library}",
        assayType = "RNA-Seq",
