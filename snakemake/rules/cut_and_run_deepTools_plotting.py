@@ -22,11 +22,12 @@ rule all:
                runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
                library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()],
                suffix = ["RPKM.bw", "1xgenome.bw"]),
-        expand("{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix.gz",
+        expand("{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix_{suffix}.gz",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
-               region = "allGenes")
+               region = "allGenes",
+               suffix = ["RPKM", "1xgenome"])
 
 
 def get_computeMatrix_input(wildcards):
@@ -37,7 +38,7 @@ def get_computeMatrix_input(wildcards):
                      wildcards["reference_version"],
                      wildcards["runID"]))
     for i in config["samples"][wildcards["assayType"]][wildcards["runID"]]:
-        fn.append("/".join((path, "_".join((i, "RPKM.bw")))))
+        fn.append("/".join((path, "_".join((i, wildcards["suffix"],".bw")))))
     return(fn)
 
 def cli_parameters_normalization(wildcards):
@@ -132,7 +133,7 @@ rule computeMatrix_scaled:
         file = get_computeMatrix_input,
         region = lambda wildcards: config["program_parameters"]["deepTools"]["regionFiles"][wildcards["reference_version"]][wildcards["region"]]
     output:
-        matrix_gz = "{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix.gz"
+        matrix_gz = "{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix_{suffix}.gz"
     shell:
         """
         {params.deepTools_dir}/computeMatrix scale-regions --numberOfProcessors {threads} \
