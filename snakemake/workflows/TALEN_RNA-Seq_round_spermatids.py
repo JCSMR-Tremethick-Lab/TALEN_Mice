@@ -20,8 +20,8 @@ include:
     include_prefix + "run_fastp.py"
 include:
     include_prefix + "run_kallisto.py"
-#include:
-#    include_prefix + "run_STAR.py"
+include:
+   include_prefix + "run_STAR.py"
 
 rule run_kallisto:
     input:
@@ -31,3 +31,12 @@ rule run_kallisto:
                runID = "NB501086_0219_TSoboleva_JCSMR_RNAseq",
                library = [y for y in config["samples"]["RNA-Seq"]["NB501086_0219_TSoboleva_JCSMR_RNAseq"].keys()])
 
+rule run_STAR_align:
+    input:
+        expand("{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{tool}/{subcommand}/{library}.bw",
+               assayType = "RNA-Seq",
+               reference_version = "GRCm38_ensembl93_ERCC",
+               runID = "NB501086_0219_TSoboleva_JCSMR_RNAseq",
+               tool = "STAR",
+               subcommand = "full",
+               library = [y for y in config["samples"]["RNA-Seq"]["NB501086_0219_TSoboleva_JCSMR_RNAseq"].keys()])
