@@ -99,7 +99,7 @@ rule bam_index_STAR_output:
         "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
 
-rule create_bigwig_from_bam_1xgenome:
+rule create_bigwig_from_bam_RPKM:
     version:
         "1"
     threads:
@@ -109,8 +109,8 @@ rule create_bigwig_from_bam_1xgenome:
         ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
         outFileFormat = "bigwig",
         binSize = 10,
-        normalizeUsing = "RPGC",
-        effectiveGenomeSize = 2150570000
+        smoothLength = 30,
+        normalizeUsing = "RPKM"
     input:
         bam = "{assayType}/{tool}/{subcommand}/{reference_version}/{runID}/{library}.bam",
         index = "{assayType}/{tool}/{subcommand}/{reference_version}/{runID}/{library}.bam.bai"
@@ -119,10 +119,10 @@ rule create_bigwig_from_bam_1xgenome:
     shell:
         """
             {params.deepTools_dir}/bamCoverage --bam {input.bam} \
-                                               --outFileName {output} \
+                                               --outFileName {output.bigwig} \
                                                --outFileFormat {params.outFileFormat} \
                                                --numberOfProcessors {threads} \
                                                --normalizeUsing {params.normalizeUsing} \
-                                               --effectiveGenomeSize {params.effectiveGenomeSize} \
-                                               --binSize {params.binSize}
+                                               --binSize {params.binSize} \
+                                               --smoothLength {params.smoothLength}
         """
