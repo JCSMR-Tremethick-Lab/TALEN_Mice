@@ -91,25 +91,29 @@ rule bamCoverage_1xgenome:
         1
     params:
         deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
-        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"]
+        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
+        outFileFormat = "bigwig",
+        binSize = 10,
+        normalizeUsing = "RPGC",
+        effectiveGenomeSize = 2150570000
     threads:
         8
     input:
         bam = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam",
         index = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai"
     output:
-        "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_1xgenome.bw"
+        bigwig = "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_1xgenome.bw"
     shell:
         """
-        {params.deepTools_dir}/bamCoverage --bam {input.bam} \
-                                           --outFileName {output} \
-                                           --outFileFormat bigwig \
-                                           --binSize 10 \ 
-                                           --numberOfProcessors {threads} \
-                                           --normalizeUsing RPGC \
-                                           --effectiveGenomeSize 2150570000 \ 
-                                           --extendReads \
-                                           --ignoreForNormalization {params.ignore}
+            {params.deepTools_dir}/bamCoverage --bam {input.bam} \
+                                               --outFileName {output.bigwig} \
+                                               --outFileFormat {params.outFileFormat} \
+                                               --binSize {params.binSize} \
+                                               --numberOfProcessors {threads} \
+                                               --normalizeUsing {params.normalizeUsing} \
+                                               --effectiveGenomeSize {params.effectiveGenomeSize} \
+                                               --extendReads \
+                                               --ignoreForNormalization {params.ignore}
         """
 
 
