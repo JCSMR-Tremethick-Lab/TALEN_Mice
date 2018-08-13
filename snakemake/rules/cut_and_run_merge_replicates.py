@@ -21,6 +21,21 @@ home = os.environ['HOME']
 REF_GENOME = config["references"]["active"]
 REF_VERSION = config["references"][REF_GENOME]["version"][0]
 
+rule all:
+    input:
+        exand("{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{replicate}_{suffix}.bw",
+              assayType = "CutRun",
+              reference_version = "GRCm38_ensembl93",
+              runID = "180731_NB501086_0217_CutandRun_Tanya",
+              replicate =  [x for x in config["samples"]["replicates"]["180731_NB501086_0217_CutandRun_Tanya"].keys],
+              suffix = ["RPKM", "1xgenome"]),
+        exand("{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{replicate}_{suffix}.bw",
+              assayType = "CutRun",
+              reference_version = "GRCm38_ensembl93",
+              runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
+              replicate =  [x for x in config["samples"]["replicates"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys],
+              suffix = ["RPKM", "1xgenome"])
+
 
 rule bigWig_merge:
     version:
