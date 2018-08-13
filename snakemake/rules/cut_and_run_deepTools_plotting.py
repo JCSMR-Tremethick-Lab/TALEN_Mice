@@ -32,7 +32,7 @@ rule all:
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
-               region = ["allIntrons", "allExons"]
+               region = ["allIntrons", "allExons"],
                suffix = ["RPKM", "1xgenome"])
 
 
@@ -165,7 +165,7 @@ rule computeMatrix_scaled:
         """
 
 
-rule computeMatrix_refPoint
+rule computeMatrix_refPoint:
     version:
         "1"
     params:
