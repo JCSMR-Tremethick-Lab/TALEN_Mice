@@ -190,3 +190,20 @@ rule computeMatrix_refPoint
                                                              --scoreFileName {input.file} \
                                                              --outFileName {output.matrix_gz}
         """
+
+
+rule plotProfile:
+    version:
+        "1"
+    params:
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"]
+    thread:
+        1
+    input:
+        matrix_gz = "{assayType}/deepTools/computeMatrix/{subcommand}/{reference_version}/{runID}/{region}/matrix_{suffix}.gz",
+    output:
+        pdf =  "{assayType}/deepTools/plotProfile/{subcommand}/{reference_version}/{runID}/{region}_{suffix}.gz"
+    shell:
+    """
+    {params.deepTools_dir}/plotProfile 
+    """
