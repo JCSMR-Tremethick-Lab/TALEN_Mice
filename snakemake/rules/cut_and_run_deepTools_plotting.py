@@ -163,3 +163,30 @@ rule computeMatrix_scaled:
                                                            --scoreFileName {input.file} \
                                                            --outFileName {output.matrix_gz}
         """
+
+
+rule computeMatrix_refPoint
+    version:
+        "1"
+    params:
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
+        upstream = 500,
+        downstream = 500
+    threads:
+        32
+    input:
+        file = get_computeMatrix_input,
+        region = lambda wildcards: config["program_parameters"]["deepTools"]["regionFiles"][wildcards["reference_version"]][wildcards["region"]]
+    output:
+        matrix_gz = "{assayType}/deepTools/computeMatrix/reference-point/{reference_version}/{runID}/{region}/matrix_{suffix}.gz"
+    shell:
+        """
+        {params.deepTools_dir}/computeMatrix reference-point --numberOfProcessors {threads} \
+                                                             --smartLabels \
+                                                             --missingDataAsZero \
+                                                             --upstream {params.upstream} \
+                                                             --downstream {params.downstream} \
+                                                             --regionsFileName {input.region} \
+                                                             --scoreFileName {input.file} \
+                                                             --outFileName {output.matrix_gz}
+        """
