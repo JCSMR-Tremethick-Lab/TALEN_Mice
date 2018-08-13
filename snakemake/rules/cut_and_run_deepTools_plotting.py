@@ -26,7 +26,7 @@ rule all:
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
-               region = "allGenes",
+               region = [x for x in config["program_parameters"]["deepTools"]["regionFiles"][wildcards["reference_version"]]],
                suffix = ["RPKM", "1xgenome"])
 
 
@@ -66,6 +66,11 @@ rule bamCoverage_normal:
         1
     params:
         deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
+        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
+        outFileFormat = "bigwig",
+        binSize = 10,
+        smoothLength = 30,
+        normalizeUsing = "RPKM",
         ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"]
     threads:
         32
@@ -78,11 +83,12 @@ rule bamCoverage_normal:
         """
         {params.deepTools_dir}/bamCoverage --bam {input.bam} \
                                            --outFileName {output} \
-                                           --outFileFormat bigwig \
-                                           --binSize 25 \
-                                           --smoothLength 75\
+                                           --outFileFormat {params.outFileFormat} \
+                                           --binSize {params.binSize} \
+                                           --smoothLength {params.smoothLength}\
                                            --numberOfProcessors {threads} \
                                            --normalizeUsing RPKM \
+                                           --extendReads \
                                            --ignoreForNormalization {params.ignore}
         """
 
@@ -95,6 +101,7 @@ rule bamCoverage_1xgenome:
         ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
         outFileFormat = "bigwig",
         binSize = 10,
+        smoothLength = 30,
         normalizeUsing = "RPGC",
         effectiveGenomeSize = 2150570000
     threads:
@@ -106,14 +113,16 @@ rule bamCoverage_1xgenome:
         bigwig = "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_1xgenome.bw"
     shell:
         """
-            {params.deepTools_dir}/bamCoverage --bam {input.bam} \
-                                               --outFileName {output.bigwig} \
-                                               --outFileFormat {params.outFileFormat} \
-                                               --binSize {params.binSize} \
-                                               --numberOfProcessors {threads} \
-                                               --normalizeUsing {params.normalizeUsing} \
-                                               --effectiveGenomeSize {params.effectiveGenomeSize} \
-                                               --ignoreForNormalization {params.ignore}
+        {params.deepTools_dir}/bamCoverage --bam {input.bam} \
+                                           --outFileName {output.bigwig} \
+                                           --outFileFormat {params.outFileFormat} \
+                                           --binSize {params.binSize} \
+                                           --smoothLength {params.smoothLength}\
+                                           --numberOfProcessors {threads} \
+                                           --normalizeUsing {params.normalizeUsing} \
+                                           --effectiveGenomeSize {params.effectiveGenomeSize} \
+                                           --extendReads \
+                                           --ignoreForNormalization {params.ignore}
         """
 
 

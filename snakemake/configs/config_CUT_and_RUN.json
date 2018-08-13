@@ -143,7 +143,9 @@
       {
         "allGenes": "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/allGenes.bed",
         "allExons": "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/allExons.bed",
-        "allIntrons": "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/allIntrons.bed"
+        "allIntrons": "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/allIntrons.bed",
+        "upRegulatedGenes" : "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/upRegulatedGenesTALENMice.bed",
+        "downRegulatedGenes" : "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/downRegulatedGenesTALENMice.bed"
       },
       "GRCh38_ensembl84":
       {
