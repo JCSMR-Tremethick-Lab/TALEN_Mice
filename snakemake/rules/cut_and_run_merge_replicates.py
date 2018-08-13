@@ -36,13 +36,13 @@ rule all:
               assayType = "CutRun",
               reference_version = "GRCm38_ensembl93_ERCC",
               runID = "180731_NB501086_0217_CutandRun_Tanya",
-              replicate =  [x for x in config["samples"]["CutRun"]["replicates"]["180731_NB501086_0217_CutandRun_Tanya"].keys()],
+              replicate =  ['WT_H2AL2', 'WT_IGG', 'WT_H3K27me3', 'WT_H3K36me3', 'KO_H2AL2'],
               suffix = ["RPKM", "1xgenome"]),
         expand("{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{replicate}_{suffix}.bw",
               assayType = "CutRun",
               reference_version = "GRCm38_ensembl93_ERCC",
               runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
-              replicate =  [x for x in config["samples"]["CutRun"]["replicates"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()],
+              replicate =  ['WT_K36me3', 'WT_PolIIS5', 'KO_K36me3', 'KO_PolIIS5'],
               suffix = ["RPKM", "1xgenome"])
 
 
