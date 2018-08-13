@@ -26,8 +26,15 @@ rule all:
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
-               region = [x for x in config["program_parameters"]["deepTools"]["regionFiles"][wildcards["reference_version"]]],
+               region = ["allGenes", "upRegulatedGenes", "downRegulatedGenes"],
+               suffix = ["RPKM", "1xgenome"]),
+        expand("{assayType}/deepTools/computeMatrix/reference-point/{reference_version}/{runID}/{region}/matrix_{suffix}.gz",
+               assayType = "CutRun",
+               reference_version = "GRCm38_ensembl93",
+               runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
+               region = ["allIntrons", "allExons"]
                suffix = ["RPKM", "1xgenome"])
+
 
 
 def get_computeMatrix_input(wildcards):
@@ -71,7 +78,6 @@ rule bamCoverage_normal:
         binSize = 10,
         smoothLength = 30,
         normalizeUsing = "RPKM",
-        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"]
     threads:
         32
     input:
