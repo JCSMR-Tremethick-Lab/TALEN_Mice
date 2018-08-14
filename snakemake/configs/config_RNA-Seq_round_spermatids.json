@@ -42,6 +42,14 @@
         "KO_19_26" : ["S4_S4_R1_001.fastq.gz", "S4_S4_R2_001.fastq.gz"],
         "WT_46_47" : ["S5_S5_R1_001.fastq.gz", "S5_S5_R2_001.fastq.gz"],
         "KO_44_45" : ["S6_S6_R1_001.fastq.gz", "S6_S6_R2_001.fastq.gz"]
+      },
+      "condition" :
+      {
+        "NB501086_0219_TSoboleva_JCSMR_RNAseq":
+        {
+          "WT" : ["WT_37_39", "WT_18_38", "WT_46_47"],
+          "KO" : ["KO_24_25", "KO_19_26", "KO_44_45"]
+        }
       }
     }
   },
