@@ -26,7 +26,7 @@ REF_VERSION = config["references"][REF_GENOME]["version"][0]
 def getReplicates(wildcards):
     fn = []
     for i in config["samples"][wildcards["assayType"]]["replicates"][wildcards["runID"]][wildcards["replicate"]]:
-        fn.append("/".join([wildcards["assayType"], "deepTools", "bamCoverage", wildcards["reference_version"], wildcards["runID"], i + wildcards["suffix"] + ".bw"]))
+        fn.append("/".join([wildcards["assayType"], "deepTools", "bamCoverage", wildcards["reference_version"], wildcards["runID"], i + "_" + wildcards["suffix"] + ".bw"]))
     return(" ".join(fn))
 
 
@@ -46,7 +46,7 @@ rule all:
         #       suffix = ["RPKM", "1xgenome"])
         expand("{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{replicate}_{suffix}.bw",
               assayType = "CutRun",
-              reference_version = "GRCm38_ensembl93_ERCC",
+              reference_version = "GRCm38_ensembl93",
               runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
               replicate =  ['WT_K36me3'],
               suffix = ["RPKM", "1xgenome"])
