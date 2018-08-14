@@ -1,15 +1,23 @@
 #!/usr/bin/env bash
 
-export GTFDir="/home/sebastian/Data/References/Annotations/Mus_musculus/GRCm38_ensembl84"
+export GTFDir="/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93"
 export TPMDir="/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain/processed_data/GRCm38_ensembl84_cDNA/kallisto"
-cd /home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain/processed_data/GRCm38_ensembl84_cDNA/suppa
 
-suppa.py generateEvents --input-file $GTFDir/Mus_musculus.GRCm38.84.gtf\
-                        --output-file $GTFDir/Mus_musculus.GRCm38.84\
+if [ -d /home/sebastian/Data/Tremethick/TALENs/RNA-Seq/suppa/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq ];
+then
+  cd /home/sebastian/Data/Tremethick/TALENs/RNA-Seq/suppa/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq
+else
+  mkdir -p /home/sebastian/Data/Tremethick/TALENs/RNA-Seq/suppa/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq
+  cd /home/sebastian/Data/Tremethick/TALENs/RNA-Seq/suppa/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq
+fi
+
+
+suppa.py generateEvents --input-file $GTFDir/Mus_musculus.GRCm38.93.gtf\
+                        --output-file $GTFDir/Mus_musculus.GRCm38.93\
                         --format ioi &
 
-suppa.py generateEvents --input-file $GTFDir/Mus_musculus.GRCm38.84.gtf\
-                        --output-file $GTFDir/Mus_musculus.GRCm38.84\
+suppa.py generateEvents --input-file $GTFDir/Mus_musculus.GRCm38.93.gtf\
+                        --output-file $GTFDir/Mus_musculus.GRCm38.93\
                         --format ioe\
                         --event-type SE SS MX RI FL &
 
@@ -50,32 +58,32 @@ suppa.py joinFiles --file-extension tpm\
                    --output PFC/HEMI/abundance
 
 # PSI calculation per gene
-suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.84.gtf\
+suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.93.gtf\
                        -e PFC/HEMI/abundance.tpm\
                        -o PFC/HEMI/results/PFC_HEMI\
                        -m INFO &
 
-suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.84.gtf\
+suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.93.gtf\
                        -e PFC/WT/abundance.tpm\
                        -o PFC/WT/results/PFC_WT\
                        -m INFO &
 
-suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.84.gtf\
+suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.93.gtf\
                        -e OB/HEMI/abundance.tpm\
                        -o OB/HEMI/results/OB_HEMI\
                        -m INFO &
 
-suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.84.gtf\
+suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.93.gtf\
                        -e OB/WT/abundance.tpm\
                        -o OB/WT/results/OB_WT\
                        -m INFO &
 
-suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.84.gtf\
+suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.93.gtf\
                        -e HIPPO/HEMI/abundance.tpm\
                        -o HIPPO/HEMI/results/HIPPO_HEMI\
                        -m INFO &
 
-suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.84.gtf\
+suppa.py psiPerIsoform -g $GTFDir/Mus_musculus.GRCm38.93.gtf\
                        -e HIPPO/WT/abundance.tpm\
                        -o HIPPO/WT/results/HIPPO_WT\
                        -m INFO &
@@ -97,7 +105,7 @@ do
   then
     mkdir -p ${i}/diff
   fi
-  ioi=$GTFDir/Mus_musculus.GRCm38.84.ioi
+  ioi=$GTFDir/Mus_musculus.GRCm38.93.ioi
   suppa.py diffSplice --method empirical\
                       --input $ioi\
                       --psi ${i}/WT/results/${i}_WT_isoform.psi ${i}/HEMI/results/${i}_HEMI_isoform.psi\

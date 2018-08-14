@@ -14,11 +14,11 @@ rule make_tpm_tsv:
     threads:
         1
     params:
-        sample = lambda wildcards: wildcards["unit"]
+        sample = lambda wildcards: wildcards["library"]
     input:
-        "{outdir}/{reference_version}/kallisto/{unit}/abundance.tsv"
+        "{assayType}/kallisto/{reference_version}/{runID}/{library}/abundance.tsv"
     output:
-        "{outdir}/{reference_version}/suppa/{unit}/abundance.tpm"
+        "{assayType}/suppa/{reference_version}/{runID}/{library}/abundance.tpm"
     shell:
         """
             awk '{{if(NR==1) {{print "{params.sample}";}} else {{split($1,a,"."); print a[1]"\t"$5}}}}' < {input} > {output}
@@ -28,12 +28,12 @@ rule collate_samples:
     threads:
         1
     params:
-        suppa_dir = home + config["suppa_dir"]
+        suppa_dir = home + "/miniconda3/bin/"
     input:
         getTPMs
     output:
         "{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundance.tpm",
-        "{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundance"
+        directory("{outdir}/{reference_version}/suppa/pooled/{tissue}/{condition}/abundance")
     shell:
         """
             suppa.py joinFiles --file-extension tpm\
