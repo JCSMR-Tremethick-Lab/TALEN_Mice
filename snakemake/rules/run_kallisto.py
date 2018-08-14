@@ -31,7 +31,7 @@ rule kallisto_quant:
         4
     params:
         bootstraps = config["kallisto"]["bootstraps"],
-	kallisto_bin = home + "/miniconda3/envs/kallisto/bin/kallisto"
+	    kallisto_bin = home + "/miniconda3/envs/kallisto/bin/kallisto"
     input:
         trimmed_read1 = rules.run_fastp.output.trimmed_read1,
         trimmed_read2 = rules.run_fastp.output.trimmed_read2,
@@ -45,4 +45,28 @@ rule kallisto_quant:
                            --threads={threads} \
                            --bootstrap-samples={params.bootstraps} \
                            {input[0]} {input[1]}
+        """
+
+rule kallisto_quant_pseudo:
+    threads:
+        4
+    params:
+        bootstraps = config["kallisto"]["bootstraps"],
+	    kallisto_bin = home + "/miniconda3/envs/kallisto/bin/kallisto"
+    input:
+        trimmed_read1 = rules.run_fastp.output.trimmed_read1,
+        trimmed_read2 = rules.run_fastp.output.trimmed_read2,
+        ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version],
+        gtf = lambda wildcards: config["STAR"][wildcards.refence_version]["GTF"]
+    output:
+        directory("{assayType}/kallisto/{reference_version}/{runID}/{library}/pseudogenome")
+    shell:
+        """
+            {params.kallisto_bin} quant --index={input.ki} \
+                                        --output-dir={output} \
+                                        --threads={threads} \
+                                        --bootstrap-samples={params.bootstraps} \
+                                        --genomebam \
+                                        --gtf {input.gtf} \
+                                        {input[0]} {input[1]}
         """
