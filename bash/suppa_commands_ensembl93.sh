@@ -16,10 +16,21 @@ suppa.py generateEvents --input-file $GTFDir/Mus_musculus.GRCm38.93.gtf\
                         --output-file $GTFDir/Mus_musculus.GRCm38.93\
                         --format ioi &
 
+suppa.py generateEvents --input-file $GTFDir/Mus_musculus.GRCm38.93.ERCC.gtf\
+                        --output-file $GTFDir/Mus_musculus.GRCm38.93.ERCC.\
+                        --format ioi &
+
 suppa.py generateEvents --input-file $GTFDir/Mus_musculus.GRCm38.93.gtf\
                         --output-file $GTFDir/Mus_musculus.GRCm38.93\
                         --format ioe\
                         --event-type SE SS MX RI FL &
+
+suppa.py generateEvents --input-file $GTFDir/Mus_musculus.GRCm38.93.ERCC.gtf\
+                        --output-file $GTFDir/Mus_musculus.GRCm38.93.ERCC\
+                        --format ioe\
+                        --event-type SE SS MX RI FL &
+
+
 
 suppa.py joinFiles --file-extension tpm\
                    --input-files 10_35_wt_HIPPO_CGATGT/abundance.tpm \
