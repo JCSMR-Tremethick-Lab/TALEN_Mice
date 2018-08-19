@@ -21,19 +21,19 @@ rule all:
                reference_version = "GRCm38_ensembl93",
                runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
                library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()],
-               suffix = ["RPKM.bw", "1xgenome.bw"]),
+               suffix = ["RPKM.bw", "1xgenome.bw", "RPGCExact.bw"]),
         expand("{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix_{suffix}.gz",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
                region = ["allGenes", "upRegulatedGenes", "downRegulatedGenes"],
-               suffix = ["RPKM", "1xgenome"]),
+               suffix = ["RPKM", "1xgenome", "RPGCExact"]),
         expand("{assayType}/deepTools/computeMatrix/reference-point/{reference_version}/{runID}/{region}/matrix_{suffix}.gz",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
                region = ["allIntrons", "allExons"],
-               suffix = ["RPKM", "1xgenome"])
+               suffix = ["RPKM", "1xgenome", "RPGCExact"])
 
 
 
@@ -132,6 +132,40 @@ rule bamCoverage_1xgenome:
         """
 
 
+rule bamCoverage_1xgenome:
+    version:
+        1
+    params:
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
+        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
+        outFileFormat = "bigwig",
+        binSize = 10,
+        smoothLength = 30,
+        normalizeUsing = "RPGC",
+        effectiveGenomeSize = 2150570000
+    threads:
+        8
+    input:
+        bam = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam",
+        index = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai"
+    output:
+        bigwig = "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_RPGCExact.bw"
+    shell:
+        """
+        {params.deepTools_dir}/bamCoverage --bam {input.bam} \
+                                           --outFileName {output.bigwig} \
+                                           --outFileFormat {params.outFileFormat} \
+                                           --binSize {params.binSize} \
+                                           --smoothLength {params.smoothLength}\
+                                           --numberOfProcessors {threads} \
+                                           --normalizeUsing {params.normalizeUsing} \
+                                           --effectiveGenomeSize {params.effectiveGenomeSize} \
+                                           --extendReads \
+                                           --exactScaling \
+                                           --ignoreForNormalization {params.ignore}
+        """
+
+
 rule computeMatrix_scaled:
     version:
         "1"
@@ -205,5 +239,5 @@ rule plotProfile:
         pdf =  "{assayType}/deepTools/plotProfile/{subcommand}/{reference_version}/{runID}/{region}_{suffix}.gz"
     shell:
     """
-    {params.deepTools_dir}/plotProfile 
+    {params.deepTools_dir}/plotProfile
     """
