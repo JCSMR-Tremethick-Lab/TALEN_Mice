@@ -25,7 +25,7 @@ include:
 
 rule run_kallisto:
     input:
-        expand("{assayType}/kallisto/{reference_version}/{runID}/{library}",
+        expand("{assayType}/kallisto/quant/{reference_version}/{runID}/{library}",
                assayType = "RNA-Seq",
                reference_version = ["GRCm38_ensembl84_ERCC", "GRCm38_gencodeM18", "GRCm38_ensembl93_ERCC"],
                runID = "NB501086_0219_TSoboleva_JCSMR_RNAseq",
@@ -34,7 +34,7 @@ rule run_kallisto:
 
 rule run_kallisto_pseudoalignment:
     input:
-        expand("{assayType}/kallisto/{reference_version}/{runID}/{library}/pseudogenome",
+        expand("{assayType}/kallisto/genomebam/{reference_version}/{runID}/{library}",
                assayType = "RNA-Seq",
                reference_version = "GRCm38_ensembl93_ERCC",
                runID = "NB501086_0219_TSoboleva_JCSMR_RNAseq",
