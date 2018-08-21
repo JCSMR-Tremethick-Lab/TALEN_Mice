@@ -4,28 +4,6 @@ __date__ = "2016-04-10"
 
 from snakemake.exceptions import MissingInputException
 
-#rule kallisto_quant_se:
-#    threads:
-#        4
-#    params:
-#        bootstraps = config["kallisto"]["bootstraps"],
-#    input:
-#        read1 = lambda wildcards: "fastq/" + config["units"][wildcards.unit],
-#        ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
-#    output:
-#        "{outdir}/{reference_version}/kallisto_se/{unit}"
-#    shell:
-#        """
-#            kallisto quant --index={input.ki} \
-#                           --output-dir={output} \
-#                           --threads={threads} \
-#                           --single \
-#                           --fragment-length=200 \
-#                           --sd=50 \
- #                          --bootstrap-samples={params.bootstraps} \
-#                           {input.read1}
-#        """
-
 rule kallisto_quant:
     threads:
         4
@@ -69,4 +47,33 @@ rule kallisto_quant_pseudo:
                                         --genomebam \
                                         --gtf {input.gtf} \
                                         {input[0]} {input[1]}
+        """
+
+
+rule pseudobam_to_bigwig:
+    version:
+        1
+    params:
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
+        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
+        outFileFormat = "bigwig",
+        binSize = 10,
+        smoothLength = 30,
+        normalizeUsing = "RPKM",
+    threads:
+        32
+    input:
+        rules.kallisto_quant_pseudo.output
+    output:
+        "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_RPKM.bw"
+    shell:
+        """
+        {params.deepTools_dir}/bamCoverage --bam {input}/pseudoalignment.bam \
+                                           --outFileName {output} \
+                                           --outFileFormat {params.outFileFormat} \
+                                           --binSize {params.binSize} \
+                                           --smoothLength {params.smoothLength}\
+                                           --numberOfProcessors {threads} \
+                                           --normalizeUsing RPKM \
+                                           --ignoreForNormalization {params.ignore}
         """
