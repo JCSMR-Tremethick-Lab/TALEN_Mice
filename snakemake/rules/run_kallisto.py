@@ -37,7 +37,7 @@ rule kallisto_quant:
         trimmed_read2 = rules.run_fastp.output.trimmed_read2,
         ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version]
     output:
-        directory("{assayType}/kallisto/{reference_version}/{runID}/{library}")
+        directory("{assayType}/kallisto/quant/{reference_version}/{runID}/{library}")
     shell:
         """
             {params.kallisto_bin} quant --index={input.ki} \
@@ -57,9 +57,9 @@ rule kallisto_quant_pseudo:
         trimmed_read1 = rules.run_fastp.output.trimmed_read1,
         trimmed_read2 = rules.run_fastp.output.trimmed_read2,
         ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version],
-        gtf = lambda wildcards: config["STAR"][wildcards.refence_version]["GTF"]
+        gtf = lambda wildcards: config["STAR"][wildcards.reference_version]["GTF"]
     output:
-        directory("{assayType}/kallisto/{reference_version}/{runID}/{library}/pseudogenome")
+        directory("{assayType}/kallisto/genomebam/{reference_version}/{runID}/{library}")
     shell:
         """
             {params.kallisto_bin} quant --index={input.ki} \

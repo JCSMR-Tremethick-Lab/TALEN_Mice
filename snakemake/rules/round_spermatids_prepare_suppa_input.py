@@ -1,14 +1,18 @@
 __author__ = "Sebastian Kurscheid (sebastian.kurscheid@anu.edu.au)"
 __license__ = "MIT"
-__date__ = "2018-04-19"
+__date__ = "2018-08-13"
 
 from snakemake.exceptions import MissingInputException
+import os
+
+home = os.environ['HOME']
 
 def getTPMs(wildcards):
     fn = []
     for i in config["samples"][wildcards["assayType"]]["condition"][wildcards["runID"]][wildcards["condition"]]:
-        fn.append("/".join([wildcards["assayType"], "suppa", wildcards["reference_version"], i, "abundance.tpm"]))
+        fn.append("/".join([wildcards["assayType"], "suppa", wildcards["reference_version"], wildcards["runID"], i, "abundance.tpm"]))
     return(" ".join(fn))
+
 
 
 rule all:
@@ -23,7 +27,7 @@ rule make_tpm_tsv:
     threads:
         1
     params:
-        sample = lambda wildcards: wildcards["unit"]
+        sample = lambda wildcards: wildcards["library"]
     input:
         "{assayType}/kallisto/genomebam/{reference_version}/{runID}/{library}/abundance.tsv"
     output:
@@ -37,7 +41,7 @@ rule collate_samples:
     threads:
         1
     params:
-        suppa_dir = home + config["suppa_dir"]
+        suppa_dir = home + "/bin/"
     input:
         getTPMs
     output:

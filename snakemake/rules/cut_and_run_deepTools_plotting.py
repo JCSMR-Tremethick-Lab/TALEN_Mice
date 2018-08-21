@@ -132,7 +132,7 @@ rule bamCoverage_1xgenome:
         """
 
 
-rule bamCoverage_1xgenome:
+rule bamCoverage_RPGCExact:
     version:
         1
     params:
@@ -231,13 +231,13 @@ rule plotProfile:
         "1"
     params:
         deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"]
-    thread:
+    threads:
         1
     input:
         matrix_gz = "{assayType}/deepTools/computeMatrix/{subcommand}/{reference_version}/{runID}/{region}/matrix_{suffix}.gz",
     output:
         pdf =  "{assayType}/deepTools/plotProfile/{subcommand}/{reference_version}/{runID}/{region}_{suffix}.gz"
     shell:
-    """
-    {params.deepTools_dir}/plotProfile
-    """
+        """
+        {params.deepTools_dir}/plotProfile
+        """
