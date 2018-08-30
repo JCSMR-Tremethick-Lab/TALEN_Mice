@@ -33,21 +33,21 @@ rule star_align_full:
         index = lambda wildcards: config["STAR"][wildcards["reference_version"]]["index"],
         gtf = lambda wildcards: config["STAR"][wildcards["reference_version"]]["GTF"]
     output:
-        "{assayType}/STAR/full/{reference_version}/{runID}/{library}.bam"
+        directory("{assayType}/STAR/full/{reference_version}/{runID}/{library}/")
     shell:
         """
             STAR --runMode alignReads \
                  --runThreadN {threads} \
                  --genomeDir {input.index} \
-                 --readFilesIn {input.trimmed_read1} {input.trimmed_read1} \
+                 --readFilesIn {input.trimmed_read1} {input.trimmed_read2} \
                  --readFilesCommand zcat \
                  --outTmpDir {params.tmp_dir}/{wildcards.library} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
                  --outSAMtype BAM SortedByCoordinate \
-                 --outStd BAM_SortedByCoordinate \
                  --alignEndsType EndToEnd\
-                 > {output}
+                 --outFileNamePrefix {output} \
+                 1 > {output}/log.txt
         """
 
 rule star_align_rMATs:
