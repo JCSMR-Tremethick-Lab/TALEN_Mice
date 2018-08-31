@@ -92,9 +92,9 @@ rule bam_index_STAR_output:
     version:
         "1"
     input:
-        "{assayType}/{tool}/{subcommand}/{reference_version}/{runID}/{library}.bam"
+        "{assayType}/STAR/full/{reference_version}/{runID}/{library}/Aligned.sortedByCoord.out.bam"
     output:
-        "{assayType}/{tool}/{subcommand}/{reference_version}/{runID}/{library}.bam.bai"
+        "{assayType}/STAR/full/{reference_version}/{runID}/{library}/Aligned.sortedByCoord.out.bam.bai"
     wrapper:
         "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
