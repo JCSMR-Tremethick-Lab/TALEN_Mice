@@ -98,6 +98,28 @@ rule bam_index_STAR_output:
     wrapper:
         "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
+rule create_tdf:
+    version:
+        "1"
+    params:
+        igvtools_bin = home + "/miniconda/envs/igv/bin/igvtools",
+        windowSize = 5,
+        chromSizes = "/home/sebastian/Bioinformatics/IGVTools/genomes/sizes/hg38.chrom.sizes"
+    input:
+        bam = "{assayType}/STAR/full/{reference_version}/{runID}/{library}/Aligned.sortedByCoord.out.bam",
+        index = "{assayType}/STAR/full/{reference_version}/{runID}/{library}/Aligned.sortedByCoord.out.bam.bai"
+    output:
+        "{assayType}/igvtools/count/{reference_version}/{runID}/{library}/{library}.tdf"
+    shell:
+        """
+            {params.igvtools_bin} count -z 5\
+                                        -w {params.windowSize}\
+                                        -e 0 \
+                                        {input.bam}\
+                                        {output}\
+                                        {params.chromSizes}
+        """
+
 
 rule create_bigwig_from_bam_RPKM:
     version:

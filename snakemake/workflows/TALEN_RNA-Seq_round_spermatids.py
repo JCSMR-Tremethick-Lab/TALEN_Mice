@@ -25,7 +25,7 @@ include:
 
 rule run_STAR_full:
     input:
-        expand("{assayType}/STAR/full/{reference_version}/{runID}/{library}/Aligned.sortedByCoord.out.bam.bai",
+        expand("{assayType}/igvtools/count/{reference_version}/{runID}/{library}/{library}.tdf",
                assayType = "RNA-Seq",
                reference_version = ["GRCm38_ensembl93_ERCC"],
                runID = "NB501086_0219_TSoboleva_JCSMR_RNAseq",
