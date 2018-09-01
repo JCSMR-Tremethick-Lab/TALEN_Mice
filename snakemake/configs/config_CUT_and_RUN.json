@@ -229,6 +229,10 @@
     {
       "fastp_bin" : "/miniconda3/bin/fastp"
     },
+    "igvtools" :
+    {
+      "igvtools_bin" : "/miniconda3/envs/igv/bin/igvtools"
+    },
     "bowtie2":
     {
       "threads": "8",
