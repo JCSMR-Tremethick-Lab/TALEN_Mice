@@ -60,6 +60,7 @@ rule pseudobam_to_bigwig:
         binSize = 10,
         smoothLength = 30,
         normalizeUsing = "RPKM",
+        maxFragmentLength = "50000"
     threads:
         32
     input:
@@ -68,12 +69,13 @@ rule pseudobam_to_bigwig:
         "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_RPKM.bw"
     shell:
         """
-        {params.deepTools_dir}/bamCoverage --bam {input}/pseudoalignment.bam \
+        {params.deepTools_dir}/bamCoverage --bam {input}/pseudoalignments.bam \
                                            --outFileName {output} \
                                            --outFileFormat {params.outFileFormat} \
                                            --binSize {params.binSize} \
                                            --smoothLength {params.smoothLength}\
                                            --numberOfProcessors {threads} \
                                            --normalizeUsing RPKM \
+                                           --maxFragmentLength {params.maxFragmentLength} \
                                            --ignoreForNormalization {params.ignore}
         """
