@@ -54,10 +54,10 @@ rule run_pizzly:
     threads:
         1
     params:
-	pizzly_bin = home + "/miniconda3/envs/pizzly/bin/pizzly",
+        pizzly_bin = home + "/miniconda3/envs/pizzly/bin/pizzly",
         k = 31,
-        align-score = 2,
-        insert-size = 400
+        alignScore = 2,
+        insertSize = 400
     input:
         abundance = "{assayType}/kallisto/fusion/{reference_version}/{runID}/{library}",
         gtf = lambda wildcards: config["STAR"][wildcards.reference_version]["GTF"],
@@ -69,9 +69,9 @@ rule run_pizzly:
             {params.pizzly_bin} -k {params.k}\
                                 --gtf {input.gtf}\
                                 --cache {input.gtf}.cache.txt\
-                                --align-score = {params.align-score}\
-                                --insert-size = {params.insert-size}\
+                                --align-score = {params.alignScore}\
+                                --insert-size = {params.insertSize}\
                                 --fasta {input.fasta}\
-                                --output {output}/wildcards["library"]\
+                                --output {output}/{wildcards.library}\
                                 {input.abundance}/fusion.txt
         """

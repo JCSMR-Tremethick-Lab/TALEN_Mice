@@ -40,7 +40,7 @@ rule run_kallisto:
                library = [y for y in config["samples"]["RNA-Seq"]["NB501086_0219_TSoboleva_JCSMR_RNAseq"].keys()])
 
 
-rule run_pizzly:
+rule run_pizzly_all:
     input:
         expand("{assayType}/pizzly/{reference_version}/{runID}/{library}/",
                assayType = "RNA-Seq",
