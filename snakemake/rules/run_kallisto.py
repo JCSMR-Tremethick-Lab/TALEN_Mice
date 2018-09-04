@@ -3,6 +3,17 @@ __license__ = "MIT"
 __date__ = "2016-04-10"
 
 from snakemake.exceptions import MissingInputException
+import os
+import subprocess
+
+def getFragmentSize(wildcards):
+    insertSize = os.popen("/home/sebastian/miniconda3/envs/pizzly/bin/pizzly_get_fragment_length.py "\
+                 + wildcards["assayType"] + "/kallisto/fusion/"\
+                 + wildcards["reference_version"] + "/"\
+                 + wildcards["runID"] + "/"\
+                 + wildcards["library"] + "/"\
+                 "abundance.h5").read()
+    return(insertSize)
 
 rule kallisto_quant:
     threads:
@@ -54,10 +65,10 @@ rule run_pizzly:
     threads:
         1
     params:
-	pizzly_bin = home + "/miniconda3/envs/pizzly/bin/pizzly",
+	    pizzly_bin = home + "/miniconda3/envs/pizzly/bin/pizzly",
         k = 31,
         align-score = 2,
-        insert-size = 400
+        insert-size = getFragmentSize
     input:
         abundance = "{assayType}/kallisto/fusion/{reference_version}/{runID}/{library}",
         gtf = lambda wildcards: config["STAR"][wildcards.reference_version]["GTF"],
