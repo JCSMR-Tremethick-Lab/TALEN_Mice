@@ -25,7 +25,7 @@ rule kallisto_quant:
                            {input[0]} {input[1]}
         """
 
-rule kallisto_quant_pseudo:
+rule kallisto_fusion:
     threads:
         4
     params:
@@ -37,43 +37,41 @@ rule kallisto_quant_pseudo:
         ki = lambda wildcards: config["kallisto_index"][wildcards.reference_version],
         gtf = lambda wildcards: config["STAR"][wildcards.reference_version]["GTF"]
     output:
-        directory("{assayType}/kallisto/genomebam/{reference_version}/{runID}/{library}")
+        directory("{assayType}/kallisto/fusion/{reference_version}/{runID}/{library}")
     shell:
         """
             {params.kallisto_bin} quant --index={input.ki} \
                                         --output-dir={output} \
                                         --threads={threads} \
                                         --bootstrap-samples={params.bootstraps} \
-                                        --genomebam \
+                                        --fusion \
                                         --gtf {input.gtf} \
                                         {input[0]} {input[1]}
         """
 
 
-rule pseudobam_to_bigwig:
-    version:
+rule run_pizzly:
+    threads:
         1
     params:
-        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
-        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
-        outFileFormat = "bigwig",
-        binSize = 10,
-        smoothLength = 30,
-        normalizeUsing = "RPKM",
-    threads:
-        32
+	    pizzly_bin = home + "/miniconda3/envs/pizzly/bin/pizzly",
+        k = 31,
+        align-score = 2,
+        insert-size =
     input:
-        rules.kallisto_quant_pseudo.output
+        abundance = "{assayType}/kallisto/fusion/{reference_version}/{runID}/{library}",
+        gtf = lambda wildcards: config["STAR"][wildcards.reference_version]["GTF"],
+        fasta = lambda wildcards: config["STAR"][wildcards.reference_version]["fasta"]
     output:
-        "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{library}_RPKM.bw"
+        directory("{assayType}/pizzly/{reference_version}/{runID}/{library}/")
     shell:
         """
-        {params.deepTools_dir}/bamCoverage --bam {input}/pseudoalignment.bam \
-                                           --outFileName {output} \
-                                           --outFileFormat {params.outFileFormat} \
-                                           --binSize {params.binSize} \
-                                           --smoothLength {params.smoothLength}\
-                                           --numberOfProcessors {threads} \
-                                           --normalizeUsing RPKM \
-                                           --ignoreForNormalization {params.ignore}
+            {params.pizzly_bin} -k {params.k}\
+                                --gtf {input.gtf}\
+                                --cache {input.gtf}.cache.txt\
+                                --align-score = {params.align-score}\
+                                --insert-size = {params.insert-size}\
+                                --fasta {input.fasta}\
+                                --output {output}/wildcards["library"]\
+                                {input.abundance}/fusion.txt
         """
