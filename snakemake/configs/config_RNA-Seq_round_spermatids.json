@@ -27,7 +27,8 @@
     "GRCm38_ensembl93_ERCC" :
     {
       "index" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/STAR_Index_ERCC",
-      "GTF" : "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.93.ERCC.gtf"
+      "GTF" : "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.93.ERCC.gtf",
+      "fasta" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.cds.all.fa.gz"
     }
   },
   "samples" :

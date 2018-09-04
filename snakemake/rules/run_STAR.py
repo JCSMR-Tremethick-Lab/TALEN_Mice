@@ -102,7 +102,7 @@ rule create_tdf:
     version:
         "1"
     params:
-        igvtools_bin = home + "/miniconda/envs/igv/bin/igvtools",
+        igvtools_bin = home + "/miniconda3/envs/igv/bin/igvtools",
         windowSize = 5,
         chromSizes = "/home/sebastian/Bioinformatics/IGVTools/genomes/sizes/hg38.chrom.sizes"
     input:
