@@ -35,7 +35,7 @@ rule run_macs2:
         directory("{assayType}/macs2/callpeak/{reference_version}/{runID}/{library}")
     shell:
         """
-            {params.macs2_bin} -f AUTO\
+            {params.macs2_bin} callpeak -f AUTO\
                                --seed {params.seed}\
                                --cutoff-analysis\
                                -g hs\

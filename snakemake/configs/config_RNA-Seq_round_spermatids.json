@@ -20,7 +20,8 @@
     "GRCm38_ensembl84_cDNA" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.cdna.ki",
     "GRCm38_ensembl84_ERCC" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki",
     "GRCm38_gencodeM18" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_gencodeM18/gencode.vM18.pc_transcripts.ERCC.ki",
-    "GRCm38_ensembl93_ERCC" :  "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.cds.all.ERCC.ki"
+    "GRCm38_ensembl93_ERCC" :  "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.cds.all.ERCC.ki",
+    "GRCm38_ensembl93" :  "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.cds.all.ERCC.ki"
   },
   "STAR" :
   {

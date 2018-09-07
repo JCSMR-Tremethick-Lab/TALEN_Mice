@@ -68,7 +68,7 @@ rule run_pizzly:
         pizzly_bin = home + "/miniconda3/envs/pizzly/bin/pizzly",
         k = 31,
         alignScore = 2,
-        insert-size = getFragmentSize
+        insertSize = getFragmentSize
     input:
         abundance = "{assayType}/kallisto/fusion/{reference_version}/{runID}/{library}",
         gtf = lambda wildcards: config["STAR"][wildcards.reference_version]["GTF"],
@@ -80,8 +80,6 @@ rule run_pizzly:
             {params.pizzly_bin} -k {params.k}\
                                 --gtf {input.gtf}\
                                 --cache {input.gtf}.cache.txt\
-                                --align-score = {params.alignScore}\
-                                --insert-size = {params.insertSize}\
                                 --fasta {input.fasta}\
                                 --output {output}/{wildcards.library}\
                                 {input.abundance}/fusion.txt
