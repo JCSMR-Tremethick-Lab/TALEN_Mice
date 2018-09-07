@@ -148,7 +148,7 @@ rule_bam_insert_size:
         rules.bam_rmdup.output
     output:
         metrics = "{assayType}/picardTools/CollectInsertSizeMetrics/{reference_version}/{runID}/{library}.insert_size_metrics.txt",
-        histogram = "{assayType}/picardTools/CollectInsertSizeMetrics/{reference_version}/{runID}/{library}.histogram.txt"
+        histogram = "{assayType}/picardTools/CollectInsertSizeMetrics/{reference_version}/{runID}/{library}.histogram.pdf"
     shell:
         """
             java -Djava.io.tmpdir={params.temp} \
