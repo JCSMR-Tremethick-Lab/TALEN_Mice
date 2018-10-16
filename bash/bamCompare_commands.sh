@@ -17,7 +17,7 @@ do
              --smoothLength 15 \
              --extendReads \
              --centerReads \
-             --numberOfProcessors 32\
+             --numberOfProcessors 24\
              --outFileName ${outdir}/${sample}_readCount.bw
 done
 
@@ -52,7 +52,7 @@ do
              --smoothLength 15 \
              --extendReads \
              --centerReads \
-             --numberOfProcessors 32\
+             --numberOfProcessors 24\
              --outFileName ${outdir}/${sample}_readCount.bw
 done
 
@@ -69,6 +69,6 @@ do
              --smoothLength 15 \
              --extendReads \
              --centerReads \
-             --numberOfProcessors 32\
+             --numberOfProcessors 24\
              --outFileName ${outdir}/WT_01_PolIIS5_readCount.bw
 done
