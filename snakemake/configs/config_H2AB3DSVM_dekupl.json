@@ -1,9 +1,9 @@
 {
-  "fastq_dir": "raw/NB501086_0219_TSoboleva_JCSMR_RNAseq",
+  "fastq_dir": "data",
   "nb_threads": 8,
   "kmer_length": 31,
   "lib_type": "rf",
-  "output_dir":"processed/round_spermatids",
+  "output_dir":"results/round_spermatids",
   "diff_method": "DESeq2",
   "data_type": "RNA-Seq",
   "chunk_size":1000000,
