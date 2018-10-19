@@ -9,6 +9,7 @@
   "chunk_size":1000000,
   "r1_suffix": "_R1_001.fastq.gz",
   "r2_suffix": "_R2_001.fastq.gz",
+  "transcript_fasta" : "results/references/gencode.vM19.transcripts.fa"
 
   "dekupl_counter": {
     "min_recurrence": 2,
