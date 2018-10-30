@@ -18,6 +18,21 @@ def getTPMs(wildcards):
     return(" ".join(fn))
 
 
+wildcards = {"assayType" : "RNA-Seq",
+             "reference_version" : "GRCm38_ensembl93_ERCC",
+             "runID" : "NB501086_0219_TSoboleva_JCSMR_RNAseq",
+             "library" : "WT_46_47"}
+
+def getFragmentSize(wildcards):
+    insertSize = os.popen("/home/sebastian/miniconda3/envs/pizzly/bin/pizzly_get_fragment_length.py "\
+                 + wildcards["assayType"] + "/kallisto/genomebam/"\
+                 + wildcards["reference_version"] + "/"\
+                 + wildcards["runID"] + "/"\
+                 + wildcards["library"] + "/"\
+                 "abundance.h5").read()
+    return(insertSize)
+
+
 wildcards = {"outdir" : "processed_data",
              "reference_version" : "GRCm38_ensembl93_ERCC",
              "assayType" : "RNA-Seq",
