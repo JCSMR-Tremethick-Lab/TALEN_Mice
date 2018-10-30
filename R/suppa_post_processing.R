@@ -1,10 +1,11 @@
 library(data.table)
+library(ggplot2)
 
 suppaResults <- lapply(list.files("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/suppa/pooled/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq/diff", pattern = "dpsi", full.names = T), function (x) fread(x))
 names(suppaResults) <- list.files("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/suppa/pooled/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq/diff", pattern = "dpsi")
 
 suppaResults$results.dpsi.temp.0$ensembl_gene_id <- unlist(lapply(strsplit(suppaResults$results.dpsi.temp.0$Event_id, ";"), function(x) x[1]))
-suppaResults$results.dpsi.temp.0[`WT_isoform-KO_isoform_p-val` < 0.05]
+suppaResults$results.dpsi.temp.0[`WT_isoform-KO_isoform_p-val` < 0.1]
 
 suppaResults <- lapply(suppaResults, function(x){
   x$ensembl_gene_id <- unlist(lapply(strsplit(x$Event_id, ";"), function(x) x[1]))
