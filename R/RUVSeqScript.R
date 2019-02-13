@@ -40,7 +40,7 @@ s2c$condition <- factor(s2c$condition)
 s2c$condition <- relevel(s2c$condition, ref = "WT")
 design <- model.matrix(~ condition, data = s2c)
 
-files[7] <- "/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain_experiment_2/processed_data/GRCm38_ensembl84/kallisto/mmus_pfc_10_51_mut_FC/abundance.h5"
+#files[7] <- "/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_brain_experiment_2/processed_data/GRCm38_ensembl84/kallisto/mmus_pfc_10_51_mut_FC/abundance.h5"
 
 txi <- tximport::tximport(files, 
                           type = "kallisto",
@@ -173,5 +173,11 @@ eResults[abs(table.logFC) > 1][table.FDR < 0.1]
 
 # Run basic sleuth analysis of the data in order to get normalised --------
 so <- sleuth_prep(s2c, ~ condition, target_mapping = t2g)
+so <- sleuth::sleuth_fit(so, formula = design)
+so <- sleuth::sleuth_wt(so, "conditionKO")
 
+so.gene <- sleuth::sleuth_prep(s2c, ~ condition, target_mapping = t2g, aggregation_column = "ext_gene")
+so.gene <- sleuth::sleuth_fit(so.gene, formula = design)
+so.gene <- sleuth::sleuth_wt(so.gene, "conditionKO")
+sleuth_live(so.gene)
 
