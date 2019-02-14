@@ -31,8 +31,9 @@ include:
 
 rule execute_macs2:
     input:
-        expand("{assayType}/macs2/callpeak/{reference_version}/{runID}/{library}",
+        expand("{assayType}/macs2/callpeak/{option}/{reference_version}/{runID}/{library}",
                 assayType = "CutRun",
+                option = ["broad", "narrow"],
                 reference_version = REF_VERSION,
                 runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
                 library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()])
