@@ -138,7 +138,7 @@ rule bam_index:
         "samtools index {input} {output}"
 
 
-rule_bam_insert_size:
+rule bam_insert_size:
     version:
         "1.0"
     params:

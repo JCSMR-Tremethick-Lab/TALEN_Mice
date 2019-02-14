@@ -1,10 +1,20 @@
 library(data.table)
+library(ggplot2)
+
+setwd("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/R_Analysis/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq")
+load("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_testes/R_analysis/kt.rda")
+load("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_testes/R_analysis/so.rda")
+load("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_testes/R_analysis/t2g.rda")
+kT <- kt; rm(kt)
+setkey(kT, target_id)
+setkey(t2g, target_id)
+kT <- merge(kT, t2g[,c("target_id", "ext_gene", "ens_gene")], by.x = "target_id", by.y = "target_id", all.x = T, all.y = F)
 
 suppaResults <- lapply(list.files("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/suppa/pooled/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq/diff", pattern = "dpsi", full.names = T), function (x) fread(x))
 names(suppaResults) <- list.files("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/suppa/pooled/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq/diff", pattern = "dpsi")
 
 suppaResults$results.dpsi.temp.0$ensembl_gene_id <- unlist(lapply(strsplit(suppaResults$results.dpsi.temp.0$Event_id, ";"), function(x) x[1]))
-suppaResults$results.dpsi.temp.0[`WT_isoform-KO_isoform_p-val` < 0.05]
+suppaResults$results.dpsi.temp.0[`WT_isoform-KO_isoform_p-val` < 0.1]
 
 suppaResults <- lapply(suppaResults, function(x){
   x$ensembl_gene_id <- unlist(lapply(strsplit(x$Event_id, ";"), function(x) x[1]))
@@ -30,6 +40,7 @@ length(el)
 plotTargets <- suppaResults$results.dpsi.temp.0[`WT_isoform-KO_isoform_p-val` < 0.1]$ensembl_gene_id
 plotTargets <- unique(plotTargets)
 length(plotTargets)
+
 ggplot(kTtx[plotTargets[12]][!is.na(tpm)], aes(x = condition, y = log2(tpm + 1))) + 
   geom_jitter(width = 0.1, aes(shape = target_id, colour = target_id)) + 
   theme(legend.position = "right") +
@@ -37,42 +48,41 @@ ggplot(kTtx[plotTargets[12]][!is.na(tpm)], aes(x = condition, y = log2(tpm + 1))
 
 
 # calculate the mean expression level, across all replicates and c --------
-kTmean <- kT[, c("target_id", "tpm")]
+kTmean <- kT[, c("target_id", "tpm", "ext_gene", "ens_gene")]
 kTmean <- kTmean[, mean(tpm), by = list(target_id)]
-colnames(kTmean)[2] <- "tpm"
-kTmean <- kTmean[!kTmean$tpm  == 0]
-kTmean$tpm <- log10(kTmean$tpm + 0.01)
-hist(kTmean$tpm)
-setkey(kTmean, target_id)
+kTmean <- merge(kTmean, t2g[,c("target_id", "ens_gene", "ext_gene")], by.x = "target_id", by.y = "target_id", all.x = T, all.y = F)
+kTmean <- kTmean[, list(cpm = log10(sum(V1) + 0.1)), by = list(ext_gene, ens_gene)]
+kTmean <- kTmean[!kTmean$cpm  == 0]
+hist(kTmean$cpm)
+setkey(kTmean, ens_gene)
 
 # add mean expression to suppa results ------------------------------------
 suppaResults <- lapply(suppaResults, function(i){
-  merged <- merge(i, kTmean, by.x = "ensembl_gene_id", by.y = "target_id", all.x = F, all.y = F)
+  merged <- merge(i, kTmean, by.x = "ensembl_gene_id", by.y = "ens_gene", all.x = F, all.y = F)
   return(merged)
 })
 
-suppaResults$RI.dpsi.temp.0[`RI-RI_p-val` < 0.1][tpm > 1]
-suppaResults$MX.dpsi.temp.0[`MX-MX_p-val` < 0.1][tpm > 1]
-suppaResults$SE.dpsi.temp.0[`SE-SE_p-val` < 0.1][tpm > 1][order(suppaResults$SE.dpsi.temp.0[`SE-SE_p-val` < 0.1][tpm > 1]$`SE-SE_dPSI`)]
-order(suppaResults$SE.dpsi.temp.0[`SE-SE_p-val` < 0.1][tpm > 1]$`SE-SE_dPSI`)
+suppaResults$RI.dpsi.temp.0[`RI-RI_p-val` < 0.1][cpm > 1]
+suppaResults$MX.dpsi.temp.0[`MX-MX_p-val` < 0.1][cpm > 1]
+suppaResults$SE.dpsi.temp.0[`SE-SE_p-val` < 0.1][cpm > 1][order(suppaResults$SE.dpsi.temp.0[`SE-SE_p-val` < 0.1][cpm > 1]$`SE-SE_dPSI`)]
+order(suppaResults$SE.dpsi.temp.0[`SE-SE_p-val` < 0.1][cpm > 1]$`SE-SE_dPSI`)
 
 DTUcondition <- suppaResults$results.dpsi.temp.0
-DTUcondition <- merge(DTUcondition, kTmean, by.x = "ensembl_gene_id", by.y = "target_id", all.x = F, all.y = F)
-DTUcondition <- DTUcondition[!is.na(`WT_isoform-KO_isoform_dPSI`)][!is.na(tpm)]
+DTUcondition <- DTUcondition[!is.na(`WT_isoform-KO_isoform_dPSI`)][!is.na(cpm)]
 
 DTU <- fread("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/suppa/pooled/GRCm38_ensembl93_ERCC/NB501086_0219_TSoboleva_JCSMR_RNAseq/diff/results.psivec")
 DTU
 DTU$ensembl_gene_id <- unlist(lapply(strsplit(DTU$V1, ";"), function(x) x[1]))
 DTU$ensembl_transcript_id <- unlist(lapply(strsplit(DTU$V1, ";"), function(x) x[2]))
-setkey(kTtx, "transcript_id")
-kTtx[DTU$ensembl_transcript_id]
-kTtx$transcript_id <-  unlist(lapply(strsplit(kTtx$target_id, "\\."), function(x) x[1]))
+kT$ensembl_trancript_id <- unlist(lapply(strsplit(kT$target_id, "\\."), function(x) x[1]))
+setkey(kT, "ensembl_trancript_id")
+kT[DTU$ensembl_transcript_id]
 
 DTUpairwise <- data.table(event = DTU$V1, psiPairwise = DTU$WT_isoform_1 - DTU$KO_isoform_1, pair = "pair1")
 DTUpairwise <- rbind(data.table(event = DTU$V1, psiPairwise = DTU$WT_isoform_2 - DTU$KO_isoform_2, pair = "pair2"))
 DTUpairwise <- rbind(data.table(event = DTU$V1, psiPairwise = DTU$WT_isoform_3 - DTU$KO_isoform_3, pair = "pair3"))
 DTUpairwise$target_id <- unlist(lapply(strsplit(DTUpairwise$event, ";"), function(x) x[1]))
-DTUpairwise <- merge(DTUpairwise, kTmean, by.x = "target_id", by.y = "target_id", all.x = F, all.y = F)
+DTUpairwise <- merge(DTUpairwise, kTmean, by.x = "target_id", by.y = "ensembl_trancript_id", all.x = F, all.y = F)
 DTUpairwise <- DTUpairwise[!is.na(psiPairwise)][!is.na(tpm)]
 
 # plotting a la SUPPA2 paper ----------------------------------------------
