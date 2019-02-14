@@ -68,7 +68,6 @@ rule run_macs2_broad:
                                --SPMR \
                                --treatment {input.bam} \
                                --name {wildcards.library} \
-                               --call-summits \
                                 --broad \
                                --outdir {output}
         """
