@@ -265,7 +265,7 @@ rule plotHeatmap_RPKM_kmeans:
         matrix = "{assayType}/deepTools/plotHeatmap/{subcommand}/{reference_version}/{runID}/{region}_RPKM_kmeans{N}.tab"
     shell:
         """
-            {params.deepTools_dir}/plotHeatmap --matrixFile {input.matrix_gz\
+            {params.deepTools_dir}/plotHeatmap --matrixFile {input.matrix_gz}\
                                                --outFileName {output.pdf}\
                                                --outFileSortedRegions {output.bed}\
                                                --outFileNameMatrix {output.matrix}\
