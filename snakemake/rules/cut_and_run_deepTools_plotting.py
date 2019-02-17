@@ -35,6 +35,16 @@ rule all:
                region = ["allIntrons", "allExons"],
                suffix = ["RPKM", "1xgenome", "RPGCExact"])
 
+rule execute_plotHeatmap_RPKM_kmeans:
+    input:
+        expand("{assayType}/deepTools/plotHeatmap/{subcommand}/{reference_version}/{runID}/{region}_RPKM_kmeans{N}.{suffix}",
+               assayType = "CutRun",
+               subcommand = "reference-point",
+               reference_version = "GRCm38_ensembl93",
+               runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
+               region = ["allIntrons", "allExons"],
+               N = ["3", "4", "5", "6", "7"],
+               suffix = ["pdf", "bed", "tab"])
 
 
 def get_computeMatrix_input(wildcards):
@@ -236,8 +246,29 @@ rule plotProfile:
     input:
         matrix_gz = "{assayType}/deepTools/computeMatrix/{subcommand}/{reference_version}/{runID}/{region}/matrix_{suffix}.gz",
     output:
-        pdf =  "{assayType}/deepTools/plotProfile/{subcommand}/{reference_version}/{runID}/{region}_{suffix}.gz"
+        pdf =  "{assayType}/deepTools/plotProfile/{subcommand}/{reference_version}/{runID}/{region}_{suffix}.pdf"
     shell:
         """
         {params.deepTools_dir}/plotProfile
         """
+
+rule plotHeatmap_RPKM_kmeans:
+    version:
+        "1"
+    params:
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"]
+    input:
+        matrix_gz = "{assayType}/deepTools/computeMatrix/{subcommand}/{reference_version}/{runID}/{region}/matrix_RPKM.gz"
+    output:
+        pdf = "{assayType}/deepTools/plotHeatmap/{subcommand}/{reference_version}/{runID}/{region}_RPKM_kmeans{N}.pdf",
+        bed = "{assayType}/deepTools/plotHeatmap/{subcommand}/{reference_version}/{runID}/{region}_RPKM_kmeans{N}.bed",
+        matrix = "{assayType}/deepTools/plotHeatmap/{subcommand}/{reference_version}/{runID}/{region}_RPKM_kmeans{N}.tab"
+    shell:
+        """
+            {params.deepTools_dir}/plotHeatmap --matrixFile {input.matrix_gz\
+                                               --outFileName {output.pdf}\
+                                               --outFileSortedRegions {output.bed}\
+                                               --outFileNameMatrix {output.matrix}\
+                                               --kmeans {wildcards.N}
+        """
+    
