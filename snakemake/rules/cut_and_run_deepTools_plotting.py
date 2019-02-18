@@ -44,7 +44,15 @@ rule execute_plotHeatmap_RPKM_kmeans:
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
                region = ["allIntrons", "allExons"],
                N = ["3", "4", "5", "6", "7"],
-               suffix = ["pdf", "bed", "tab"])
+               suffix = ["pdf", "bed", "tab"]),
+       expand("{assayType}/deepTools/plotHeatmap/{subcommand}/{reference_version}/{runID}/{region}_RPKM_kmeans{N}.{suffix}",
+               assayType = "CutRun",
+               subcommand = "scale-region",
+               reference_version = "GRCm38_ensembl93",
+               runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
+               region = ["allGenes"],
+               N = ["3", "4", "5", "6", "7"],
+               suffix = ["pdf", "bed", "tab"]
 
 
 def get_computeMatrix_input(wildcards):
@@ -271,4 +279,5 @@ rule plotHeatmap_RPKM_kmeans:
                                                --outFileNameMatrix {output.matrix}\
                                                --kmeans {wildcards.N}
         """
+
     
