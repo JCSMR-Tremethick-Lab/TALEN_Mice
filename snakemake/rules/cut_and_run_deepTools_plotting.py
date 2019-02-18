@@ -52,7 +52,7 @@ rule execute_plotHeatmap_RPKM_kmeans:
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
                region = ["allGenes"],
                N = ["3", "4", "5", "6", "7"],
-               suffix = ["pdf", "bed", "tab"]
+               suffix = ["pdf", "bed", "tab"])
 
 
 def get_computeMatrix_input(wildcards):
