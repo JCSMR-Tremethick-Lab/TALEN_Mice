@@ -27,7 +27,10 @@ rule run_macs2_narrow:
         1
     params:
         macs2_bin = home + "/miniconda3/envs/py27/bin/macs2",
-        seed = "1234"
+        seed = "1234",
+        fileType = "BAMPE",
+        qvalCutoff = 0.99,
+        genomeSize = "mm"
     input:
         bam = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam",
         bai = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai"
@@ -35,10 +38,10 @@ rule run_macs2_narrow:
         directory("{assayType}/macs2/callpeak/narrow/{reference_version}/{runID}/{library}")
     shell:
         """
-            {params.macs2_bin} callpeak -f AUTO\
+            {params.macs2_bin} callpeak -f {params.filetype}\
                                --seed {params.seed}\
-                               --cutoff-analysis\
-                               -g mm\
+                               --qvalue {params.qvalCutoff}\
+                               -g {params.genomeSize}\
                                --bdg \
                                --SPMR \
                                --treatment {input.bam} \
@@ -52,7 +55,10 @@ rule run_macs2_broad:
         1
     params:
         macs2_bin = home + "/miniconda3/envs/py27/bin/macs2",
-        seed = "1234"
+        seed = "1234",
+        fileType = "BAMPE",
+        qvalCutoff = 0.99,
+        genomeSize = "mm"
     input:
         bam = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam",
         bai = "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai"
@@ -60,15 +66,15 @@ rule run_macs2_broad:
         directory("{assayType}/macs2/callpeak/broad/{reference_version}/{runID}/{library}")
     shell:
         """
-            {params.macs2_bin} callpeak -f AUTO\
+            {params.macs2_bin} callpeak -f {params.fileType}\
                                --seed {params.seed}\
-                               --cutoff-analysis\
-                               -g mm\
+                               -g {params.genomeSize}\
+                               --qvalue {params.qvalCutoff}\
                                --bdg \
                                --SPMR \
                                --treatment {input.bam} \
                                --name {wildcards.library} \
-                                --broad \
+                               --broad \
                                --outdir {output}
         """
 
