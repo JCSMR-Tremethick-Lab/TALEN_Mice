@@ -38,7 +38,7 @@ rule run_macs2_narrow:
         directory("{assayType}/macs2/callpeak/narrow/{reference_version}/{runID}/{library}")
     shell:
         """
-            {params.macs2_bin} callpeak -f {params.filetype}\
+            {params.macs2_bin} callpeak -f {params.fileType}\
                                --seed {params.seed}\
                                --qvalue {params.qvalCutoff}\
                                -g {params.genomeSize}\
