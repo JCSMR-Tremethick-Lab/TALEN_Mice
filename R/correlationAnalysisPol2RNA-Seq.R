@@ -2,7 +2,7 @@ library(rtracklayer)
 library(GenomicRanges)
 library(GenomicFeatures)
 library(biomaRt)
-library(BS)
+library(BSgenome.Mmusculus.UCSC.mm10)
 
 # set working & data directory --------------------------------------------
 setwd("/home/sebastian/Data/Tremethick/TALENs/R_analysis")
@@ -26,3 +26,24 @@ covData <- keepSeqlevels(covData, commonLevels, pruning.mode = "coarse")
 seqinfo(grEnsGenes) <- seqinfo(covData)
 
 subsetByOverlaps(covData, grEnsGenes)
+
+
+# inspect peak calling data -----------------------------------------------
+macs2broad <- "/home/sebastian/Data/Tremethick/TALENs/CutRun/macs2/callpeak/broad/GRCm38_ensembl93/NB501086_0221_TSoboleva_JCSMR_CutandRun/"
+
+broadPeakFiles <- list.files(macs2broad, recursive = T, pattern = "broadPeak", full.names = T)
+names(broadPeakFiles) <- list.files(macs2broad, recursive = T, pattern = "broadPeak", full.names = F)
+names(broadPeakFiles) <- gsub(".broadPeak", "", unlist(lapply(strsplit(names(broadPeakFiles), "/"), function(x) x[2])))
+broadPeakFiles <- broadPeakFiles[grep("35sec", broadPeakFiles, invert = T)]
+
+broadPeaks <- lapply(broadPeakFiles, function(x) data.table::fread(x))
+broadPeaksGRL <- lapply(broadPeaks, function(x) {
+  GenomicRanges::makeGRangesFromDataFrame(x,
+                                          keep.extra.columns = T, 
+                                          seqnames.field = "V1", 
+                                          start.field = "V2", 
+                                          end.field = "V3")
+})
+broadPeaksGRL <- GenomicRanges::GenomicRangesList(broadPeaksGRL)
+names(broadPeaksGRL) <- names(broadPeakFiles)
+sapply(broadPeaksGRL, function(x) summary(width(x)))
