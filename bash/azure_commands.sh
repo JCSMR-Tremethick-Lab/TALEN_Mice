@@ -18,7 +18,7 @@ az storage file upload-batch \
 
 
 # creating a mountpoint on the DSVM and mounting azure files shares
-STORAGEKEY="SoNLLyJ0ci0uFfJZgX+qJ7qAPO82bPliyOv2Pg79UzWm41Zn8sTxCO8uuxl6psVgPjtCYE0KLOaNw3IPGuOvfQ=="
+STORAGEKEY="NNNN"
 DEST="h2ab3data.file.core.windows.net/raw"
 sudo mount -t cifs //$DEST /mnt/raw -o vers=3.0,username=$STORAGEACCT,password=$STORAGEKEY,dir_mode=0777,file_mode=0777,serverino
 
