@@ -10,6 +10,9 @@ library(GenomicRanges)
 # comments: remove KO_19_26 & WT_46_47
 # libPaths "/home/sebastian/miniconda3/envs/r_351/lib/R/library"
 
+# load config.json
+runInfo <- jsonlite::fromJSON("~/Development/JCSMR-Tremethick-Lab/TALEN_Mice/snakemake/configs/config_RNA-Seq_round_spermatids.json")
+runInfo$samples$`RNA-Seq`$NB501086_0219_TSoboleva_JCSMR_RNAseq
 
 # import kallisto data using tximport -------------------------------------
 setwd("/home/sebastian/Data/Tremethick/TALENs/RNA-Seq/Mus_musculus_testes/R_analysis/")
