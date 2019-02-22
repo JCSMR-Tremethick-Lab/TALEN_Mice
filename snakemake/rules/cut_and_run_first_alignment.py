@@ -136,3 +136,25 @@ rule bam_index:
         "{assayType}/samtools/rmdup/{reference_version}/{runID}/{library}.bam.bai"
     shell:
         "samtools index {input} {output}"
+
+
+rule bam_insert_size:
+    version:
+        "1.0"
+    params:
+        picard = home + config["program_parameters"]["picard_tools"]["jar"],
+        temp = home + config["temp_dir"]
+    input:
+        rules.bam_rmdup.output
+    output:
+        metrics = "{assayType}/picardTools/CollectInsertSizeMetrics/{reference_version}/{runID}/{library}.insert_size_metrics.txt",
+        histogram = "{assayType}/picardTools/CollectInsertSizeMetrics/{reference_version}/{runID}/{library}.histogram.pdf"
+    shell:
+        """
+            java -Djava.io.tmpdir={params.temp} \
+            -Xmx24G \
+            -jar {params.picard} CollectInsertSizeMetrics \
+            INPUT={input}\
+            OUTPUT={output.metrics}\
+            H={output.histogram}
+        """

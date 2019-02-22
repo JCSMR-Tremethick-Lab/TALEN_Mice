@@ -25,6 +25,27 @@ include:
     include_prefix + "cut_and_run_first_alignment.py"
 include:
     include_prefix + "cut_and_run_unmapped_reads_extraction.py"
+include:
+    include_prefix + "cut_and_run_macs2.py"
+
+
+rule execute_macs2:
+    input:
+        expand("{assayType}/macs2/callpeak/{option}/{reference_version}/{runID}/{library}",
+                assayType = "CutRun",
+                option = ["broad", "narrow"],
+                reference_version = REF_VERSION,
+                runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
+                library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()])
+
+rule execute_collectInsertSize:
+    input:
+        expand("{assayType}/picardTools/CollectInsertSizeMetrics/{reference_version}/{runID}/{library}.{suffix}",
+                assayType = "CutRun",
+                reference_version = REF_VERSION,
+                runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
+                library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()],
+                suffix = ["histogram.pdf", "insert_size_metrics.txt"])
 
 rule all:
     input:
@@ -63,4 +84,9 @@ rule all:
                 reference_version = REF_VERSION,
                 runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
                 library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()],
-                suffix = ["bam.bai"])
+                suffix = ["bam.bai"]),
+        expand("{assayType}/macs2/callpeak/{reference_version}/{runID}/{library}/",
+                assayType = "CutRun",
+                reference_version = REF_VERSION,
+                runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
+                library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()])

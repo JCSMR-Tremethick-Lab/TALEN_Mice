@@ -22,55 +22,57 @@ def getGroups(wildcards):
 
 rule star_align_full:
     version:
-        0.5
+        "1"
     threads:
-        lambda wildcards: int(str(config["STAR"]["runThreadN"]).strip("['']"))
+        8
     params:
         tmp_dir = home + "/tmp"
     input:
-        rules.cutadapt_pe.output,
-        index = lambda wildcards: config["STAR"][wildcards.reference_version]
+        trimmed_read1 = rules.run_fastp.output.trimmed_read1,
+        trimmed_read2 = rules.run_fastp.output.trimmed_read2,
+        index = lambda wildcards: config["STAR"][wildcards["reference_version"]]["index"],
+        gtf = lambda wildcards: config["STAR"][wildcards["reference_version"]]["GTF"]
     output:
-        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
+        directory("{assayType}/STAR/full/{reference_version}/{runID}/{library}/")
     shell:
         """
             STAR --runMode alignReads \
                  --runThreadN {threads} \
                  --genomeDir {input.index} \
-                 --readFilesIn {input[0]} {input[1]} \
+                 --readFilesIn {input.trimmed_read1} {input.trimmed_read2} \
                  --readFilesCommand zcat \
-                 --outTmpDir {params.tmp_dir}/{wildcards.unit} \
+                 --outTmpDir {params.tmp_dir}/{wildcards.library} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
                  --outSAMtype BAM SortedByCoordinate \
-                 --outStd BAM_SortedByCoordinate \
                  --alignEndsType EndToEnd\
-                 --quantMode GeneCounts \
-                 > {output}
+                 --outFileNamePrefix {output} \
+                 1 > {output}/log.txt
         """
 
 rule star_align_rMATs:
     version:
-        0.1
+        "1"
     threads:
-        30
+        16
     params:
         tempDir = home + "/tmp/",
         tophatAnchor = "2"
     input:
-        rules.cutadapt_pe.output,
-        index = lambda wildcards: config["STAR"][wildcards.reference_version],
-        gtf = lambda wildcards: config["references"]["GTF"]
+        trimmed_read1 = rules.run_fastp.output.trimmed_read1,
+        trimmed_read2 = rules.run_fastp.output.trimmed_read2,
+        index = lambda wildcards: config["STAR"][wildcards["reference_version"]]["index"],
+        gtf = lambda wildcards: config["STAR"][wildcards["reference_version"]]["GTF"]
     output:
-        protected("{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam")
+        "{assayType}/rMATs/BAMs/{reference_version}/{runID}/{library}.bam"
     shell:
         """
             STAR --runMode alignReads \
                  --runThreadN {threads} \
                  --genomeDir {input.index} \
-                 --readFilesIn {input[0]} {input[1]} \
+                 --readFilesIn {input.trimmed_read1} {input.trimmed_read2} \
                  --readFilesCommand zcat \
-                 --outTmpDir {params.tempDir}{wildcards.unit} \
+                 --outTmpDir {params.tempDir}{wildcards.library} \
                  --outSAMmode Full \
                  --outSAMattributes Standard \
                  --outSAMstrandField intronMotif\
@@ -88,135 +90,61 @@ rule star_align_rMATs:
 
 rule bam_index_STAR_output:
     version:
-        0.2
+        "1"
     input:
-        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
+        "{assayType}/STAR/full/{reference_version}/{runID}/{library}/Aligned.sortedByCoord.out.bam"
     output:
-        "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
+        "{assayType}/STAR/full/{reference_version}/{runID}/{library}/Aligned.sortedByCoord.out.bam.bai"
     wrapper:
         "file://" + wrapper_dir + "/samtools/index/wrapper.py"
 
-rule bam_index_STAR_rMATS_output:
+rule create_tdf:
     version:
-        0.1
+        "1"
+    params:
+        igvtools_bin = home + "/miniconda3/envs/igv/bin/igvtools",
+        windowSize = 5,
+        chromSizes = "/home/sebastian/Bioinformatics/IGVTools/genomes/sizes/hg38.chrom.sizes"
     input:
-        "{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam"
+        bam = "{assayType}/STAR/full/{reference_version}/{runID}/{library}/Aligned.sortedByCoord.out.bam",
+        index = "{assayType}/STAR/full/{reference_version}/{runID}/{library}/Aligned.sortedByCoord.out.bam.bai"
     output:
-        protected("{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam.bai")
-    wrapper:
-        "file://" + wrapper_dir + "/samtools/index/wrapper.py"
+        "{assayType}/igvtools/count/{reference_version}/{runID}/{library}/{library}.tdf"
+    shell:
+        """
+            {params.igvtools_bin} count -z 5\
+                                        -w {params.windowSize}\
+                                        -e 0 \
+                                        {input.bam}\
+                                        {output}\
+                                        {params.chromSizes}
+        """
 
 
-rule create_bigwig_from_bam:
+rule create_bigwig_from_bam_RPKM:
     version:
-        0.1
+        "1"
     threads:
         16
     params:
-        deepTools_dir = home + config["deepTools_dir"]
+        deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
+        ignore = config["program_parameters"]["deepTools"]["ignoreForNormalization"],
+        outFileFormat = "bigwig",
+        binSize = 10,
+        smoothLength = 30,
+        normalizeUsing = "RPKM"
     input:
-        bam = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam"
+        bam = "{assayType}/{tool}/{subcommand}/{reference_version}/{runID}/{library}.bam",
+        index = "{assayType}/{tool}/{subcommand}/{reference_version}/{runID}/{library}.bam.bai"
     output:
-        bigwig = protected("{outdir}/{reference_version}/deepTools/bamCoverage/{unit}.bw")
+        bigwig = "{assayType}/deepTools/bamCoverage/{reference_version}/{runID}/{tool}/{subcommand}/{library}.bw"
     shell:
         """
             {params.deepTools_dir}/bamCoverage --bam {input.bam} \
-                                               --outFileName {output} \
-                                               --outFileFormat bigwig \
-                                               --binSize 1 \
+                                               --outFileName {output.bigwig} \
+                                               --outFileFormat {params.outFileFormat} \
                                                --numberOfProcessors {threads} \
-                                               --normalizeUsingRPKM \
-                                               --smoothLength 10
-        """
-
-rule create_bigwig_from_rMATS_bam:
-    version:
-        0.1
-    threads:
-        16
-    params:
-        deepTools_dir = home + config["deepTools_dir"],
-    input:
-        bam = "{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam",
-        index = "{outdir}/{reference_version}/rMATS/BAMs/{unit}.aligned.bam.bai"
-    output:
-        bigwig = protected("{outdir}/{reference_version}/rMATS/BWs/{unit}.bw")
-    shell:
-        """
-            {params.deepTools_dir}/bamCoverage --bam {input.bam} \
-                                               --outFileName {output} \
-                                               --outFileFormat bigwig \
-                                               --binSize 1 \
-                                               --numberOfProcessors {threads} \
-                                               --normalizeUsingRPKM \
-                                               --smoothLength 10
-        """
-
-rule run_dexseq_count:
-    version:
-        0.1
-    params:
-        dexseq_dir = home + config["DEXSeq_dir"],
-        dex_gtf = home + config["references"]["DEX_GTF"],
-        python_bin = home + config["python27_bin"]
-    input:
-        bam = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam",
-        index = "{outdir}/{reference_version}/STAR/full/{unit}.aligned.bam.bai"
-    output:
-        "{outdir}/{reference_version}/DEXSeq/count/{unit}.txt"
-    shell:
-        """
-            {params.python_bin} {params.dexseq_dir}/dexseq_count.py --format=bam \
-                                                       --paired=yes \
-                                                       --order=pos \
-                                                       --stranded=reverse \
-                                                       {params.dex_gtf} \
-                                                       {input.bam} \
-                                                       {output}
-        """
-
-
-rule collect_insert_size_metrics:
-    version:
-        0.1
-    params:
-        sampling = config["Picard"]["sampling"],
-        jar_file = home + "/bin/picard.jar",
-        tmp_dir = home + "/tmp"
-    input:
-        rules.star_align_full.output
-    output:
-        txt = "{outdir}/{reference_version}/PICARD/insert_size_metrics/{unit}.insert_size_metrics.txt",
-        pdf = "{outdir}/{reference_version}/PICARD/insert_size_metrics/{unit}.insert_size_metrics.pdf"
-    shell:
-        """
-            java -Djava.io.tmpdir={params.tmp_dir} \
-            -Xmx36G \
-            -jar {params.jar_file} CollectInsertSizeMetrics \
-            I={input} \
-            O={output.txt} \
-            H={output.pdf} \
-            M=0.2
-        """
-
-rule run_rMats:
-    version:
-        0.1
-    params:
-        gtf = config["references"]["GTF"],
-        bin = home + "/Bioinformatics/rMATS.3.2.5/RNASeq-MATS.py"
-    input:
-        getGroups
-    output:
-        "{outdir}/{reference_version}/rMATS/{tissue}/{condition}"
-    shell:
-        """
-            python {params.bin} -b1 {input[0]} \
-                                -b2 {input[1]} \
-                                -gtf {params.gtf} \
-                                -t paired \
-                                -len 76 \
-                                -analysis U \
-                                -libType fr-firststrand \
-                                -o {output}
+                                               --normalizeUsing {params.normalizeUsing} \
+                                               --binSize {params.binSize} \
+                                               --smoothLength {params.smoothLength}
         """

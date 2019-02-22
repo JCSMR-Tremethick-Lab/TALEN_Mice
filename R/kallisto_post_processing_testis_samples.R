@@ -29,6 +29,7 @@ attribs <- listAttributes(mouse)
 t2g <- getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id", "external_gene_name"), mart = mouse)
 t2g <- data.table::data.table(dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name))
 save(t2g, file = "t2g_ensembl84.rda")
+load("t2g_ensembl84.rda")
 
 files <- paste(kal_dirs, "abundance.h5", sep = "/")
 txi <- tximport::tximport(files, tx2gene = t2g[,c("target_id", "ext_gene")], geneIdCol = "ext_gene", txIdCol = "target_id", type = "kallisto", ignoreTxVersion = T)

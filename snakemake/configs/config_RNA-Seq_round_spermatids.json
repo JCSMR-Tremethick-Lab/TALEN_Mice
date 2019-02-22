@@ -20,7 +20,23 @@
     "GRCm38_ensembl84_cDNA" : "/home/sebastian/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.cdna.ki",
     "GRCm38_ensembl84_ERCC" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl84/Mus_musculus.GRCm38.ERCC.ki",
     "GRCm38_gencodeM18" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_gencodeM18/gencode.vM18.pc_transcripts.ERCC.ki",
-    "GRCm38_ensembl93_ERCC" :  "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.cds.all.ERCC.ki"   
+    "GRCm38_ensembl93_ERCC" :  "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.cds.all.ERCC.ki",
+    "GRCm38_ensembl93" :  "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.cds.all.ERCC.ki"
+  },
+  "STAR" :
+  {
+    "GRCm38_ensembl93_ERCC" :
+    {
+      "index" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/STAR_Index_ERCC",
+      "GTF" : "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.93.ERCC.gtf",
+      "fasta" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.cds.all.fa.gz"
+    },
+    "GRCm38_ensembl93" :
+    {
+      "index" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/STAR_Index",
+      "GTF" : "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.93.gtf",
+      "fasta" : "/Data/References/Transcriptomes/Mus_musculus/GRCm38_ensembl93/Mus_musculus.GRCm38.cds.all.fa.gz"
+    }
   },
   "samples" :
   {
@@ -34,6 +50,103 @@
         "KO_19_26" : ["S4_S4_R1_001.fastq.gz", "S4_S4_R2_001.fastq.gz"],
         "WT_46_47" : ["S5_S5_R1_001.fastq.gz", "S5_S5_R2_001.fastq.gz"],
         "KO_44_45" : ["S6_S6_R1_001.fastq.gz", "S6_S6_R2_001.fastq.gz"]
+      },
+      "condition" :
+      {
+        "NB501086_0219_TSoboleva_JCSMR_RNAseq":
+        {
+          "WT" : ["WT_37_39", "WT_18_38", "WT_46_47"],
+          "KO" : ["KO_24_25", "KO_19_26", "KO_44_45"]
+        }
+      }
+    }
+  },
+  "program_parameters" :
+  {
+    "deepTools":
+    {
+      "SES_sample_length": ["1000"],
+      "SES_numer_of_samples": ["10000000.0"],
+      "ignoreForNormalization": ["MT X"],
+      "binSize": ["10000"],
+      "threads": "8",
+      "deepTools_dir": "/miniconda3/envs/deepTools/bin",
+      "regionFiles":
+      {
+        "GRCm38_ensembl93":
+        {
+          "allGenes": "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/allGenes.bed",
+          "allExons": "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/allExons.bed",
+          "allIntrons": "/Data/References/Annotations/Mus_musculus/GRCm38_ensembl93/allIntrons.bed"
+        },
+        "GRCh38_ensembl84":
+        {
+          "allGenes": "/Data/References/Annotations/Homo_sapiens/GRCh38_ensembl84/allGenes.bed"
+        }
+      },
+      "bamCoverage":
+      {
+        "MNase":
+        {
+          "--binSize": "1",
+          "--smoothLength": "30"
+        },
+        "normal":
+        {
+          "--centerReads": " ",
+          "--binSize": "100",
+          "--smoothLength": "150"
+        }
+      },
+      "bamCompare":
+      {
+        "MNase":
+        {
+          "--binSize": "1",
+          "--smoothLength": "30"
+        },
+        "normal":
+        {
+          "--centerReads": " ",
+          "--binSize": "100",
+          "--smoothLength": "150"
+        }
+      },
+      "computeMatrix":
+      {
+        "scale-regions":
+        {
+          "default":
+          {
+            "--upstream": "3000",
+            "--downstream": "3000",
+            "--regionBodyLength": "5000",
+            "--unscaled5prime": "200",
+            "--unscaled3prime": "200"
+          },
+          "coding":
+          {
+            "--upstream": "3000",
+            "--downstream": "3000",
+            "--regionBodyLength": "5000",
+            "--unscaled5prime": "200",
+            "--unscaled3prime": "200"
+          },
+          "noncoding":
+          {
+            "--upstream": "0",
+            "--downstream": "0",
+            "--regionBodyLength": "20000",
+            "--unscaled5prime": "0",
+            "--unscaled3prime": "0"
+          }
+        },
+        "reference-point":
+        {
+          "--upstream": "1500",
+          "--downstream": "1500",
+          "--referencePoint": ""
+        }
       }
     }
   },
