@@ -21,19 +21,19 @@ rule all:
                reference_version = "GRCm38_ensembl93",
                runID = "NB501086_0221_TSoboleva_JCSMR_CutandRun",
                library = [x for x in config["samples"]["CutRun"]["NB501086_0221_TSoboleva_JCSMR_CutandRun"].keys()],
-               suffix = ["RPKM.bw", "1xgenome.bw", "RPGCExact.bw"]),
+               suffix = ["RPKM.bw"]),
         expand("{assayType}/deepTools/computeMatrix/scale-region/{reference_version}/{runID}/{region}/matrix_{suffix}.gz",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
                region = ["allGenes", "upRegulatedGenes", "downRegulatedGenes"],
-               suffix = ["RPKM", "1xgenome", "RPGCExact"]),
+               suffix = ["RPKM.bw"]),
         expand("{assayType}/deepTools/computeMatrix/reference-point/{reference_version}/{runID}/{region}/matrix_{suffix}.gz",
                assayType = "CutRun",
                reference_version = "GRCm38_ensembl93",
                runID = ["NB501086_0221_TSoboleva_JCSMR_CutandRun", "180731_NB501086_0217_CutandRun_Tanya"],
-               region = ["allIntrons", "allExons"],
-               suffix = ["RPKM", "1xgenome", "RPGCExact"])
+               region = ["allIntrons", "allExons", "allGenes"],
+               suffix = ["RPKM.bw"])
 
 rule execute_plotHeatmap_RPKM_kmeans:
     input:
@@ -221,8 +221,8 @@ rule computeMatrix_refPoint:
         "1"
     params:
         deepTools_dir = home + config["program_parameters"]["deepTools"]["deepTools_dir"],
-        upstream = 500,
-        downstream = 500
+        upstream = 1500,
+        downstream = 1500
     threads:
         32
     input:
